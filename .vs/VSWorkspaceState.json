@@ -4,13 +4,14 @@
     "\\app",
     "\\app\\Http",
     "\\app\\Http\\Controllers",
+    "\\app\\Models",
     "\\resources",
     "\\resources\\views",
-    "\\resources\\views\\admin",
-    "\\resources\\views\\admin\\settings",
-    "\\resources\\views\\admin\\settings\\users",
-    "\\resources\\views\\personal"
+    "\\resources\\views\\incidencias",
+    "\\resources\\views\\vendor\\adminlte",
+    "\\resources\\views\\vendor\\adminlte\\partials",
+    "\\routes"
   ],
-  "SelectedNode": "\\database\\seeders\\DatabaseSeeder.php",
+  "SelectedNode": "\\resources\\views\\incidencias\\show.blade.php",
   "PreviewInSolutionExplorer": false
 }

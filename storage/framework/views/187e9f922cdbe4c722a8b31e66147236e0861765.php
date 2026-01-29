@@ -24,7 +24,6 @@
                 </div>
 
                 <div class="card-body">
-                    
                     <div class="table-responsive">
                         <table id="personals" class="table table-striped table-bordered table-hover table-sm w-100">
                             <thead>
@@ -113,15 +112,13 @@
         .table th, .table td{
             text-align: center;
             vertical-align: middle;
-            white-space: nowrap; /* ✅ evita que crezcan filas y “rompa” el layout */
+            white-space: nowrap;
         }
 
-        /* ✅ DataTables dentro de cards: fuerza a no desbordar el contenedor */
         .dataTables_wrapper{
             width: 100%;
         }
 
-        /* ✅ evita el “brinco” de ancho al cargar */
         table.dataTable{
             width: 100% !important;
         }
@@ -153,11 +150,10 @@
                 "responsive": true,
                 "lengthChange": true,
                 "autoWidth": false,
-                "scrollX": true,   // ✅ clave: scroll horizontal para que no se salga del card
+                "scrollX": true,
                 "deferRender": true
             });
 
-            // ✅ cuando AdminLTE/Bootstrap recalcula tamaños, ajusta columnas
             setTimeout(function () {
                 dt.columns.adjust().responsive.recalc();
             }, 150);

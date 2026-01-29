@@ -19,8 +19,13 @@ class Weapon extends Model
         'observaciones',
     ];
 
-    public function asignaciones()
+    public function assignments()
     {
         return $this->hasMany(WeaponAssignment::class, 'weapon_id');
+    }
+
+    public function asignaciones()
+    {
+        return $this->assignments();
     }
 }
