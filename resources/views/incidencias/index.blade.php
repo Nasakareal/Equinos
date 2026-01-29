@@ -47,7 +47,7 @@
                                         {{ $inc->personal->nombres ?? '—' }}
                                     </td>
 
-                                    <td>{{ $inc->type->nombre ?? '—' }}</td>
+                                    <td>{{ $inc->tipo->nombre ?? '—' }}</td>
 
                                     <td>{{ optional($inc->fecha_inicio)->format('d/m/Y') }}</td>
 

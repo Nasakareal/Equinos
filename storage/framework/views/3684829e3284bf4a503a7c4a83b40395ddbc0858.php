@@ -7,6 +7,12 @@
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('content'); ?>
+<?php
+    // ✅ Prioridad: old() si hay errores; si no, el que viene por query (?personal_id=)
+    $personalSeleccionado = old('personal_id', $personal_id_preseleccionado ?? '');
+    $bloquearPersonal = !empty($personal_id_preseleccionado) && empty(old('personal_id'));
+?>
+
 <div class="row">
     <div class="col-md-12">
         <div class="card card-outline card-primary">
@@ -17,6 +23,11 @@
             <div class="card-body">
                 <form action="<?php echo e(route('incidencias.store')); ?>" method="POST">
                     <?php echo csrf_field(); ?>
+
+                    
+                    <?php if($bloquearPersonal): ?>
+                        <input type="hidden" name="personal_id" value="<?php echo e($personalSeleccionado); ?>">
+                    <?php endif; ?>
 
                     <div class="row">
                         <!-- Personal -->
@@ -33,16 +44,21 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                        required>
-                                    <option value="" selected disabled>Seleccione...</option>
+                                        required
+                                        <?php echo e($bloquearPersonal ? 'disabled' : ''); ?>>
+                                    <option value="" disabled <?php echo e(empty($personalSeleccionado) ? 'selected' : ''); ?>>
+                                        Seleccione...
+                                    </option>
+
                                     <?php $__currentLoopData = $personals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $p): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <option value="<?php echo e($p->id); ?>"
-                                            <?php echo e(old('personal_id') == $p->id ? 'selected' : ''); ?>>
+                                            <?php echo e((string)$personalSeleccionado === (string)$p->id ? 'selected' : ''); ?>>
                                             <?php echo e($p->nombres); ?>
 
                                         </option>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
+
                                 <?php $__errorArgs = ['personal_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -53,6 +69,12 @@ $message = $__bag->first($__errorArgs[0]); ?>
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
+
+                                <?php if($bloquearPersonal): ?>
+                                    <small class="text-muted">
+                                        Personal fijado porque llegaste desde el detalle del elemento.
+                                    </small>
+                                <?php endif; ?>
                             </div>
                         </div>
 

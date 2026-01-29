@@ -48,7 +48,7 @@
 
                                     </td>
 
-                                    <td><?php echo e($inc->type->nombre ?? '—'); ?></td>
+                                    <td><?php echo e($inc->tipo->nombre ?? '—'); ?></td>
 
                                     <td><?php echo e(optional($inc->fecha_inicio)->format('d/m/Y')); ?></td>
 

@@ -2,16 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\app",
-    "\\app\\Http",
-    "\\app\\Http\\Controllers",
     "\\app\\Models",
     "\\resources",
     "\\resources\\views",
     "\\resources\\views\\admin",
     "\\resources\\views\\admin\\settings",
     "\\resources\\views\\admin\\settings\\users",
+    "\\resources\\views\\incidencias",
     "\\resources\\views\\personal"
   ],
-  "SelectedNode": "\\resources\\views\\admin\\settings\\users\\show.blade.php",
+  "SelectedNode": "\\resources\\views\\incidencias\\create.blade.php",
   "PreviewInSolutionExplorer": false
 }

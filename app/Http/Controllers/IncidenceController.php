@@ -19,7 +19,7 @@ class IncidenceController extends Controller
     public function index()
     {
         $incidencias = Incidence::query()
-            ->with(['type', 'personal'])
+            ->with(['tipo', 'personal', 'registradoPor'])
             ->orderByDesc('fecha_inicio')
             ->orderByDesc('created_at')
             ->get();
@@ -86,14 +86,14 @@ class IncidenceController extends Controller
 
     public function show(Incidence $incidence)
     {
-        $incidence->load(['type', 'personal']);
+        $incidence->load(['tipo', 'personal', 'registradoPor']);
 
         return view('incidencias.show', compact('incidence'));
     }
 
     public function edit(Incidence $incidence)
     {
-        $incidence->load(['type', 'personal']);
+        $incidence->load(['tipo', 'personal', 'registradoPor']);
 
         $incidence_types = IncidenceType::query()
             ->where('activo', 1)
