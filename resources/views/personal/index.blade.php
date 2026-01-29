@@ -32,11 +32,7 @@
                                     <th><center>Grado</center></th>
                                     <th><center>Nombre</center></th>
                                     <th><center>Dependencia</center></th>
-                                    <th><center>CUIP</center></th>
-                                    <th><center>Celular</center></th>
                                     <th><center>CRP</center></th>
-                                    <th><center>Cargo</center></th>
-                                    <th><center>Responsable</center></th>
                                     <th><center>Acciones</center></th>
                                 </tr>
                             </thead>
@@ -48,17 +44,7 @@
                                         <td>{{ $personal->grado ?? '-' }}</td>
                                         <td>{{ $personal->nombres }}</td>
                                         <td>{{ $personal->dependencia ?? '-' }}</td>
-                                        <td>{{ $personal->cuip ?? '-' }}</td>
-                                        <td>{{ $personal->celular ?? '-' }}</td>
                                         <td>{{ $personal->crp ?? '-' }}</td>
-                                        <td>{{ $personal->cargo ?? '-' }}</td>
-                                        <td>
-                                            @if(!empty($personal->es_responsable) && (int)$personal->es_responsable === 1)
-                                                <span class="badge badge-success">Sí</span>
-                                            @else
-                                                <span class="badge badge-secondary">No</span>
-                                            @endif
-                                        </td>
                                         <td style="text-align: center">
                                             <div class="btn-group" role="group">
 

@@ -6,7 +6,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
-
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\WeaponController;
 use App\Http\Controllers\WeaponAssignmentController;
@@ -28,6 +27,7 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::middleware('auth')->group(function () {
 
     Route::prefix('admin/settings')->middleware('can:ver configuraciones')->group(function () {
+
         Route::get('/', [SettingsController::class, 'index'])->name('settings.index');
 
         Route::prefix('users')->middleware('can:ver usuarios')->group(function () {
@@ -44,13 +44,14 @@ Route::middleware('auth')->group(function () {
             Route::get('/', [RoleController::class, 'index'])->name('roles.index');
             Route::get('/create', [RoleController::class, 'create'])->middleware('can:crear roles')->name('roles.create');
             Route::post('/', [RoleController::class, 'store'])->middleware('can:crear roles')->name('roles.store');
-            Route::get('/{role}', [RoleController::class, 'show'])->name('roles.show');
+            Route::get('/{role}', [RoleController::class, 'show'])->middleware('can:ver roles')->name('roles.show');
             Route::get('/{role}/edit', [RoleController::class, 'edit'])->middleware('can:editar roles')->name('roles.edit');
             Route::put('/{role}', [RoleController::class, 'update'])->middleware('can:editar roles')->name('roles.update');
             Route::delete('/{role}', [RoleController::class, 'destroy'])->middleware('can:eliminar roles')->name('roles.destroy');
             Route::get('/{role}/permissions', [RoleController::class, 'permissions'])->middleware('can:editar roles')->name('roles.permissions');
             Route::post('/{role}/permissions', [RoleController::class, 'assignPermissions'])->middleware('can:editar roles')->name('roles.assignPermissions');
         });
+
     });
 
     Route::prefix('personal')->middleware('can:ver personal')->group(function () {
@@ -138,6 +139,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/generar', [DailyReportController::class, 'generar'])->middleware('can:crear reportes')->name('daily_reports.generar');
         Route::get('/{daily_report}', [DailyReportController::class, 'show'])->name('daily_reports.show');
         Route::get('/{daily_report}/descargar/{tipo}', [DailyReportController::class, 'descargar'])->middleware('can:ver reportes')->name('daily_reports.descargar');
+        Route::get('/{daily_report}/descargar/excel-armamento', [DailyReportController::class, 'descargarExcelArmamento'])->middleware('can:ver reportes')->name('daily_reports.descargar.excel_armamento');
     });
 
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');

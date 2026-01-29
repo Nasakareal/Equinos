@@ -24,6 +24,120 @@
 @section('content')
 <div class="row">
 
+    {{-- RESUMEN / KPIS --}}
+    <div class="col-12">
+        <div class="row">
+
+            <div class="col-lg-3 col-md-6 col-12">
+                <div class="small-box bg-primary">
+                    <div class="inner">
+                        <h3>{{ $total_personal ?? 0 }}</h3>
+                        <p>Total del personal</p>
+                        <small>{{ isset($now) ? $now->format('d/m/Y H:i') : '' }}</small>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-12">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{{ $total_laborando ?? 0 }}</h3>
+                        <p>Laborando ahora</p>
+                        <small>Según patrón de servicio</small>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-12 col-12">
+                <div class="card card-outline card-primary h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fa-solid fa-chart-pie"></i> Estado de fuerza por dependencia (laborando)
+                        </h3>
+                        <div class="card-tools">
+                            <span class="badge badge-light">
+                                {{ isset($now) ? $now->format('d/m/Y H:i') : '' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Dependencia</th>
+                                        <th class="text-center" style="width:140px;">Laborando</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $hayLaborando = isset($laborando_por_dependencia) && $laborando_por_dependencia->count() > 0;
+                                    @endphp
+
+                                    @if($hayLaborando)
+                                        @foreach($laborando_por_dependencia as $row)
+                                            <tr>
+                                                <td>{{ $row->dependencia ?? 'Sin dependencia' }}</td>
+                                                <td class="text-center">
+                                                    <span class="badge badge-success">{{ $row->total }}</span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="2"><center>Sin datos de laborando por dependencia.</center></td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <hr class="my-2">
+
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Dependencia</th>
+                                        <th class="text-center" style="width:140px;">Plantilla</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $hayTotales = isset($total_por_dependencia) && $total_por_dependencia->count() > 0;
+                                    @endphp
+
+                                    @if($hayTotales)
+                                        @foreach($total_por_dependencia as $row)
+                                            <tr>
+                                                <td>{{ $row->dependencia ?? 'Sin dependencia' }}</td>
+                                                <td class="text-center">
+                                                    <span class="badge badge-primary">{{ $row->total }}</span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="2"><center>Sin datos de plantilla por dependencia.</center></td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     {{-- BLOQUE 1: OPERACIÓN DIARIA --}}
     <div class="col-12">
         <div class="ef-section">
@@ -78,10 +192,28 @@
             </div>
             <div class="ef-card__body">
                 <div class="ef-card__title">Reportes diarios</div>
-                <div class="ef-card__desc">Generación y descarga de formatos diarios (6 excels).</div>
-                <a href="{{ url('reportes-diarios') }}" class="btn ef-btn">
-                    <i class="fa-solid fa-arrow-right"></i> Abrir módulo
-                </a>
+                <div class="ef-card__desc">
+                    Generación y descarga de formatos diarios (6 excels).
+                </div>
+
+                <div class="d-flex gap-2" style="gap:8px;">
+
+                    {{-- GENERAR HOY (POST) --}}
+                    @can('crear reportes')
+                    <form action="{{ route('daily_reports.generar') }}" method="POST" style="display:inline;">
+                        @csrf
+                        <button type="submit" class="btn ef-btn">
+                            <i class="fa-solid fa-file-circle-plus"></i> Generar hoy
+                        </button>
+                    </form>
+                    @endcan
+
+                    {{-- HISTORIAL --}}
+                    <a href="{{ route('daily_reports.index') }}" class="btn ef-btn ef-btn--ghost">
+                        <i class="fa-solid fa-list"></i> Historial
+                    </a>
+
+                </div>
             </div>
         </div>
     </div>
@@ -251,6 +383,7 @@
 
 </div>
 @stop
+
 
 @section('css')
 <style>

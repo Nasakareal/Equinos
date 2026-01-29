@@ -4,22 +4,26 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
     public function run()
     {
-        // Si usas cache de spatie
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        // Cache spatie
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        // Todos los permisos
+        /**
+         * Permisos reales según tus rutas web.php
+         */
         $permissions = [
-            // Configuraciones y usuarios
+            // Configuraciones (settings)
             'ver configuraciones',
+
+            // Usuarios
             'ver usuarios',
             'crear usuarios',
             'editar usuarios',
@@ -31,117 +35,121 @@ class RolesAndPermissionsSeeder extends Seeder
             'editar roles',
             'eliminar roles',
 
-            // Hechos de tránsito
-            'ver hechos',
-            'crear hechos',
-            'editar hechos',
-            'eliminar hechos',
+            // Personal
+            'ver personal',
+            'crear personal',
+            'editar personal',
+            'eliminar personal',
 
-            // Hechos de Vehículos
-            'ver vehiculos',
-            'crear vehiculos',
-            'editar vehiculos',
-            'eliminar vehiculos',
+            // Armamento (weapons) + asignaciones usan el mismo middleware can:ver armamento
+            'ver armamento',
+            'crear armamento',
+            'editar armamento',
+            'eliminar armamento',
 
-            // Hechos de Lesionados
-            'ver lesionados',
-            'crear lesionados',
-            'editar lesionados',
-            'eliminar lesionados',
+            // Incidencias (incluye tipos)
+            'ver incidencias',
+            'crear incidencias',
+            'editar incidencias',
+            'eliminar incidencias',
 
-            // Grúas
-            'ver gruas',
-            'crear gruas',
-            'editar gruas',
-            'eliminar gruas',
+            // Turnos / Turnos-horarios / Servicio
+            'ver turnos',
+            'crear turnos',
+            'editar turnos',
+            'eliminar turnos',
 
-            // Dictamenes
-            'ver dictamenes',
-            'crear dictamenes',
-            'editar dictamenes',
-            'eliminar dictamenes',
-
-            // Formatos
-            'ver formatos',
-            'crear formatos',
-            'editar formatos',
-            'eliminar formatos',
-
-            // Listas
-            'ver listas',
-            'crear listas',
-            'editar listas',
-            'eliminar listas',
-
-            // Oficios
-            'ver oficios',
-            'crear oficios',
-            'editar oficios',
-            'eliminar oficios',
-
-            // Ver Estadisticas
-            'ver estadisticas',
-            'crear estadisticas',
-            'editar estadisticas',
-            'eliminar estadisticas',
-            'ver mapa',
+            // Reportes diarios
+            'ver reportes',
+            'crear reportes',
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
-        }
+        DB::transaction(function () use ($permissions) {
 
-        // Definición de roles y permisos asignados
-        $roles = [
-            // Superadmin: SIEMPRE TODO
-            'Superadmin' => $permissions,
+            // 1) Crear permisos si no existen
+            foreach ($permissions as $permission) {
+                Permission::firstOrCreate([
+                    'name' => $permission,
+                    'guard_name' => 'web',
+                ]);
+            }
 
-            'Administrador' => $permissions,
+            // 2) Roles y sus permisos
+            $roles = [
+                // Superadmin: TODO
+                'Superadmin' => $permissions,
 
-            'Subdirector' => [
-                'ver configuraciones',
-                'ver hechos',
-                'crear hechos',
-                'editar hechos',
-                'eliminar hechos',
-                'ver dictamenes',
-                'crear dictamenes',
-                'editar dictamenes',
-            ],
-            'Empleado' => [
-                'ver hechos',
-                'crear hechos',
-                'editar hechos',
-            ],
-            'Observador' => [
-                'ver hechos',
-            ],
-        ];
+                // Administrador: TODO (si luego quieres restringirlo, lo ajustamos)
+                'Administrador' => $permissions,
 
-        DB::transaction(function () use ($roles) {
+                // Subdirector: ve operación y reportes, pero NO configura usuarios/roles
+                'Subdirector' => [
+                    'ver personal',
+                    'ver armamento',
+                    'ver incidencias',
+                    'ver turnos',
+                    'ver reportes',
+                    'crear reportes',
+                ],
+
+                // Empleado: opera módulos, sin eliminar ni configuraciones
+                'Empleado' => [
+                    'ver personal',
+                    'crear personal',
+                    'editar personal',
+
+                    'ver armamento',
+                    'crear armamento',
+                    'editar armamento',
+
+                    'ver incidencias',
+                    'crear incidencias',
+                    'editar incidencias',
+
+                    'ver turnos',
+                    'editar turnos',
+
+                    'ver reportes',
+                ],
+
+                // Observador: solo lectura
+                'Observador' => [
+                    'ver personal',
+                    'ver armamento',
+                    'ver incidencias',
+                    'ver turnos',
+                    'ver reportes',
+                ],
+            ];
 
             foreach ($roles as $roleName => $rolePermissions) {
-                $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
+                $role = Role::firstOrCreate([
+                    'name' => $roleName,
+                    'guard_name' => 'web',
+                ]);
 
-                $permissionsToAssign = Permission::whereIn('name', $rolePermissions)->get();
+                $permissionsToAssign = Permission::whereIn('name', $rolePermissions)
+                    ->where('guard_name', 'web')
+                    ->get();
+
                 $role->syncPermissions($permissionsToAssign);
             }
 
-            // ====== HARD RULE: el sistema no puede quedarse sin superadmins ======
-            // Si ya existe al menos 1 usuario con rol Superadmin, ok.
-            // Si NO existe, promovemos al primer usuario (por id) a Superadmin.
-            $superadminRole = Role::where('name', 'Superadmin')->first();
+            // ====== HARD RULE: no quedarse sin Superadmin ======
+            $superadminRole = Role::where('name', 'Superadmin')->where('guard_name', 'web')->first();
             if ($superadminRole) {
                 $count = User::role('Superadmin')->count();
 
                 if ($count === 0) {
                     $firstUser = User::orderBy('id')->first();
-
                     if ($firstUser) {
                         $firstUser->assignRole('Superadmin');
                     }
                 }
             }
         });
+
+        // por si acaso
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 }

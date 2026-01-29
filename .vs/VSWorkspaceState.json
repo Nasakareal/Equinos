@@ -3,12 +3,15 @@
     "",
     "\\app",
     "\\app\\Http",
-    "\\app\\Http\\Controllers",
-    "\\app\\Models",
+    "\\app\\Services",
+    "\\app\\Services\\DailyReports",
+    "\\app\\Services\\DailyReports\\Exporters",
+    "\\database",
+    "\\database\\seeders",
     "\\resources",
     "\\resources\\views",
-    "\\resources\\views\\armamento_asignaciones"
+    "\\resources\\views\\personal"
   ],
-  "SelectedNode": "\\app\\Models\\Weapon.php",
+  "SelectedNode": "\\resources\\views\\personal\\index.blade.php",
   "PreviewInSolutionExplorer": false
 }

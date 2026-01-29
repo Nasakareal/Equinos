@@ -32,11 +32,7 @@
                                     <th><center>Grado</center></th>
                                     <th><center>Nombre</center></th>
                                     <th><center>Dependencia</center></th>
-                                    <th><center>CUIP</center></th>
-                                    <th><center>Celular</center></th>
                                     <th><center>CRP</center></th>
-                                    <th><center>Cargo</center></th>
-                                    <th><center>Responsable</center></th>
                                     <th><center>Acciones</center></th>
                                 </tr>
                             </thead>
@@ -48,17 +44,7 @@
                                         <td><?php echo e($personal->grado ?? '-'); ?></td>
                                         <td><?php echo e($personal->nombres); ?></td>
                                         <td><?php echo e($personal->dependencia ?? '-'); ?></td>
-                                        <td><?php echo e($personal->cuip ?? '-'); ?></td>
-                                        <td><?php echo e($personal->celular ?? '-'); ?></td>
                                         <td><?php echo e($personal->crp ?? '-'); ?></td>
-                                        <td><?php echo e($personal->cargo ?? '-'); ?></td>
-                                        <td>
-                                            <?php if(!empty($personal->es_responsable) && (int)$personal->es_responsable === 1): ?>
-                                                <span class="badge badge-success">Sí</span>
-                                            <?php else: ?>
-                                                <span class="badge badge-secondary">No</span>
-                                            <?php endif; ?>
-                                        </td>
                                         <td style="text-align: center">
                                             <div class="btn-group" role="group">
 
