@@ -5,7 +5,25 @@
 @section('title', 'Detalle de Personal')
 
 @section('content_header')
-    <h1>Detalle de Personal</h1>
+    <div class="d-flex align-items-center justify-content-between">
+        <h1 class="mb-0">Detalle de Personal</h1>
+
+        <div class="btn-group">
+            @can('crear armamento')
+                <a href="{{ route('armamento_asignaciones.create', ['personal_id' => $personal->id]) }}"
+                   class="btn btn-primary">
+                    <i class="fa-solid fa-gun"></i> Asignar arma
+                </a>
+            @endcan
+
+            @can('crear incidencias')
+                <a href="{{ route('incidencias.create', ['personal_id' => $personal->id]) }}"
+                   class="btn btn-warning">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Registrar incidencia
+                </a>
+            @endcan
+        </div>
+    </div>
 @stop
 
 @section('content')
@@ -140,16 +158,18 @@
                     </div>
                 </div>
 
-                <div class="card-footer">
+                <div class="card-footer d-flex align-items-center justify-content-between">
                     <a href="{{ route('personal.index') }}" class="btn btn-secondary">
                         <i class="fa-solid fa-arrow-left"></i> Volver
                     </a>
 
-                    @can('editar personal')
-                        <a href="{{ route('personal.edit', $personal->id) }}" class="btn btn-success">
-                            <i class="fa-solid fa-pen-to-square"></i> Editar
-                        </a>
-                    @endcan
+                    <div class="btn-group">
+                        @can('editar personal')
+                            <a href="{{ route('personal.edit', $personal->id) }}" class="btn btn-success">
+                                <i class="fa-solid fa-pen-to-square"></i> Editar
+                            </a>
+                        @endcan
+                    </div>
                 </div>
             </div>
 

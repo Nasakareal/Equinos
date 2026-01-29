@@ -27,8 +27,17 @@ class IncidenceController extends Controller
         return view('incidencias.index', compact('incidencias'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $personal_id_preseleccionado = $request->query('personal_id');
+
+        if (!empty($personal_id_preseleccionado)) {
+            $existe = Personal::query()->where('id', $personal_id_preseleccionado)->exists();
+            if (!$existe) {
+                $personal_id_preseleccionado = null;
+            }
+        }
+
         $incidence_types = IncidenceType::query()
             ->where('activo', 1)
             ->orderBy('nombre')
@@ -38,7 +47,11 @@ class IncidenceController extends Controller
             ->orderBy('nombres')
             ->get();
 
-        return view('incidencias.create', compact('incidence_types', 'personals'));
+        return view('incidencias.create', compact(
+            'incidence_types',
+            'personals',
+            'personal_id_preseleccionado'
+        ));
     }
 
     public function store(Request $request)

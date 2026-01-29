@@ -37,7 +37,6 @@
                                     <th><center>CRP</center></th>
                                     <th><center>Cargo</center></th>
                                     <th><center>Responsable</center></th>
-                                    <th><center>Estado</center></th>
                                     <th><center>Acciones</center></th>
                                 </tr>
                             </thead>
@@ -58,13 +57,6 @@
                                                 <span class="badge badge-success">Sí</span>
                                             @else
                                                 <span class="badge badge-secondary">No</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if(!empty($personal->activo) && (int)$personal->activo === 1)
-                                                <span class="badge badge-success">Activo</span>
-                                            @else
-                                                <span class="badge badge-danger">Inactivo</span>
                                             @endif
                                         </td>
                                         <td style="text-align: center">

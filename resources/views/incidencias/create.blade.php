@@ -7,6 +7,12 @@
 @stop
 
 @section('content')
+@php
+    // ✅ Prioridad: old() si hay errores; si no, el que viene por query (?personal_id=)
+    $personalSeleccionado = old('personal_id', $personal_id_preseleccionado ?? '');
+    $bloquearPersonal = !empty($personal_id_preseleccionado) && empty(old('personal_id'));
+@endphp
+
 <div class="row">
     <div class="col-md-12">
         <div class="card card-outline card-primary">
@@ -18,6 +24,11 @@
                 <form action="{{ route('incidencias.store') }}" method="POST">
                     @csrf
 
+                    {{-- ✅ Si el select va bloqueado, enviamos el valor por hidden (disabled NO se envía) --}}
+                    @if($bloquearPersonal)
+                        <input type="hidden" name="personal_id" value="{{ $personalSeleccionado }}">
+                    @endif
+
                     <div class="row">
                         <!-- Personal -->
                         <div class="col-md-6">
@@ -26,18 +37,29 @@
                                 <select name="personal_id"
                                         id="personal_id"
                                         class="form-control @error('personal_id') is-invalid @enderror"
-                                        required>
-                                    <option value="" selected disabled>Seleccione...</option>
+                                        required
+                                        {{ $bloquearPersonal ? 'disabled' : '' }}>
+                                    <option value="" disabled {{ empty($personalSeleccionado) ? 'selected' : '' }}>
+                                        Seleccione...
+                                    </option>
+
                                     @foreach ($personals as $p)
                                         <option value="{{ $p->id }}"
-                                            {{ old('personal_id') == $p->id ? 'selected' : '' }}>
+                                            {{ (string)$personalSeleccionado === (string)$p->id ? 'selected' : '' }}>
                                             {{ $p->nombres }}
                                         </option>
                                     @endforeach
                                 </select>
+
                                 @error('personal_id')
                                     <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
                                 @enderror
+
+                                @if($bloquearPersonal)
+                                    <small class="text-muted">
+                                        Personal fijado porque llegaste desde el detalle del elemento.
+                                    </small>
+                                @endif
                             </div>
                         </div>
 

@@ -5,7 +5,25 @@
 <?php $__env->startSection('title', 'Detalle de Personal'); ?>
 
 <?php $__env->startSection('content_header'); ?>
-    <h1>Detalle de Personal</h1>
+    <div class="d-flex align-items-center justify-content-between">
+        <h1 class="mb-0">Detalle de Personal</h1>
+
+        <div class="btn-group">
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('crear armamento')): ?>
+                <a href="<?php echo e(route('armamento_asignaciones.create', ['personal_id' => $personal->id])); ?>"
+                   class="btn btn-primary">
+                    <i class="fa-solid fa-gun"></i> Asignar arma
+                </a>
+            <?php endif; ?>
+
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('crear incidencias')): ?>
+                <a href="<?php echo e(route('incidencias.create', ['personal_id' => $personal->id])); ?>"
+                   class="btn btn-warning">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Registrar incidencia
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -141,16 +159,18 @@
                     </div>
                 </div>
 
-                <div class="card-footer">
+                <div class="card-footer d-flex align-items-center justify-content-between">
                     <a href="<?php echo e(route('personal.index')); ?>" class="btn btn-secondary">
                         <i class="fa-solid fa-arrow-left"></i> Volver
                     </a>
 
-                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('editar personal')): ?>
-                        <a href="<?php echo e(route('personal.edit', $personal->id)); ?>" class="btn btn-success">
-                            <i class="fa-solid fa-pen-to-square"></i> Editar
-                        </a>
-                    <?php endif; ?>
+                    <div class="btn-group">
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('editar personal')): ?>
+                            <a href="<?php echo e(route('personal.edit', $personal->id)); ?>" class="btn btn-success">
+                                <i class="fa-solid fa-pen-to-square"></i> Editar
+                            </a>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
 

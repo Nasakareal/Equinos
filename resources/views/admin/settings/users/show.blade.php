@@ -1,3 +1,5 @@
+{{-- resources/views/admin/settings/users/show.blade.php --}}
+
 @extends('adminlte::page')
 
 @section('title', 'Detalles del Usuario')
@@ -11,7 +13,7 @@
         <div class="col-md-10">
             <div class="card card-outline card-info">
                 <div class="card-header">
-                    <h3 class="card-title">Datos Registrados</h3>
+                    <h3 class="card-title">Información del Usuario</h3>
                 </div>
 
                 <div class="card-body">
@@ -27,7 +29,7 @@
                         <!-- Email -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Correo Electrónico</label>
+                                <label>Correo electrónico</label>
                                 <p class="form-control-static">{{ $user->email }}</p>
                             </div>
                         </div>
@@ -38,7 +40,9 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Área</label>
-                                <p class="form-control-static">{{ $user->area ?? 'No especificada' }}</p>
+                                <p class="form-control-static">
+                                    {{ $user->area ?? 'No especificada' }}
+                                </p>
                             </div>
                         </div>
 
@@ -46,86 +50,39 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Estado</label>
-                                <p class="form-control-static">{{ $user->estado }}</p>
+                                <p class="form-control-static">
+                                    {{ $user->estado }}
+                                </p>
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
                         <!-- Rol -->
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="form-group">
-                                <label>Rol</label>
+                                <label>Rol asignado</label>
                                 <p class="form-control-static">
-                                    {{ $user->roles->pluck('name')->join(', ') }}
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Unidad principal -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Unidad principal</label>
-                                <p class="form-control-static">
-                                    {{ optional($user->unidad)->nombre ?? 'Sin unidad asignada' }}
+                                    {{ $user->roles->pluck('name')->join(', ') ?: 'Sin rol asignado' }}
                                 </p>
                             </div>
                         </div>
                     </div>
-
-                    <div class="row">
-                        <!-- Turno -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Turno</label>
-                                <p class="form-control-static">
-                                    {{ optional($user->turno)->nombre ?? 'Sin turno asignado' }}
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Patrulla -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Patrulla (número económico)</label>
-                                <p class="form-control-static">
-                                    {{ optional($user->patrulla)->numero_economico ?? 'Sin patrulla asignada' }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    @if ($user->hasRole('Coordinador'))
-                        <div class="row">
-                            <!-- Unidades adicionales -->
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>Unidades a cargo</label>
-                                    @if ($user->unidades && $user->unidades->count())
-                                        <ul class="mb-0">
-                                            @foreach ($user->unidades as $u)
-                                                <li>{{ $u->nombre }}</li>
-                                            @endforeach
-                                        </ul>
-                                    @else
-                                        <p class="form-control-static">No tiene unidades adicionales asignadas.</p>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @endif
 
                     <div class="row">
                         <!-- Foto de perfil -->
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label>Foto de Perfil</label>
+                                <label>Foto de perfil</label>
+
                                 @if ($user->foto_perfil)
                                     <div>
-                                        <img src="{{ asset('storage/' . $user->foto_perfil) }}"
-                                             alt="Foto de Perfil"
-                                             class="img-thumbnail"
-                                             style="max-width: 150px;">
+                                        <img
+                                            src="{{ asset('storage/' . $user->foto_perfil) }}"
+                                            alt="Foto de perfil"
+                                            class="img-thumbnail"
+                                            style="max-width: 150px;"
+                                        >
                                     </div>
                                 @else
                                     <p class="form-control-static">No tiene foto de perfil.</p>
@@ -144,6 +101,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -151,7 +109,9 @@
 
 @section('css')
     <style>
-        .form-group label { font-weight: bold; }
+        .form-group label {
+            font-weight: bold;
+        }
         .form-control-static {
             display: block;
             font-size: 1rem;

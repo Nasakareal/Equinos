@@ -2,83 +2,119 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Turno;
+use App\Models\TurnoHorario;
 use Illuminate\Http\Request;
 
 class TurnoHorarioController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Listado de turnos-horarios
      */
     public function index()
     {
-        //
+        $turno_horarios = TurnoHorario::with('turno')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return view('turno_horarios.index', compact('turno_horarios'));
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Formulario de creación
      */
     public function create()
     {
-        //
+        $turnos = Turno::orderBy('nombre')->get();
+
+        return view('turno_horarios.create', compact('turnos'));
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * Guardar nuevo turno-horario
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'turno_id' => 'required|exists:turnos,id',
+            'hora_entrada' => 'nullable|date_format:H:i',
+            'hora_salida' => 'nullable|date_format:H:i',
+            'min_tolerancia' => 'required|integer|min:0|max:1440',
+            'cruza_dia' => 'nullable|in:0,1',
+            'notas' => 'nullable|string|max:255',
+        ]);
+
+        TurnoHorario::create([
+            'turno_id' => $request->turno_id,
+            'hora_entrada' => $request->hora_entrada,
+            'hora_salida' => $request->hora_salida,
+            'min_tolerancia' => $request->min_tolerancia ?? 0,
+            'cruza_dia' => $request->has('cruza_dia') ? 1 : 0,
+            'notas' => $request->notas,
+        ]);
+
+        return redirect()
+            ->route('turno_horarios.index')
+            ->with('success', 'Horario del turno creado correctamente');
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Mostrar turno-horario
      */
-    public function show($id)
+    public function show(TurnoHorario $turno_horario)
     {
-        //
+        $turno_horario->load('turno');
+
+        return view('turno_horarios.show', compact('turno_horario'));
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Formulario de edición
      */
-    public function edit($id)
+    public function edit(TurnoHorario $turno_horario)
     {
-        //
+        $turnos = Turno::orderBy('nombre')->get();
+
+        return view('turno_horarios.edit', compact('turno_horario', 'turnos'));
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Actualizar turno-horario
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, TurnoHorario $turno_horario)
     {
-        //
+        $request->validate([
+            'turno_id' => 'required|exists:turnos,id',
+            'hora_entrada' => 'nullable|date_format:H:i',
+            'hora_salida' => 'nullable|date_format:H:i',
+            'min_tolerancia' => 'required|integer|min:0|max:1440',
+            'cruza_dia' => 'nullable|in:0,1',
+            'notas' => 'nullable|string|max:255',
+        ]);
+
+        $turno_horario->update([
+            'turno_id' => $request->turno_id,
+            'hora_entrada' => $request->hora_entrada,
+            'hora_salida' => $request->hora_salida,
+            'min_tolerancia' => $request->min_tolerancia ?? 0,
+            'cruza_dia' => $request->has('cruza_dia') ? 1 : 0,
+            'notas' => $request->notas,
+        ]);
+
+        return redirect()
+            ->route('turno_horarios.index')
+            ->with('success', 'Horario del turno actualizado correctamente');
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Eliminar turno-horario
      */
-    public function destroy($id)
+    public function destroy(TurnoHorario $turno_horario)
     {
-        //
+        $turno_horario->delete();
+
+        return redirect()
+            ->route('turno_horarios.index')
+            ->with('success', 'Horario del turno eliminado correctamente');
     }
 }

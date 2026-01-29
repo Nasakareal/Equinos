@@ -7,11 +7,11 @@
     "\\app\\Models",
     "\\resources",
     "\\resources\\views",
-    "\\resources\\views\\incidencias",
-    "\\resources\\views\\vendor\\adminlte",
-    "\\resources\\views\\vendor\\adminlte\\partials",
-    "\\routes"
+    "\\resources\\views\\admin",
+    "\\resources\\views\\admin\\settings",
+    "\\resources\\views\\admin\\settings\\users",
+    "\\resources\\views\\personal"
   ],
-  "SelectedNode": "\\resources\\views\\incidencias\\show.blade.php",
+  "SelectedNode": "\\resources\\views\\admin\\settings\\users\\show.blade.php",
   "PreviewInSolutionExplorer": false
 }

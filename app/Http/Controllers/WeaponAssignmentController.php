@@ -15,7 +15,6 @@ class WeaponAssignmentController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        // En tus rutas ya pusiste can:ver/crear/editar/eliminar armamento, así que aquí no duplico.
     }
 
     public function index()
@@ -28,8 +27,17 @@ class WeaponAssignmentController extends Controller
         return view('armamento_asignaciones.index', compact('weapon_assignments'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $personal_id_preseleccionado = $request->query('personal_id');
+
+        if (!empty($personal_id_preseleccionado)) {
+            $existe = Personal::query()->where('id', $personal_id_preseleccionado)->exists();
+            if (!$existe) {
+                $personal_id_preseleccionado = null;
+            }
+        }
+
         $weapons = Weapon::query()
             ->orderBy('tipo')
             ->orderBy('matricula')
@@ -39,7 +47,11 @@ class WeaponAssignmentController extends Controller
             ->orderBy('nombres')
             ->get();
 
-        return view('armamento_asignaciones.create', compact('weapons', 'personals'));
+        return view('armamento_asignaciones.create', compact(
+            'weapons',
+            'personals',
+            'personal_id_preseleccionado'
+        ));
     }
 
     public function store(Request $request)
@@ -53,7 +65,6 @@ class WeaponAssignmentController extends Controller
             'observaciones' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        // Regla clave: no permitir 2 asignaciones activas del mismo arma
         $status = strtoupper(trim($validated['status']));
         $devolucion = $validated['fecha_devolucion'] ?? null;
 
@@ -119,7 +130,6 @@ class WeaponAssignmentController extends Controller
         $status = strtoupper(trim($validated['status']));
         $devolucion = $validated['fecha_devolucion'] ?? null;
 
-        // Misma regla: si lo dejas ASIGNADA sin devolución, asegúrate que no exista otra activa (excluyendo esta)
         if ($status === 'ASIGNADA' && empty($devolucion)) {
             $existsActive = WeaponAssignment::query()
                 ->where('weapon_id', $validated['weapon_id'])

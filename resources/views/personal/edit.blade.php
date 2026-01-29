@@ -234,6 +234,152 @@
 
                         <hr>
 
+                        {{-- =======================
+                             ASIGNACIÓN DE TURNO / SERVICIO (service_schedules)
+                             ======================= --}}
+                        @php
+                            $servicioActivo = $servicioActivo ?? null;
+
+                            $servicio_activo_val = old('servicio_activo', $servicioActivo ? (int)$servicioActivo->activo : 0);
+                            $turno_id_val = old('turno_id', $servicioActivo->turno_id ?? '');
+                            $tipo_val = old('tipo', $servicioActivo->tipo ?? 'CICLICO');
+                            $fecha_inicio_ciclo_val = old('fecha_inicio_ciclo', $servicioActivo->fecha_inicio_ciclo ?? now()->toDateString());
+                            $horas_trabajo_val = old('horas_trabajo', $servicioActivo->horas_trabajo ?? 24);
+                            $horas_descanso_val = old('horas_descanso', $servicioActivo->horas_descanso ?? 24);
+                            $servicio_obs_val = old('servicio_observaciones', $servicioActivo->observaciones ?? null);
+                        @endphp
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="alert alert-info mb-2">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    Aquí asignas el turno del personal (se guarda en <b>service_schedules</b>, no en <b>personals</b>).
+                                </div>
+                            </div>
+
+                            <!-- Activar/Desactivar servicio -->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="servicio_activo">Servicio activo</label>
+                                    <div class="custom-control custom-checkbox mt-2">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="servicio_activo"
+                                               name="servicio_activo"
+                                               value="1"
+                                               {{ (int)$servicio_activo_val === 1 ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="servicio_activo">Sí (asignado)</label>
+                                    </div>
+                                    @error('servicio_activo')
+                                        <span class="text-danger"><small>{{ $message }}</small></span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Turno -->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="turno_id">Turno</label>
+                                    <select name="turno_id" id="turno_id" class="form-control @error('turno_id') is-invalid @enderror">
+                                        <option value="">Seleccione...</option>
+                                        @foreach($turnos as $t)
+                                            <option value="{{ $t->id }}" {{ (string)$turno_id_val === (string)$t->id ? 'selected' : '' }}>
+                                                {{ $t->nombre ?? ('TURNO #' . $t->id) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('turno_id')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Tipo -->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="tipo">Tipo</label>
+                                    <input type="text"
+                                           name="tipo"
+                                           id="tipo"
+                                           class="form-control @error('tipo') is-invalid @enderror"
+                                           value="{{ $tipo_val }}"
+                                           readonly>
+                                    @error('tipo')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                    <small class="text-muted">Por ahora se maneja como CICLICO.</small>
+                                </div>
+                            </div>
+
+                            <!-- Fecha inicio ciclo -->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="fecha_inicio_ciclo">Inicio de ciclo</label>
+                                    <input type="date"
+                                           name="fecha_inicio_ciclo"
+                                           id="fecha_inicio_ciclo"
+                                           class="form-control @error('fecha_inicio_ciclo') is-invalid @enderror"
+                                           value="{{ $fecha_inicio_ciclo_val }}">
+                                    @error('fecha_inicio_ciclo')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Horas trabajo -->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="horas_trabajo">Horas de trabajo</label>
+                                    <input type="number"
+                                           name="horas_trabajo"
+                                           id="horas_trabajo"
+                                           min="1"
+                                           max="168"
+                                           class="form-control @error('horas_trabajo') is-invalid @enderror"
+                                           value="{{ $horas_trabajo_val }}">
+                                    @error('horas_trabajo')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Horas descanso -->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="horas_descanso">Horas de descanso</label>
+                                    <input type="number"
+                                           name="horas_descanso"
+                                           id="horas_descanso"
+                                           min="0"
+                                           max="168"
+                                           class="form-control @error('horas_descanso') is-invalid @enderror"
+                                           value="{{ $horas_descanso_val }}">
+                                    @error('horas_descanso')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Observaciones del servicio -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="servicio_observaciones">Observaciones del servicio</label>
+                                    <input type="text"
+                                           name="servicio_observaciones"
+                                           id="servicio_observaciones"
+                                           class="form-control @error('servicio_observaciones') is-invalid @enderror"
+                                           value="{{ $servicio_obs_val }}">
+                                    @error('servicio_observaciones')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-success">
@@ -274,5 +420,23 @@
                 confirmButtonText: 'Aceptar'
             });
         @endif
+
+        // UI simple: si desactivas servicio, deshabilita campos de turno
+        (function(){
+            const chk = document.getElementById('servicio_activo');
+            const campos = [
+                'turno_id','fecha_inicio_ciclo','horas_trabajo','horas_descanso','servicio_observaciones'
+            ].map(id => document.getElementById(id)).filter(Boolean);
+
+            function sync(){
+                const on = chk && chk.checked;
+                campos.forEach(el => el.disabled = !on);
+            }
+
+            if(chk){
+                chk.addEventListener('change', sync);
+                sync();
+            }
+        })();
     </script>
 @stop

@@ -2,83 +2,101 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Turno;
 use Illuminate\Http\Request;
 
 class TurnoController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Listado de turnos
      */
     public function index()
     {
-        //
+        $turnos = Turno::orderBy('id')->get();
+        return view('turnos.index', compact('turnos'));
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Formulario de creación
      */
     public function create()
     {
-        //
+        return view('turnos.create');
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * Guardar nuevo turno
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'clave' => 'required|string|max:20|unique:turnos,clave',
+            'nombre' => 'required|string|max:100|unique:turnos,nombre',
+            'descripcion' => 'nullable|string|max:255',
+            'activo' => 'required|in:0,1',
+        ]);
+
+        Turno::create([
+            'clave' => $request->clave,
+            'nombre' => $request->nombre,
+            'descripcion' => $request->descripcion,
+            'activo' => $request->activo,
+        ]);
+
+        return redirect()
+            ->route('turnos.index')
+            ->with('success', 'Turno creado correctamente');
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Mostrar turno
      */
-    public function show($id)
+    public function show(Turno $turno)
     {
-        //
+        return view('turnos.show', compact('turno'));
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Formulario de edición
      */
-    public function edit($id)
+    public function edit(Turno $turno)
     {
-        //
+        return view('turnos.edit', compact('turno'));
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Actualizar turno
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Turno $turno)
     {
-        //
+        $request->validate([
+            'clave' => 'required|string|max:20|unique:turnos,clave,' . $turno->id,
+            'nombre' => 'required|string|max:100|unique:turnos,nombre,' . $turno->id,
+            'descripcion' => 'nullable|string|max:255',
+            'activo' => 'required|in:0,1',
+        ]);
+
+        $turno->update([
+            'clave' => $request->clave,
+            'nombre' => $request->nombre,
+            'descripcion' => $request->descripcion,
+            'activo' => $request->activo,
+        ]);
+
+        return redirect()
+            ->route('turnos.index')
+            ->with('success', 'Turno actualizado correctamente');
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Eliminar turno
      */
-    public function destroy($id)
+    public function destroy(Turno $turno)
     {
-        //
+        $turno->delete();
+
+        return redirect()
+            ->route('turnos.index')
+            ->with('success', 'Turno eliminado correctamente');
     }
 }

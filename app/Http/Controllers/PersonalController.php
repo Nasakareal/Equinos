@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Personal;
 use App\Models\User;
+use App\Models\Turno;
+use App\Models\ServiceSchedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -40,12 +42,6 @@ class PersonalController extends Controller
         return view('personal.create', compact('users'));
     }
 
-    /**
-     * Normaliza un texto para comparar:
-     * - trim
-     * - colapsa espacios múltiples
-     * - convierte a MAYÚSCULAS (para comparación case-insensitive)
-     */
     private function normalizeText(?string $value): ?string
     {
         if ($value === null) return null;
@@ -53,10 +49,7 @@ class PersonalController extends Controller
         $value = trim($value);
         if ($value === '') return null;
 
-        // colapsa espacios múltiples
         $value = preg_replace('/\s+/u', ' ', $value);
-
-        // a mayúsculas (UTF-8)
         $value = mb_strtoupper($value, 'UTF-8');
 
         return $value;
@@ -66,19 +59,15 @@ class PersonalController extends Controller
     {
         $validatedData = $request->validate([
             'user_id' => 'nullable|exists:users,id',
-
             'no_empleado' => 'nullable|string|max:50',
 
-            // ✅ CUIP no repetido (si viene)
             'cuip' => [
                 'nullable',
                 'string',
                 'max:40',
                 Rule::unique('personals', 'cuip')->where(function ($q) use ($request) {
-                    // Evita que " " cuente como valor
                     $cuip = $this->normalizeText($request->input('cuip'));
                     if ($cuip === null) {
-                        // si está vacío, no forzamos unique
                         $q->whereRaw('1=0');
                         return $q;
                     }
@@ -88,7 +77,6 @@ class PersonalController extends Controller
 
             'grado' => 'nullable|string|max:60',
 
-            // ✅ Nombre requerido, y validación anti-duplicado "humana" (case/espacios)
             'nombres' => [
                 'required',
                 'string',
@@ -111,7 +99,6 @@ class PersonalController extends Controller
             'dependencia' => 'nullable|string|max:120',
             'crp' => 'nullable|string|max:60',
 
-            // ✅ Celular no repetido (si viene)
             'celular' => [
                 'nullable',
                 'string',
@@ -130,14 +117,12 @@ class PersonalController extends Controller
             'es_responsable' => 'nullable|boolean',
             'area_patrullaje' => 'nullable|string|max:180',
             'observaciones' => 'nullable|string|max:1000',
-
             'activo' => 'nullable|boolean',
         ], [
             'cuip.unique' => 'Ese CUIP ya está registrado.',
             'celular.unique' => 'Ese celular ya está registrado.',
         ]);
 
-        // ✅ Normaliza CUIP/CELULAR/NOMBRES antes de guardar (para consistencia)
         $validatedData['cuip'] = $this->normalizeText($validatedData['cuip'] ?? null);
         $validatedData['celular'] = $this->normalizeText($validatedData['celular'] ?? null);
         $validatedData['nombres'] = $this->normalizeText($validatedData['nombres'] ?? null) ?? $validatedData['nombres'];
@@ -145,7 +130,6 @@ class PersonalController extends Controller
         try {
             $personal = Personal::create([
                 'user_id' => $validatedData['user_id'] ?? null,
-
                 'no_empleado' => $validatedData['no_empleado'] ?? null,
                 'cuip' => $validatedData['cuip'] ?? null,
                 'grado' => $validatedData['grado'] ?? null,
@@ -153,12 +137,10 @@ class PersonalController extends Controller
                 'dependencia' => $validatedData['dependencia'] ?? null,
                 'crp' => $validatedData['crp'] ?? null,
                 'celular' => $validatedData['celular'] ?? null,
-
                 'cargo' => $validatedData['cargo'] ?? null,
                 'es_responsable' => (bool) ($validatedData['es_responsable'] ?? false),
                 'area_patrullaje' => $validatedData['area_patrullaje'] ?? null,
                 'observaciones' => $validatedData['observaciones'] ?? null,
-
                 'activo' => (bool) ($validatedData['activo'] ?? true),
             ]);
 
@@ -173,8 +155,12 @@ class PersonalController extends Controller
 
     public function show($id)
     {
+        // Cargamos también el servicio activo para mostrar su turno en show si quieres
         $personal = Personal::query()
             ->with('user')
+            ->with(['servicios' => function ($q) {
+                $q->where('activo', 1)->latest('id');
+            }])
             ->findOrFail($id);
 
         return view('personal.show', compact('personal'));
@@ -184,13 +170,19 @@ class PersonalController extends Controller
     {
         $personal = Personal::query()
             ->with('user')
+            ->with(['servicios' => function ($q) {
+                $q->where('activo', 1)->latest('id');
+            }])
             ->findOrFail($id);
 
-        $users = User::query()
-            ->orderBy('name')
-            ->get();
+        $users = User::query()->orderBy('name')->get();
 
-        return view('personal.edit', compact('personal', 'users'));
+        $turnos = Turno::query()->orderBy('id')->get();
+
+        // servicio activo (si existe)
+        $servicioActivo = $personal->servicios->first();
+
+        return view('personal.edit', compact('personal', 'users', 'turnos', 'servicioActivo'));
     }
 
     public function update(Request $request, $id)
@@ -198,11 +190,10 @@ class PersonalController extends Controller
         $personal = Personal::query()->findOrFail($id);
 
         $validatedData = $request->validate([
+            // ===== personal =====
             'user_id' => 'nullable|exists:users,id',
-
             'no_empleado' => 'nullable|string|max:50',
 
-            // ✅ CUIP unique ignorando este registro
             'cuip' => [
                 'nullable',
                 'string',
@@ -212,7 +203,6 @@ class PersonalController extends Controller
 
             'grado' => 'nullable|string|max:60',
 
-            // ✅ Nombre no duplicado (case/espacios) ignorando este registro
             'nombres' => [
                 'required',
                 'string',
@@ -236,7 +226,6 @@ class PersonalController extends Controller
             'dependencia' => 'nullable|string|max:120',
             'crp' => 'nullable|string|max:60',
 
-            // ✅ Celular unique ignorando este registro
             'celular' => [
                 'nullable',
                 'string',
@@ -248,22 +237,30 @@ class PersonalController extends Controller
             'es_responsable' => 'nullable|boolean',
             'area_patrullaje' => 'nullable|string|max:180',
             'observaciones' => 'nullable|string|max:1000',
-
             'activo' => 'nullable|boolean',
+
+            // ===== servicio/turno =====
+            // si no mandas estos campos, no tocamos el turno
+            'turno_id' => 'nullable|exists:turnos,id',
+            'servicio_activo' => 'nullable|boolean',
+            'tipo' => 'nullable|string|max:20',
+            'fecha_inicio_ciclo' => 'nullable|date',
+            'horas_trabajo' => 'nullable|integer|min:1|max:168',
+            'horas_descanso' => 'nullable|integer|min:0|max:168',
+            'servicio_observaciones' => 'nullable|string|max:1000',
         ], [
             'cuip.unique' => 'Ese CUIP ya está registrado.',
             'celular.unique' => 'Ese celular ya está registrado.',
         ]);
 
-        // ✅ Normaliza CUIP/CELULAR/NOMBRES antes de guardar (para consistencia)
         $validatedData['cuip'] = $this->normalizeText($validatedData['cuip'] ?? null);
         $validatedData['celular'] = $this->normalizeText($validatedData['celular'] ?? null);
         $validatedData['nombres'] = $this->normalizeText($validatedData['nombres'] ?? null) ?? $validatedData['nombres'];
 
         try {
+            // 1) actualiza personal
             $personal->update([
                 'user_id' => $validatedData['user_id'] ?? null,
-
                 'no_empleado' => $validatedData['no_empleado'] ?? null,
                 'cuip' => $validatedData['cuip'] ?? null,
                 'grado' => $validatedData['grado'] ?? null,
@@ -271,14 +268,85 @@ class PersonalController extends Controller
                 'dependencia' => $validatedData['dependencia'] ?? null,
                 'crp' => $validatedData['crp'] ?? null,
                 'celular' => $validatedData['celular'] ?? null,
-
                 'cargo' => $validatedData['cargo'] ?? null,
                 'es_responsable' => (bool) ($validatedData['es_responsable'] ?? false),
                 'area_patrullaje' => $validatedData['area_patrullaje'] ?? null,
                 'observaciones' => $validatedData['observaciones'] ?? null,
-
                 'activo' => (bool) ($validatedData['activo'] ?? true),
             ]);
+
+            // 2) turno / service_schedule (solo si viene algo de turno en el request)
+            $tocoServicio = $request->hasAny([
+                'turno_id',
+                'servicio_activo',
+                'tipo',
+                'fecha_inicio_ciclo',
+                'horas_trabajo',
+                'horas_descanso',
+                'servicio_observaciones',
+            ]);
+
+            if ($tocoServicio) {
+                $servicio_activo = (bool) ($validatedData['servicio_activo'] ?? true);
+
+                // buscamos el registro activo actual
+                $servicioActual = ServiceSchedule::query()
+                    ->where('personal_id', $personal->id)
+                    ->where('activo', 1)
+                    ->latest('id')
+                    ->first();
+
+                if (!$servicio_activo) {
+                    // desactivar servicio actual si existe
+                    if ($servicioActual) {
+                        $servicioActual->update([
+                            'activo' => 0,
+                            'updated_at' => now(),
+                        ]);
+                    }
+                } else {
+                    // si activas servicio, necesitamos fecha_inicio_ciclo (porque en tu tabla es NOT NULL)
+                    $fecha_inicio_ciclo = $validatedData['fecha_inicio_ciclo'] ?? ($servicioActual->fecha_inicio_ciclo ?? now()->toDateString());
+
+                    // defaults coherentes
+                    $tipo = $validatedData['tipo'] ?? ($servicioActual->tipo ?? 'CICLICO');
+                    $horas_trabajo = (int) ($validatedData['horas_trabajo'] ?? ($servicioActual->horas_trabajo ?? 24));
+                    $horas_descanso = (int) ($validatedData['horas_descanso'] ?? ($servicioActual->horas_descanso ?? 24));
+
+                    // si no mandan turno_id, no lo pisamos; si no existe servicio, sí exigimos turno_id para crear
+                    $turno_id = $validatedData['turno_id'] ?? ($servicioActual->turno_id ?? null);
+
+                    if (!$servicioActual && $turno_id === null) {
+                        return redirect()->back()
+                            ->withErrors('Selecciona un turno para activar el servicio.')
+                            ->withInput();
+                    }
+
+                    // si ya había uno activo y cambias turno/ciclo: lo actualizamos (no creamos otro)
+                    if ($servicioActual) {
+                        $servicioActual->update([
+                            'turno_id' => $turno_id,
+                            'tipo' => $tipo,
+                            'fecha_inicio_ciclo' => $fecha_inicio_ciclo,
+                            'horas_trabajo' => $horas_trabajo,
+                            'horas_descanso' => $horas_descanso,
+                            'activo' => 1,
+                            'observaciones' => $validatedData['servicio_observaciones'] ?? $servicioActual->observaciones,
+                        ]);
+                    } else {
+                        ServiceSchedule::create([
+                            'personal_id' => $personal->id,
+                            'turno_id' => $turno_id,
+                            'tipo' => $tipo,
+                            'fecha_inicio_ciclo' => $fecha_inicio_ciclo,
+                            'horas_trabajo' => $horas_trabajo,
+                            'horas_descanso' => $horas_descanso,
+                            'activo' => 1,
+                            'observaciones' => $validatedData['servicio_observaciones'] ?? null,
+                        ]);
+                    }
+                }
+            }
 
             Log::info("Personal actualizado: {$personal->id} {$personal->nombres} por usuario " . (Auth::id() ?? 'N/A'));
 
