@@ -1,240 +1,270 @@
 @extends('adminlte::page')
 
-@section('title', 'Sistema Estadistico')
+@section('title', 'Estado de Fuerza')
 
 @section('content_header')
-    <div class="sv-hero">
-        <div class="sv-hero__inner">
-            <div class="sv-hero__badge">
-                <span class="sv-dot"></span>
-                <span>Operativo · Prevención · Respuesta</span>
-            </div>
+<div class="ef-hero">
+    <div class="ef-hero__inner">
+        <div class="ef-hero__badge">
+            <span class="ef-dot"></span>
+            <span>Control operativo · Turnos · Armamento · Reportes</span>
+        </div>
 
-            <div class="sv-hero__title">
-                Sistema Estadístico
-            </div>
+        <div class="ef-hero__title">
+            Estado de Fuerza y Armamento
+        </div>
 
-            <div class="sv-hero__subtitle">
-                Coordinación del Agrupamiento de Seguridad Vial · Michoacán
-            </div>
+        <div class="ef-hero__subtitle">
+            Panel operativo para captura, incidencias y generación diaria de reportes
         </div>
     </div>
+</div>
 @stop
 
 @section('content')
-    <div class="row">
+<div class="row">
 
-        {{-- HECHOS --}}
-        @can('ver hechos')
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-navy">
-                    <i class="fa-solid fa-car-side"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Listado de Accidentes</div>
-                    <div class="sv-card__desc">Consulta, crea y administra hechos.</div>
-                    <a href="{{ url('hechos') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
-                </div>
+    {{-- BLOQUE 1: OPERACIÓN DIARIA --}}
+    <div class="col-12">
+        <div class="ef-section">
+            <div class="ef-section__title">
+                <i class="fa-solid fa-bolt"></i> Operación diaria
+            </div>
+            <div class="ef-section__desc">
+                Lo que se usa todos los días: personal, incidencias, servicio y reportes.
             </div>
         </div>
-        @endcan
-
-        {{-- LISTAS --}}
-        @can('ver listas')
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-teal">
-                    <i class="fas fa-user-check"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Pase de Lista</div>
-                    <div class="sv-card__desc">Control de asistencias y registros.</div>
-                    <a href="{{ url('listas') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
-                </div>
-            </div>
-        </div>
-        @endcan
-
-        {{-- ACTIVIDADES (EN DESARROLLO) --}}
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card sv-card--disabled" title="En desarrollo">
-                <div class="sv-card__icon bg-lime">
-                    <i class="fas fa-tasks"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Actividades</div>
-                    <div class="sv-card__desc">Módulo en desarrollo.</div>
-                    <a href="{{ url('#') }}" class="btn sv-btn sv-btn--ghost" onclick="return false;">
-                        <i class="fas fa-clock"></i> Próximamente
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        {{-- GRAFICO SERVICIOS --}}
-        @can('ver gruas')
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-teal">
-                    <i class="fa-solid fa-chart-line"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Gráfico de Servicios</div>
-                    <div class="sv-card__desc">Estadísticas de servicios por grúa.</div>
-                    <a href="{{ url('servicios/grafico') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
-                </div>
-            </div>
-        </div>
-        @endcan
-
-        {{-- GRUAS --}}
-        @can('ver gruas')
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-maroon">
-                    <i class="fa-solid fa-truck-moving"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Grúas</div>
-                    <div class="sv-card__desc">Catálogo y control de grúas.</div>
-                    <a href="{{ url('gruas') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
-                </div>
-            </div>
-        </div>
-        @endcan
-
-        {{-- FORMATOS --}}
-        @can('ver formatos')
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-info">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Formatos</div>
-                    <div class="sv-card__desc">Plantillas y documentos oficiales.</div>
-                    <a href="{{ url('formatos') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
-                </div>
-            </div>
-        </div>
-        @endcan
-
-        {{-- DICTAMENES (crear) --}}
-        @can('crear dictamenes')
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-warning">
-                    <i class="fas fa-gavel"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Solicitar Dictamen</div>
-                    <div class="sv-card__desc">Genera un folio / número de dictamen.</div>
-                    <a href="{{ url('dictamenes/create') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
-                </div>
-            </div>
-        </div>
-        @endcan
-
-        {{-- OFICIOS --}}
-        @can('ver oficios')
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-fuchsia">
-                    <i class="fas fa-envelope-open-text"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Oficios</div>
-                    <div class="sv-card__desc">Sube y consulta oficios generados.</div>
-                    <a href="{{ url('oficios') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
-                </div>
-            </div>
-        </div>
-        @endcan
-
-        {{-- ESTADISTICAS --}}
-        @can('ver estadisticas')
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-success">
-                    <i class="fa-solid fa-table-cells"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Estadísticas</div>
-                    <div class="sv-card__desc">Reportes y exportaciones.</div>
-                    <a href="{{ url('admin/settings/estadisticas') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
-                </div>
-            </div>
-        </div>
-        @endcan
-
-        {{-- BUSQUEDA --}}
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-indigo">
-                    <i class="fas fa-search"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Búsqueda</div>
-                    <div class="sv-card__desc">Localiza registros por filtros.</div>
-                    <a href="{{ url('busqueda') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        {{-- MAPA --}}
-        @can('ver mapa')
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-primary">
-                    <i class="fa-solid fa-map-location-dot"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Mapa Patrullas</div>
-                    <div class="sv-card__desc">Ubicación operativa en tiempo real.</div>
-                    <a href="{{ url('mapa') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
-                </div>
-            </div>
-        </div>
-        @endcan
-
     </div>
+
+    @can('ver personal')
+    <div class="col-lg-4 col-md-6 col-12">
+        <div class="ef-card">
+            <div class="ef-card__icon bg-primary">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="ef-card__body">
+                <div class="ef-card__title">Personal</div>
+                <div class="ef-card__desc">Alta, edición y consulta del estado de fuerza.</div>
+                <a href="{{ url('personal') }}" class="btn ef-btn">
+                    <i class="fa-solid fa-arrow-right"></i> Abrir módulo
+                </a>
+            </div>
+        </div>
+    </div>
+    @endcan
+
+    @can('ver incidencias')
+    <div class="col-lg-4 col-md-6 col-12">
+        <div class="ef-card">
+            <div class="ef-card__icon bg-warning">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="ef-card__body">
+                <div class="ef-card__title">Incidencias</div>
+                <div class="ef-card__desc">Vacaciones, licencia, franco, comisión, etc.</div>
+                <a href="{{ url('incidencias') }}" class="btn ef-btn">
+                    <i class="fa-solid fa-arrow-right"></i> Abrir módulo
+                </a>
+            </div>
+        </div>
+    </div>
+    @endcan
+
+    @can('ver reportes')
+    <div class="col-lg-4 col-md-6 col-12">
+        <div class="ef-card">
+            <div class="ef-card__icon bg-success">
+                <i class="fa-solid fa-file-excel"></i>
+            </div>
+            <div class="ef-card__body">
+                <div class="ef-card__title">Reportes diarios</div>
+                <div class="ef-card__desc">Generación y descarga de formatos diarios (6 excels).</div>
+                <a href="{{ url('reportes-diarios') }}" class="btn ef-btn">
+                    <i class="fa-solid fa-arrow-right"></i> Abrir módulo
+                </a>
+            </div>
+        </div>
+    </div>
+    @endcan
+
+    {{-- BLOQUE 2: ARMAMENTO --}}
+    <div class="col-12 mt-2">
+        <div class="ef-section">
+            <div class="ef-section__title">
+                <i class="fa-solid fa-shield-halved"></i> Armamento
+            </div>
+            <div class="ef-section__desc">
+                Inventario, asignación y control de armamento por personal.
+            </div>
+        </div>
+    </div>
+
+    @can('ver armamento')
+    <div class="col-lg-4 col-md-6 col-12">
+        <div class="ef-card">
+            <div class="ef-card__icon bg-navy">
+                <i class="fa-solid fa-gun"></i>
+            </div>
+            <div class="ef-card__body">
+                <div class="ef-card__title">Inventario de armas</div>
+                <div class="ef-card__desc">Alta y control de armas cortas y largas.</div>
+                <a href="{{ url('armamento') }}" class="btn ef-btn">
+                    <i class="fa-solid fa-arrow-right"></i> Abrir módulo
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 col-12">
+        <div class="ef-card">
+            <div class="ef-card__icon bg-maroon">
+                <i class="fa-solid fa-clipboard-check"></i>
+            </div>
+            <div class="ef-card__body">
+                <div class="ef-card__title">Asignación de armamento</div>
+                <div class="ef-card__desc">Asignar/devolver armamento y ver historial.</div>
+                <a href="{{ url('armamento-asignaciones') }}" class="btn ef-btn">
+                    <i class="fa-solid fa-arrow-right"></i> Abrir módulo
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 col-12">
+        <div class="ef-card ef-card--soft">
+            <div class="ef-card__icon bg-info">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <div class="ef-card__body">
+                <div class="ef-card__title">Consulta rápida</div>
+                <div class="ef-card__desc">Buscar por matrícula o por elemento (próximo).</div>
+                <a href="#" class="btn ef-btn ef-btn--ghost" onclick="return false;">
+                    <i class="fa-solid fa-clock"></i> Próximamente
+                </a>
+            </div>
+        </div>
+    </div>
+    @endcan
+
+    {{-- BLOQUE 3: TURNOS / SERVICIO --}}
+    <div class="col-12 mt-2">
+        <div class="ef-section">
+            <div class="ef-section__title">
+                <i class="fa-solid fa-calendar-days"></i> Turnos y servicio
+            </div>
+            <div class="ef-section__desc">
+                Definición de turnos, horarios y patrón 24x24 (sin pares/nonones).
+            </div>
+        </div>
+    </div>
+
+    @can('ver turnos')
+    <div class="col-lg-4 col-md-6 col-12">
+        <div class="ef-card">
+            <div class="ef-card__icon bg-teal">
+                <i class="fa-solid fa-people-group"></i>
+            </div>
+            <div class="ef-card__body">
+                <div class="ef-card__title">Turnos</div>
+                <div class="ef-card__desc">Turno A/B, administrativos, mixto, etc.</div>
+                <a href="{{ url('turnos') }}" class="btn ef-btn">
+                    <i class="fa-solid fa-arrow-right"></i> Abrir módulo
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 col-12">
+        <div class="ef-card">
+            <div class="ef-card__icon bg-indigo">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="ef-card__body">
+                <div class="ef-card__title">Horarios por turno</div>
+                <div class="ef-card__desc">Horas de entrada/salida y tolerancias.</div>
+                <a href="{{ url('turnos-horarios') }}" class="btn ef-btn">
+                    <i class="fa-solid fa-arrow-right"></i> Abrir módulo
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 col-12">
+        <div class="ef-card">
+            <div class="ef-card__icon bg-secondary">
+                <i class="fa-solid fa-repeat"></i>
+            </div>
+            <div class="ef-card__body">
+                <div class="ef-card__title">Patrón de servicio</div>
+                <div class="ef-card__desc">Configura 24x24 por fecha inicio de ciclo.</div>
+                <a href="{{ url('servicio') }}" class="btn ef-btn">
+                    <i class="fa-solid fa-arrow-right"></i> Abrir módulo
+                </a>
+            </div>
+        </div>
+    </div>
+    @endcan
+
+    {{-- BLOQUE 4: CONFIGURACIÓN --}}
+    @can('ver configuraciones')
+    <div class="col-12 mt-2">
+        <div class="ef-section">
+            <div class="ef-section__title">
+                <i class="fa-solid fa-gear"></i> Configuración
+            </div>
+            <div class="ef-section__desc">
+                Usuarios, roles y permisos (Spatie).
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 col-md-6 col-12">
+        <div class="ef-card">
+            <div class="ef-card__icon bg-dark">
+                <i class="fa-solid fa-user-gear"></i>
+            </div>
+            <div class="ef-card__body">
+                <div class="ef-card__title">Usuarios</div>
+                <div class="ef-card__desc">Alta, roles y acceso al sistema.</div>
+                <a href="{{ url('admin/settings/users') }}" class="btn ef-btn">
+                    <i class="fa-solid fa-arrow-right"></i> Administrar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 col-md-6 col-12">
+        <div class="ef-card">
+            <div class="ef-card__icon bg-gray">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div class="ef-card__body">
+                <div class="ef-card__title">Roles y permisos</div>
+                <div class="ef-card__desc">Control fino de permisos por módulo.</div>
+                <a href="{{ url('admin/settings/roles') }}" class="btn ef-btn">
+                    <i class="fa-solid fa-arrow-right"></i> Administrar
+                </a>
+            </div>
+        </div>
+    </div>
+    @endcan
+
+</div>
 @stop
 
 @section('css')
 <style>
     :root{
-        --sv-text: rgba(234,240,255,.92);
-        --sv-muted: rgba(234,240,255,.65);
-        --sv-stroke: rgba(255,255,255,.12);
-        --sv-card: rgba(255,255,255,.08);
-        --sv-card2: rgba(255,255,255,.05);
-        --sv-shadow: 0 18px 55px rgba(0,0,0,.35);
-        --sv-radius: 22px;
+        --ef-text: rgba(234,240,255,.92);
+        --ef-muted: rgba(234,240,255,.65);
+        --ef-stroke: rgba(255,255,255,.12);
+        --ef-card: rgba(255,255,255,.08);
+        --ef-card2: rgba(255,255,255,.05);
+        --ef-shadow: 0 18px 55px rgba(0,0,0,.35);
+        --ef-radius: 22px;
     }
 
-    /* Hero */
-    .sv-hero{
+    .ef-hero{
         margin: 10px 0 12px;
         border-radius: 26px;
         border: 1px solid rgba(255,255,255,.12);
@@ -242,11 +272,11 @@
             radial-gradient(700px 280px at 20% 30%, rgba(45,168,255,.20), transparent 60%),
             radial-gradient(700px 280px at 80% 30%, rgba(124,92,255,.18), transparent 60%),
             linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
-        box-shadow: var(--sv-shadow);
+        box-shadow: var(--ef-shadow);
         overflow: hidden;
     }
-    .sv-hero__inner{ padding: 18px 18px 16px; text-align: center; }
-    .sv-hero__badge{
+    .ef-hero__inner{ padding: 18px 18px 16px; text-align: center; }
+    .ef-hero__badge{
         display:inline-flex; align-items:center; gap:10px;
         padding: 8px 12px;
         border-radius: 999px;
@@ -257,46 +287,68 @@
         font-size: 12px;
         letter-spacing: .35px;
     }
-    .sv-dot{
+    .ef-dot{
         width: 8px; height: 8px; border-radius: 999px;
         background: #19D38C;
         box-shadow: 0 0 0 5px rgba(25,211,140,.14);
         display:inline-block;
     }
-    .sv-hero__title{
+    .ef-hero__title{
         margin-top: 10px;
         font-weight: 950;
         letter-spacing: -.6px;
         font-size: clamp(22px, 2.3vw, 30px);
-        color: var(--sv-text);
+        color: var(--ef-text);
     }
-    .sv-hero__subtitle{
+    .ef-hero__subtitle{
         margin-top: 6px;
         font-weight: 650;
         font-size: 13px;
-        color: var(--sv-muted);
+        color: var(--ef-muted);
     }
 
-    /* Cards */
-    .sv-card{
+    .ef-section{
+        margin: 8px 0 12px;
+        padding: 12px 14px;
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,.10);
+        background: rgba(0,0,0,.12);
+    }
+    .ef-section__title{
+        font-weight: 950;
+        letter-spacing: -.35px;
+        color: rgba(234,240,255,.92);
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        font-size: 14px;
+    }
+    .ef-section__desc{
+        margin-top: 4px;
+        font-weight: 650;
+        font-size: 12.5px;
+        color: rgba(234,240,255,.65);
+    }
+
+    .ef-card{
         display:flex;
         gap: 14px;
         padding: 14px;
         margin-bottom: 16px;
-        border-radius: var(--sv-radius);
-        border: 1px solid var(--sv-stroke);
-        background: linear-gradient(180deg, var(--sv-card), var(--sv-card2));
+        border-radius: var(--ef-radius);
+        border: 1px solid var(--ef-stroke);
+        background: linear-gradient(180deg, var(--ef-card), var(--ef-card2));
         box-shadow: 0 10px 35px rgba(0,0,0,.22);
         transition: .18s ease;
-        min-height: 108px;
+        min-height: 112px;
     }
-    .sv-card:hover{
+    .ef-card:hover{
         transform: translateY(-2px);
         border-color: rgba(45,168,255,.28);
         box-shadow: 0 18px 55px rgba(0,0,0,.30);
     }
 
-    .sv-card__icon{
+    .ef-card__icon{
         width: 52px; height: 52px;
         border-radius: 18px;
         display:grid; place-items:center;
@@ -304,26 +356,26 @@
         box-shadow: 0 12px 25px rgba(0,0,0,.22);
         flex: 0 0 auto;
     }
-    .sv-card__icon i{
+    .ef-card__icon i{
         font-size: 20px;
         color: rgba(255,255,255,.95);
     }
 
-    .sv-card__body{ flex: 1; min-width: 0; }
-    .sv-card__title{
-        font-weight: 900;
+    .ef-card__body{ flex: 1; min-width: 0; }
+    .ef-card__title{
+        font-weight: 950;
         font-size: 14px;
-        color: var(--sv-text);
+        color: var(--ef-text);
         line-height: 1.15;
     }
-    .sv-card__desc{
+    .ef-card__desc{
         margin-top: 6px;
         font-weight: 650;
         font-size: 12.5px;
-        color: var(--sv-muted);
+        color: var(--ef-muted);
     }
 
-    .sv-btn{
+    .ef-btn{
         margin-top: 10px;
         display:inline-flex;
         align-items:center;
@@ -335,30 +387,24 @@
         color: rgba(234,240,255,.95) !important;
         padding: 8px 12px;
     }
-    .sv-btn:hover{
+    .ef-btn:hover{
         transform: translateY(-1px);
         border-color: rgba(45,168,255,.55) !important;
         background: linear-gradient(135deg, rgba(45,168,255,.34), rgba(124,92,255,.30)) !important;
         color: rgba(234,240,255,.98) !important;
     }
 
-    .sv-btn--ghost{
+    .ef-btn--ghost{
         background: rgba(0,0,0,.18) !important;
         border: 1px solid rgba(255,255,255,.12) !important;
         color: rgba(234,240,255,.88) !important;
     }
-    .sv-btn--ghost:hover{
+    .ef-btn--ghost:hover{
         background: rgba(0,0,0,.22) !important;
         border-color: rgba(255,255,255,.16) !important;
         transform: none;
     }
 
-    .sv-card--disabled{
-        opacity: .78;
-    }
+    .ef-card--soft{ opacity: .92; }
 </style>
-@stop
-
-@section('js')
-    <script> console.log("¿Alguien Lee esto?"); </script>
 @stop

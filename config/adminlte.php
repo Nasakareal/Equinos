@@ -7,7 +7,7 @@ return [
     | Title
     |--------------------------------------------------------------------------
     */
-    'title' => 'Sistema Estadistico',
+    'title' => 'Equinos y Caninos',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -33,12 +33,12 @@ return [
     | Admin Panel Logo
     |--------------------------------------------------------------------------
     */
-    'logo' => '<b style="color:white;">Seguridad Vial</b>',
+    'logo' => '<b style="color:white;">Equinos y Caninos</b>',
     'logo_img' => 'guardiacivil.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'Admin Logo',
+    'logo_img_alt' => 'Equinos y Caninos',
 
     /*
     |--------------------------------------------------------------------------
@@ -66,7 +66,7 @@ return [
         'mode' => 'fullscreen',
         'img' => [
             'path' => 'guardiacivil.png',
-            'alt' => 'Sistema Estadistico',
+            'alt' => 'Equinos y Caninos',
             'effect' => 'animation__shake',
             'class' => 'custom-preloader-img',
             'width' => 300,
@@ -185,16 +185,18 @@ return [
     |--------------------------------------------------------------------------
     */
     'menu' => [
-        // Navbar items:
+
+        // ===================== NAVBAR =====================
+
         [
             'type' => 'navbar-search',
-            'text' => 'search',
+            'text' => 'Buscar',
             'topnav_right' => true,
         ],
         [
             'type' => 'link',
             'text' => 'Scan',
-            'url' => '#',
+            'url' => 'scan',
             'topnav_right' => true,
             'icon' => 'fa-solid fa-qrcode',
         ],
@@ -203,257 +205,190 @@ return [
             'topnav_right' => true,
         ],
         [
-            'text'        => 'Perfil',
-            'route'       => 'profile',
-            'icon'        => 'fas fa-fw fa-user',
+            'text' => 'Perfil',
+            'route' => 'profile',
+            'icon' => 'fas fa-fw fa-user',
             'topnav_user' => true,
         ],
         [
-            'text'        => 'Cambiar Contraseña',
-            'route'       => 'password.change',
-            'icon'        => 'fas fa-fw fa-lock',
+            'text' => 'Cambiar Contraseña',
+            'route' => 'password.change',
+            'icon' => 'fas fa-fw fa-lock',
             'topnav_user' => true,
         ],
 
         // ===================== SIDEBAR =====================
 
+        ['header' => 'OPERACIÓN'],
+
         [
-            'text'    => 'Accidentes',
-            'icon'    => 'fa-solid fa-car-side',
-            'classes' => 'bg-blue text-white',
-            'can'     => 'ver hechos',
+            'text' => 'Home',
+            'icon' => 'fas fa-fw fa-house',
+            'url' => 'home',
+        ],
+
+        [
+            'text' => 'Personal',
+            'icon' => 'fa-solid fa-users',
+            'classes' => 'bg-primary text-white',
+            'can' => 'ver personal',
             'submenu' => [
                 [
-                    'text'    => 'Listado de Accidentes',
-                    'icon'    => 'fa-solid fa-car-side',
+                    'text' => 'Listado',
+                    'icon' => 'fa-solid fa-list',
                     'classes' => 'text-white',
-                    'url'     => 'hechos',
-                    'can'     => 'ver hechos',
+                    'url' => 'personal',
+                    'can' => 'ver personal',
                 ],
                 [
-                    'text'    => 'Añadir un accidente',
-                    'icon'    => 'fa-solid fa-plus',
+                    'text' => 'Agregar',
+                    'icon' => 'fa-solid fa-plus',
                     'classes' => 'text-white',
-                    'url'     => 'hechos/create',
-                    'can'     => 'crear hechos',
-                ],
-                [
-                    'text'    => 'Búsqueda',
-                    'icon'    => 'fas fa-search',
-                    'classes' => 'text-white',
-                    'url'     => 'busqueda',
-                    'can'     => 'ver hechos',
+                    'url' => 'personal/create',
+                    'can' => 'crear personal',
                 ],
             ],
         ],
 
         [
-            'text'    => 'Pase de Lista',
-            'icon'    => 'fas fa-user-check',
-            'classes' => 'bg-blue text-white',
-            'can'     => 'ver listas',
+            'text' => 'Incidencias',
+            'icon' => 'fa-solid fa-triangle-exclamation',
+            'classes' => 'bg-warning text-dark',
+            'can' => 'ver incidencias',
             'submenu' => [
                 [
-                    'text'    => 'Pases de lista',
-                    'icon'    => 'fa-solid fa-clipboard-list',
-                    'classes' => 'text-white',
-                    'url'     => 'listas',
-                    'can'     => 'ver listas',
+                    'text' => 'Listado',
+                    'icon' => 'fa-solid fa-list',
+                    'url' => 'incidencias',
+                    'can' => 'ver incidencias',
                 ],
                 [
-                    'text'    => 'Añadir un Pase',
-                    'icon'    => 'fa-solid fa-plus',
-                    'classes' => 'text-white',
-                    'url'     => 'listas/create',
-                    'can'     => 'crear listas',
+                    'text' => 'Registrar',
+                    'icon' => 'fa-solid fa-plus',
+                    'url' => 'incidencias/create',
+                    'can' => 'crear incidencias',
+                ],
+                ['header' => 'Catálogos'],
+                [
+                    'text' => 'Tipos de Incidencia',
+                    'icon' => 'fa-solid fa-tags',
+                    'url' => 'incidencias/tipos',
+                    'can' => 'ver incidencias',
                 ],
             ],
         ],
 
         [
-            'text'    => 'Dictamenes',
-            'icon'    => 'fas fa-gavel',
-            'classes' => 'bg-blue text-white',
-            'can'     => 'ver dictamenes',
+            'text' => 'Armamento',
+            'icon' => 'fa-solid fa-gun',
+            'classes' => 'bg-navy text-white',
+            'can' => 'ver armamento',
             'submenu' => [
                 [
-                    'text'    => 'Listado de Dictamenes',
-                    'icon'    => 'fas fa-gavel',
+                    'text' => 'Inventario',
+                    'icon' => 'fa-solid fa-boxes-stacked',
                     'classes' => 'text-white',
-                    'url'     => 'dictamenes',
-                    'can'     => 'ver dictamenes',
+                    'url' => 'armamento',
+                    'can' => 'ver armamento',
                 ],
                 [
-                    'text'    => 'Solicitar número Dictamen',
-                    'icon'    => 'fa-solid fa-plus',
+                    'text' => 'Agregar arma',
+                    'icon' => 'fa-solid fa-plus',
                     'classes' => 'text-white',
-                    'url'     => 'dictamenes/create',
-                    'can'     => 'crear dictamenes',
+                    'url' => 'armamento/create',
+                    'can' => 'crear armamento',
+                ],
+                [
+                    'text' => 'Asignaciones',
+                    'icon' => 'fa-solid fa-clipboard-check',
+                    'classes' => 'text-white',
+                    'url' => 'armamento-asignaciones',
+                    'can' => 'ver armamento',
+                ],
+                [
+                    'text' => 'Nueva asignación',
+                    'icon' => 'fa-solid fa-plus',
+                    'classes' => 'text-white',
+                    'url' => 'armamento-asignaciones/create',
+                    'can' => 'crear armamento',
                 ],
             ],
         ],
 
         [
-            'text'    => 'Actividades',
-            'icon'    => 'fas fa-tasks',
-            'classes' => 'bg-blue text-white',
+            'text' => 'Turnos y servicio',
+            'icon' => 'fa-solid fa-calendar-days',
+            'classes' => 'bg-secondary text-white',
+            'can' => 'ver turnos',
             'submenu' => [
                 [
-                    'text'    => 'Listado de Actividades',
-                    'icon'    => 'fas fa-tasks',
+                    'text' => 'Turnos',
+                    'icon' => 'fa-solid fa-people-group',
                     'classes' => 'text-white',
-                    'url'     => '#',
+                    'url' => 'turnos',
+                    'can' => 'ver turnos',
                 ],
                 [
-                    'text'    => 'Añadir Actividad',
-                    'icon'    => 'fa-solid fa-plus',
+                    'text' => 'Horarios por turno',
+                    'icon' => 'fa-solid fa-clock',
                     'classes' => 'text-white',
-                    'url'     => '#',
+                    'url' => 'turnos-horarios',
+                    'can' => 'ver turnos',
+                ],
+                [
+                    'text' => 'Patrón 24x24',
+                    'icon' => 'fa-solid fa-repeat',
+                    'classes' => 'text-white',
+                    'url' => 'servicio',
+                    'can' => 'ver turnos',
                 ],
             ],
         ],
 
         [
-            'text'    => 'Grúas',
-            'icon'    => 'fa-solid fa-truck-moving',
-            'classes' => 'bg-blue text-white',
-            'can'     => 'ver gruas',
+            'text' => 'Reportes diarios',
+            'icon' => 'fa-solid fa-file-excel',
+            'classes' => 'bg-success text-white',
+            'can' => 'ver reportes',
             'submenu' => [
                 [
-                    'text'    => 'Listado de Grúas',
-                    'icon'    => 'fa-solid fa-truck-moving',
+                    'text' => 'Panel de reportes',
+                    'icon' => 'fa-solid fa-table-cells',
                     'classes' => 'text-white',
-                    'url'     => 'gruas',
-                    'can'     => 'ver gruas',
-                ],
-                [
-                    'text'    => 'Ver Gráfico de Servicios',
-                    'icon'    => 'fa-solid fa-chart-line',
-                    'classes' => 'text-white',
-                    'url'     => 'servicios/grafico',
-                    'can'     => 'ver gruas',
+                    'url' => 'reportes-diarios',
+                    'can' => 'ver reportes',
                 ],
             ],
         ],
 
-        [
-            'text'    => 'Formatos',
-            'icon'    => 'fas fa-file-alt',
-            'classes' => 'bg-blue text-white',
-            'can'     => 'ver formatos',
-            'submenu' => [
-                [
-                    'text'    => 'Listado de Formatos',
-                    'icon'    => 'fas fa-file-alt',
-                    'classes' => 'text-white',
-                    'url'     => 'formatos',
-                    'can'     => 'ver formatos',
-                ],
-                [
-                    'text'    => 'Subir Formato',
-                    'icon'    => 'fa-solid fa-plus',
-                    'classes' => 'text-white',
-                    'url'     => 'formatos/create',
-                    'can'     => 'crear formatos',
-                ],
-            ],
-        ],
+        ['header' => 'ADMINISTRACIÓN'],
 
         [
-            'text'    => 'Oficios',
-            'icon'    => 'fas fa-envelope-open-text',
-            'classes' => 'bg-blue text-white',
-            'can'     => 'ver oficios',
+            'text' => 'Configuraciones',
+            'icon' => 'fas fa-fw fa-gear',
+            'classes' => 'bg-dark text-white',
+            'can' => 'ver configuraciones',
             'submenu' => [
                 [
-                    'text'    => 'Listado de Oficios',
-                    'icon'    => 'fas fa-envelope-open-text',
+                    'text' => 'Panel',
+                    'icon' => 'fas fa-fw fa-gear',
                     'classes' => 'text-white',
-                    'url'     => 'oficios',
-                    'can'     => 'ver oficios',
+                    'url' => 'admin/settings',
+                    'can' => 'ver configuraciones',
                 ],
                 [
-                    'text'    => 'Subir Oficio',
-                    'icon'    => 'fa-solid fa-plus',
+                    'text' => 'Usuarios',
+                    'icon' => 'fa-solid fa-user',
                     'classes' => 'text-white',
-                    'url'     => 'oficios/create',
-                    'can'     => 'crear oficios',
-                ],
-            ],
-        ],
-
-        [
-            'text'    => 'Estadísticas',
-            'icon'    => 'fa-solid fa-chart-pie',
-            'classes' => 'bg-blue text-white',
-            'can'     => 'ver estadisticas',
-            'submenu' => [
-                [
-                    'text'    => 'Listado de Estadisticas',
-                    'icon'    => 'fa-solid fa-chart-pie',
-                    'classes' => 'text-white',
-                    'url'     => 'admin/settings/estadisticas',
-                    'can'     => 'ver estadisticas',
+                    'url' => 'admin/settings/users',
+                    'can' => 'ver usuarios',
                 ],
                 [
-                    'text'    => 'Parte de Novedades',
-                    'icon'    => 'fa-solid fa-file-word',
+                    'text' => 'Roles',
+                    'icon' => 'fa-regular fa-flag',
                     'classes' => 'text-white',
-                    'route'   => 'estadisticas.parteNovedades',
-                    'can'     => 'ver estadisticas',
-                ],
-                [
-                    'text'    => 'Mini Parte',
-                    'icon'    => 'fa-solid fa-file-word',
-                    'classes' => 'text-white',
-                    'route'   => 'estadisticas.miniParte',
-                    'can'     => 'ver estadisticas',
-                ],
-            ],
-        ],
-
-        [
-            'text'    => 'Mapa',
-            'icon'    => 'fa-solid fa-map-location-dot',
-            'classes' => 'bg-blue text-white',
-            'can'     => 'ver mapa',
-            'submenu' => [
-                [
-                    'text'    => 'Mapa Patrullas',
-                    'icon'    => 'fa-solid fa-map-location-dot',
-                    'classes' => 'text-white',
-                    'url'     => 'mapa',
-                    'can'     => 'ver mapa',
-                ],
-            ],
-        ],
-
-        [
-            'text'    => 'Configuraciones',
-            'icon'    => 'fas fa-fw fa-gear',
-            'classes' => 'bg-blue text-white',
-            'can'     => 'ver configuraciones',
-            'submenu' => [
-                [
-                    'text'    => 'Listado de Configuraciones',
-                    'icon'    => 'fas fa-fw fa-gear',
-                    'classes' => 'text-white',
-                    'url'     => 'admin/settings',
-                    'can'     => 'ver configuraciones',
-                ],
-                [
-                    'text'    => 'Listado de Usuarios',
-                    'icon'    => 'fa-solid fa-user',
-                    'classes' => 'text-white',
-                    'url'     => 'admin/settings/users',
-                    'can'     => 'ver usuarios',
-                ],
-                [
-                    'text'    => 'Listado de Roles',
-                    'icon'    => 'fa-regular fa-flag',
-                    'classes' => 'text-white',
-                    'url'     => 'admin/settings/roles',
-                    'can'     => 'ver roles',
+                    'url' => 'admin/settings/roles',
+                    'can' => 'ver roles',
                 ],
             ],
         ],
@@ -480,50 +415,51 @@ return [
     |--------------------------------------------------------------------------
     */
     'plugins' => [
+
         'FontAwesome' => [
             'active' => true,
             'files' => [
                 [
                     'type' => 'css',
                     'asset' => false,
-                    'location' => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css',
+                    'location' => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css',
                 ],
             ],
         ],
 
         'Datatables' => [
-            'active' => false,
+            'active' => true,
             'files' => [
                 [
                     'type' => 'js',
                     'asset' => false,
-                    'location' => '//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js',
+                    'location' => 'https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js',
                 ],
                 [
                     'type' => 'js',
                     'asset' => false,
-                    'location' => '//cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js',
+                    'location' => 'https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js',
                 ],
                 [
                     'type' => 'css',
                     'asset' => false,
-                    'location' => '//cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css',
+                    'location' => 'https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css',
                 ],
             ],
         ],
 
         'Select2' => [
-            'active' => false,
+            'active' => true,
             'files' => [
                 [
                     'type' => 'js',
                     'asset' => false,
-                    'location' => '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js',
+                    'location' => 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js',
                 ],
                 [
                     'type' => 'css',
                     'asset' => false,
-                    'location' => '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css',
+                    'location' => 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css',
                 ],
             ],
         ],
@@ -534,7 +470,7 @@ return [
                 [
                     'type' => 'js',
                     'asset' => false,
-                    'location' => '//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js',
+                    'location' => 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js',
                 ],
             ],
         ],
@@ -551,22 +487,6 @@ return [
                     'type' => 'css',
                     'asset' => false,
                     'location' => 'https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css',
-                ],
-            ],
-        ],
-
-        'Pace' => [
-            'active' => false,
-            'files' => [
-                [
-                    'type' => 'css',
-                    'asset' => false,
-                    'location' => '//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-center-radar.min.css',
-                ],
-                [
-                    'type' => 'js',
-                    'asset' => false,
-                    'location' => '//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js',
                 ],
             ],
         ],

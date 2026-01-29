@@ -1,173 +1,150 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
+
+use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\WeaponController;
+use App\Http\Controllers\WeaponAssignmentController;
+use App\Http\Controllers\IncidenceTypeController;
+use App\Http\Controllers\IncidenceController;
+use App\Http\Controllers\TurnoController;
+use App\Http\Controllers\TurnoHorarioController;
+use App\Http\Controllers\ServiceScheduleController;
+use App\Http\Controllers\DailyReportController;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [App\Http\Controllers\UserController::class, 'profile'])->name('profile');
-    Route::get('/change-password', [App\Http\Controllers\UserController::class, 'showChangePasswordForm'])->name('password.change');
-    Route::post('/change-password', [App\Http\Controllers\UserController::class, 'updatePassword'])->name('user.password.update');
-});
-
-// Ruta de Grúas para las liberaciones
-Route::middleware(['auth', 'can:subir liberacion grua'])->group(function () {
-    Route::get('/liberacion/{vehiculo}/grua', [App\Http\Controllers\LiberacionController::class, 'verParaGruas'])->name('liberacion.grua.ver');
-    Route::post('/liberacion/{vehiculo}/grua', [App\Http\Controllers\LiberacionController::class, 'storePdfGruas'])->name('liberacion.grua.subir');
-});
-
-
-
-// Búsqueda
-Route::get('/busqueda', [App\Http\Controllers\BusquedaController::class, 'index'])->name('busqueda.index');
-
-// Campañas
-Route::get('/campanas', [App\Http\Controllers\CampanaController::class, 'index'])->name('campanas.index');
-
-// Contacto
-// Route::get('/contacto', [App\Http\Controllers\ContactoController::class, 'index'])->name('contacto.index');
-// Route::post('/contacto/enviar', [ContactoController::class, 'enviarMensaje'])->name('contacto.enviar');
-
-
-// Apoyos
-Route::get('/apoyo', [App\Http\Controllers\ApoyoController::class, 'index'])->name('apoyo.index');
-
-// Rutas para Licencias
-Route::prefix('licencias')->group(function () {
-    Route::get('/requisitos', [App\Http\Controllers\LicenciaController::class, 'requisitos'])->name('licencias.requisitos');
-    Route::get('/costos', [App\Http\Controllers\LicenciaController::class, 'costos'])->name('licencias.costos');
-    Route::get('/ubicaciones', [App\Http\Controllers\LicenciaController::class, 'ubicaciones'])->name('licencias.ubicaciones');
-});
-
-
 Auth::routes();
 
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-// Home
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::middleware('auth')->group(function () {
 
-// Rutas para Oficios
-Route::prefix('oficios')->middleware('can:ver oficios')->group(function () {
-    Route::get('/', [App\Http\Controllers\OficioController::class, 'index'])->name('oficios.index');
-    Route::get('/create', [App\Http\Controllers\OficioController::class, 'create'])->middleware('can:crear oficios')->name('oficios.create');
-    Route::post('/', [App\Http\Controllers\OficioController::class, 'store'])->middleware('can:crear oficios')->name('oficios.store');
-    Route::get('/{oficio}', [App\Http\Controllers\OficioController::class, 'show'])->middleware('can:ver oficios')->name('oficios.show');
-    Route::get('/{oficio}/edit', [App\Http\Controllers\OficioController::class, 'edit'])->middleware('can:editar oficios')->name('oficios.edit');
-    Route::put('/{oficio}', [App\Http\Controllers\OficioController::class, 'update'])->middleware('can:editar oficios')->name('oficios.update');
-    Route::delete('/{oficio}', [App\Http\Controllers\OficioController::class, 'destroy'])->middleware('can:eliminar oficios')->name('oficios.destroy');
-});
+    Route::prefix('admin/settings')->middleware('can:ver configuraciones')->group(function () {
+        Route::get('/', [SettingsController::class, 'index'])->name('settings.index');
 
-// Rutas para Listas
-Route::prefix('listas')->middleware('can:ver listas')->group(function () {
-    Route::get('/', [App\Http\Controllers\ListaController::class, 'index'])->name('listas.index');
-    Route::get('/create', [App\Http\Controllers\ListaController::class, 'create'])->middleware('can:crear listas')->name('listas.create');
-    Route::post('/', [App\Http\Controllers\ListaController::class, 'store'])->middleware('can:crear listas')->name('listas.store');
-    Route::get('/{lista}', [App\Http\Controllers\ListaController::class, 'show'])->middleware('can:ver listas')->name('listas.show');
-    Route::get('/{lista}/edit', [App\Http\Controllers\ListaController::class, 'edit'])->middleware('can:editar listas')->name('listas.edit');
-    Route::put('/{lista}', [App\Http\Controllers\ListaController::class, 'update'])->middleware('can:editar listas')->name('listas.update');
-    Route::delete('/{lista}', [App\Http\Controllers\ListaController::class, 'destroy'])->middleware('can:eliminar listas')->name('listas.destroy');
-});
+        Route::prefix('users')->middleware('can:ver usuarios')->group(function () {
+            Route::get('/', [UserController::class, 'index'])->name('users.index');
+            Route::get('/create', [UserController::class, 'create'])->middleware('can:crear usuarios')->name('users.create');
+            Route::post('/', [UserController::class, 'store'])->middleware('can:crear usuarios')->name('users.store');
+            Route::get('/{user}', [UserController::class, 'show'])->middleware('can:ver usuarios')->name('users.show');
+            Route::get('/{user}/edit', [UserController::class, 'edit'])->middleware('can:editar usuarios')->name('users.edit');
+            Route::put('/{user}', [UserController::class, 'update'])->middleware('can:editar usuarios')->name('users.update');
+            Route::delete('/{user}', [UserController::class, 'destroy'])->middleware('can:eliminar usuarios')->name('users.destroy');
+        });
 
-// Rutas para Formatos
-Route::prefix('formatos')->middleware('can:ver formatos')->group(function () {
-    Route::get('/', [App\Http\Controllers\FormatoController::class, 'index'])->name('formatos.index');
-    Route::get('/create', [App\Http\Controllers\FormatoController::class, 'create'])->middleware('can:crear formatos')->name('formatos.create');
-    Route::post('/', [App\Http\Controllers\FormatoController::class, 'store'])->middleware('can:crear formatos')->name('formatos.store');
-    Route::get('/{formato}', [App\Http\Controllers\FormatoController::class, 'show'])->middleware('can:ver formatos')->name('formatos.show');
-    Route::get('/{formato}/edit', [App\Http\Controllers\FormatoController::class, 'edit'])->middleware('can:editar formatos')->name('formatos.edit');
-    Route::put('/{formato}', [App\Http\Controllers\FormatoController::class, 'update'])->middleware('can:editar formatos')->name('formatos.update');
-    Route::delete('/{formato}', [App\Http\Controllers\FormatoController::class, 'destroy'])->middleware('can:eliminar formatos')->name('formatos.destroy');
-});
-
-// Rutas para Dictamenes
-Route::prefix('dictamenes')->middleware('can:ver dictamenes')->group(function () {
-    Route::get('/', [App\Http\Controllers\DictamenController::class, 'index'])->name('dictamenes.index');
-    Route::get('/create', [App\Http\Controllers\DictamenController::class, 'create'])->middleware('can:crear dictamenes')->name('dictamenes.create');
-    Route::post('/', [App\Http\Controllers\DictamenController::class, 'store'])->middleware('can:crear dictamenes')->name('dictamenes.store');
-    Route::get('/{dictamen}', [App\Http\Controllers\DictamenController::class, 'show'])->middleware('can:ver dictamenes')->name('dictamenes.show');
-    Route::get('/{dictamen}/edit', [App\Http\Controllers\DictamenController::class, 'edit'])->middleware('can:editar dictamenes')->name('dictamenes.edit');
-    Route::put('/{dictamen}', [App\Http\Controllers\DictamenController::class, 'update'])->middleware('can:editar dictamenes')->name('dictamenes.update');
-    Route::delete('/{dictamen}', [App\Http\Controllers\DictamenController::class, 'destroy'])->middleware('can:eliminar dictamenes')->name('dictamenes.destroy');
-});
-
-// Rutas para Grúas
-Route::prefix('gruas')->middleware('can:ver gruas')->group(function () {
-    Route::get('/', [App\Http\Controllers\GruaController::class, 'index'])->name('gruas.index');
-    Route::get('/create', [App\Http\Controllers\GruaController::class, 'create'])->middleware('can:crear gruas')->name('gruas.create');
-    Route::post('/', [App\Http\Controllers\GruaController::class, 'store'])->middleware('can:crear gruas')->name('gruas.store');
-    Route::get('/{grua}', [App\Http\Controllers\GruaController::class, 'show'])->middleware('can:ver gruas')->name('gruas.show');
-    Route::get('/{grua}/edit', [App\Http\Controllers\GruaController::class, 'edit'])->middleware('can:editar gruas')->name('gruas.edit');
-    Route::put('/{grua}', [App\Http\Controllers\GruaController::class, 'update'])->middleware('can:editar gruas')->name('gruas.update');
-    Route::delete('/{grua}', [App\Http\Controllers\GruaController::class, 'destroy'])->middleware('can:eliminar gruas')->name('gruas.destroy');
-
-    // Rutas para Servicios relacionados a Grúas
-    Route::prefix('/{grua}/servicios')->group(function () {
-        Route::get('/', [App\Http\Controllers\ServicioController::class, 'index'])->name('servicios.index');
-        Route::get('/create', [App\Http\Controllers\ServicioController::class, 'create'])->name('servicios.create');
-        Route::post('/', [App\Http\Controllers\ServicioController::class, 'store'])->name('servicios.store');
-        Route::get('/{servicio}', [App\Http\Controllers\ServicioController::class, 'show'])->name('servicios.show');
-        Route::get('/{servicio}/edit', [App\Http\Controllers\ServicioController::class, 'edit'])->name('servicios.edit');
-        Route::put('/{servicio}', [App\Http\Controllers\ServicioController::class, 'update'])->name('servicios.update');
-        Route::delete('/{servicio}', [App\Http\Controllers\ServicioController::class, 'destroy'])->name('servicios.destroy');
-    });
-});
-
-
-Route::get('/servicios/grafico', [App\Http\Controllers\ServicioController::class, 'grafico'])->name('servicios.grafico');
-
-// Configuraciones generales
-Route::prefix('admin/settings')->middleware('can:ver configuraciones')->group(function () {
-    // Configuración general
-    Route::get('/', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings.index');
-
-    // Usuarios
-    Route::prefix('users')->middleware('can:ver usuarios')->group(function () {
-        Route::get('/', [App\Http\Controllers\UserController::class, 'index'])->name('users.index');
-        Route::get('/create', [App\Http\Controllers\UserController::class, 'create'])->middleware('can:crear usuarios')->name('users.create');
-        Route::post('/', [App\Http\Controllers\UserController::class, 'store'])->middleware('can:crear usuarios')->name('users.store');
-        Route::get('/{user}', [App\Http\Controllers\UserController::class, 'show'])->middleware('can:ver usuarios')->name('users.show');
-        Route::get('/{user}/edit', [App\Http\Controllers\UserController::class, 'edit'])->middleware('can:editar usuarios')->name('users.edit');
-        Route::put('/{user}', [App\Http\Controllers\UserController::class, 'update'])->middleware('can:editar usuarios')->name('users.update');
-        Route::delete('/{user}', [App\Http\Controllers\UserController::class, 'destroy'])->middleware('can:eliminar usuarios')->name('users.destroy');
+        Route::prefix('roles')->middleware('can:ver roles')->group(function () {
+            Route::get('/', [RoleController::class, 'index'])->name('roles.index');
+            Route::get('/create', [RoleController::class, 'create'])->middleware('can:crear roles')->name('roles.create');
+            Route::post('/', [RoleController::class, 'store'])->middleware('can:crear roles')->name('roles.store');
+            Route::get('/{role}', [RoleController::class, 'show'])->name('roles.show');
+            Route::get('/{role}/edit', [RoleController::class, 'edit'])->middleware('can:editar roles')->name('roles.edit');
+            Route::put('/{role}', [RoleController::class, 'update'])->middleware('can:editar roles')->name('roles.update');
+            Route::delete('/{role}', [RoleController::class, 'destroy'])->middleware('can:eliminar roles')->name('roles.destroy');
+            Route::get('/{role}/permissions', [RoleController::class, 'permissions'])->middleware('can:editar roles')->name('roles.permissions');
+            Route::post('/{role}/permissions', [RoleController::class, 'assignPermissions'])->middleware('can:editar roles')->name('roles.assignPermissions');
+        });
     });
 
-
-    // Roles
-    Route::prefix('roles')->middleware('can:ver roles')->group(function () {
-        Route::get('/', [App\Http\Controllers\RoleController::class, 'index'])->name('roles.index');
-        Route::get('/create', [App\Http\Controllers\RoleController::class, 'create'])->middleware('can:crear roles')->name('roles.create');
-        Route::post('/', [App\Http\Controllers\RoleController::class, 'store'])->middleware('can:crear roles')->name('roles.store');
-        Route::get('/{role}', [App\Http\Controllers\RoleController::class, 'show'])->name('roles.show');
-        Route::get('/{role}/edit', [App\Http\Controllers\RoleController::class, 'edit'])->middleware('can:editar roles')->name('roles.edit');
-        Route::put('/{role}', [App\Http\Controllers\RoleController::class, 'update'])->middleware('can:editar roles')->name('roles.update');
-        Route::delete('/{role}', [App\Http\Controllers\RoleController::class, 'destroy'])->middleware('can:eliminar roles')->name('roles.destroy');
-        Route::get('/{role}/permissions', [App\Http\Controllers\RoleController::class, 'permissions'])->middleware('can:editar roles')->name('roles.permissions');
-        Route::post('/{role}/permissions', [App\Http\Controllers\RoleController::class, 'assignPermissions'])->middleware('can:editar roles')->name('roles.assignPermissions');
+    Route::prefix('personal')->middleware('can:ver personal')->group(function () {
+        Route::get('/', [PersonalController::class, 'index'])->name('personal.index');
+        Route::get('/create', [PersonalController::class, 'create'])->middleware('can:crear personal')->name('personal.create');
+        Route::post('/', [PersonalController::class, 'store'])->middleware('can:crear personal')->name('personal.store');
+        Route::get('/{personal}', [PersonalController::class, 'show'])->middleware('can:ver personal')->name('personal.show');
+        Route::get('/{personal}/edit', [PersonalController::class, 'edit'])->middleware('can:editar personal')->name('personal.edit');
+        Route::put('/{personal}', [PersonalController::class, 'update'])->middleware('can:editar personal')->name('personal.update');
+        Route::delete('/{personal}', [PersonalController::class, 'destroy'])->middleware('can:eliminar personal')->name('personal.destroy');
     });
 
-    // Estadísticas
-    Route::prefix('estadisticas')->middleware('can:ver estadisticas')->group(function () {
-        Route::get('/', [App\Http\Controllers\EstadisticasController::class, 'index'])->name('estadisticas.index');
-
-        Route::get('/parte-novedades', [App\Http\Controllers\EstadisticasController::class, 'parteNovedades'])->name('estadisticas.parteNovedades');
-        Route::get('/parte-novedades/descargar', [App\Http\Controllers\EstadisticasController::class, 'descargarParte'])->name('estadisticas.parteNovedades.descargar');
-
-        Route::get('/mini-parte', [App\Http\Controllers\EstadisticasController::class, 'miniParte'])->name('estadisticas.miniParte');
-        Route::get('/mini-parte/descargar', [App\Http\Controllers\EstadisticasController::class, 'descargarMiniParte'])->name('estadisticas.miniParte.descargar');
-
-        Route::get('/dictamen', [App\Http\Controllers\EstadisticasController::class, 'dictamen'])->name('estadisticas.dictamen');
-        Route::get('/dictamen/{id}', [App\Http\Controllers\EstadisticasController::class, 'dictamenShow'])->name('estadisticas.dictamen.show');
-        Route::get('/dictamen/{id}/docx', [App\Http\Controllers\EstadisticasController::class, 'dictamenDocx'])->name('estadisticas.dictamen.docx');
-
-        Route::get('/bitacora', [App\Http\Controllers\EstadisticasController::class, 'bitacora'])->name('estadisticas.bitacora');
-        Route::get('/bitacora/descargar', [App\Http\Controllers\EstadisticasController::class, 'descargarBitacora'])->name('estadisticas.bitacora.descargar');
+    Route::prefix('armamento')->middleware('can:ver armamento')->group(function () {
+        Route::get('/', [WeaponController::class, 'index'])->name('armamento.index');
+        Route::get('/create', [WeaponController::class, 'create'])->middleware('can:crear armamento')->name('armamento.create');
+        Route::post('/', [WeaponController::class, 'store'])->middleware('can:crear armamento')->name('armamento.store');
+        Route::get('/{weapon}', [WeaponController::class, 'show'])->middleware('can:ver armamento')->name('armamento.show');
+        Route::get('/{weapon}/edit', [WeaponController::class, 'edit'])->middleware('can:editar armamento')->name('armamento.edit');
+        Route::put('/{weapon}', [WeaponController::class, 'update'])->middleware('can:editar armamento')->name('armamento.update');
+        Route::delete('/{weapon}', [WeaponController::class, 'destroy'])->middleware('can:eliminar armamento')->name('armamento.destroy');
     });
+
+    Route::prefix('armamento-asignaciones')->middleware('can:ver armamento')->group(function () {
+        Route::get('/', [WeaponAssignmentController::class, 'index'])->name('armamento_asignaciones.index');
+        Route::get('/create', [WeaponAssignmentController::class, 'create'])->middleware('can:crear armamento')->name('armamento_asignaciones.create');
+        Route::post('/', [WeaponAssignmentController::class, 'store'])->middleware('can:crear armamento')->name('armamento_asignaciones.store');
+        Route::get('/{weapon_assignment}', [WeaponAssignmentController::class, 'show'])->middleware('can:ver armamento')->name('armamento_asignaciones.show');
+        Route::get('/{weapon_assignment}/edit', [WeaponAssignmentController::class, 'edit'])->middleware('can:editar armamento')->name('armamento_asignaciones.edit');
+        Route::put('/{weapon_assignment}', [WeaponAssignmentController::class, 'update'])->middleware('can:editar armamento')->name('armamento_asignaciones.update');
+        Route::delete('/{weapon_assignment}', [WeaponAssignmentController::class, 'destroy'])->middleware('can:eliminar armamento')->name('armamento_asignaciones.destroy');
+    });
+
+    Route::prefix('incidencias/tipos')->middleware('can:ver incidencias')->group(function () {
+        Route::get('/', [IncidenceTypeController::class, 'index'])->name('incidence_types.index');
+        Route::get('/create', [IncidenceTypeController::class, 'create'])->middleware('can:crear incidencias')->name('incidence_types.create');
+        Route::post('/', [IncidenceTypeController::class, 'store'])->middleware('can:crear incidencias')->name('incidence_types.store');
+        Route::get('/{incidence_type}', [IncidenceTypeController::class, 'show'])->middleware('can:ver incidencias')->name('incidence_types.show');
+        Route::get('/{incidence_type}/edit', [IncidenceTypeController::class, 'edit'])->middleware('can:editar incidencias')->name('incidence_types.edit');
+        Route::put('/{incidence_type}', [IncidenceTypeController::class, 'update'])->middleware('can:editar incidencias')->name('incidence_types.update');
+        Route::delete('/{incidence_type}', [IncidenceTypeController::class, 'destroy'])->middleware('can:eliminar incidencias')->name('incidence_types.destroy');
+    });
+
+    Route::prefix('incidencias')->middleware('can:ver incidencias')->group(function () {
+        Route::get('/', [IncidenceController::class, 'index'])->name('incidencias.index');
+        Route::get('/create', [IncidenceController::class, 'create'])->middleware('can:crear incidencias')->name('incidencias.create');
+        Route::post('/', [IncidenceController::class, 'store'])->middleware('can:crear incidencias')->name('incidencias.store');
+        Route::get('/{incidence}', [IncidenceController::class, 'show'])->middleware('can:ver incidencias')->name('incidencias.show');
+        Route::get('/{incidence}/edit', [IncidenceController::class, 'edit'])->middleware('can:editar incidencias')->name('incidencias.edit');
+        Route::put('/{incidence}', [IncidenceController::class, 'update'])->middleware('can:editar incidencias')->name('incidencias.update');
+        Route::delete('/{incidence}', [IncidenceController::class, 'destroy'])->middleware('can:eliminar incidencias')->name('incidencias.destroy');
+    });
+
+    Route::prefix('turnos')->middleware('can:ver turnos')->group(function () {
+        Route::get('/', [TurnoController::class, 'index'])->name('turnos.index');
+        Route::get('/create', [TurnoController::class, 'create'])->middleware('can:crear turnos')->name('turnos.create');
+        Route::post('/', [TurnoController::class, 'store'])->middleware('can:crear turnos')->name('turnos.store');
+        Route::get('/{turno}', [TurnoController::class, 'show'])->middleware('can:ver turnos')->name('turnos.show');
+        Route::get('/{turno}/edit', [TurnoController::class, 'edit'])->middleware('can:editar turnos')->name('turnos.edit');
+        Route::put('/{turno}', [TurnoController::class, 'update'])->middleware('can:editar turnos')->name('turnos.update');
+        Route::delete('/{turno}', [TurnoController::class, 'destroy'])->middleware('can:eliminar turnos')->name('turnos.destroy');
+    });
+
+    Route::prefix('turnos-horarios')->middleware('can:ver turnos')->group(function () {
+        Route::get('/', [TurnoHorarioController::class, 'index'])->name('turno_horarios.index');
+        Route::get('/create', [TurnoHorarioController::class, 'create'])->middleware('can:crear turnos')->name('turno_horarios.create');
+        Route::post('/', [TurnoHorarioController::class, 'store'])->middleware('can:crear turnos')->name('turno_horarios.store');
+        Route::get('/{turno_horario}', [TurnoHorarioController::class, 'show'])->middleware('can:ver turnos')->name('turno_horarios.show');
+        Route::get('/{turno_horario}/edit', [TurnoHorarioController::class, 'edit'])->middleware('can:editar turnos')->name('turno_horarios.edit');
+        Route::put('/{turno_horario}', [TurnoHorarioController::class, 'update'])->middleware('can:editar turnos')->name('turno_horarios.update');
+        Route::delete('/{turno_horario}', [TurnoHorarioController::class, 'destroy'])->middleware('can:eliminar turnos')->name('turno_horarios.destroy');
+    });
+
+    Route::prefix('servicio')->middleware('can:ver turnos')->group(function () {
+        Route::get('/', [ServiceScheduleController::class, 'index'])->name('servicio.index');
+        Route::get('/create', [ServiceScheduleController::class, 'create'])->middleware('can:editar turnos')->name('servicio.create');
+        Route::post('/', [ServiceScheduleController::class, 'store'])->middleware('can:editar turnos')->name('servicio.store');
+        Route::get('/{service_schedule}', [ServiceScheduleController::class, 'show'])->middleware('can:ver turnos')->name('servicio.show');
+        Route::get('/{service_schedule}/edit', [ServiceScheduleController::class, 'edit'])->middleware('can:editar turnos')->name('servicio.edit');
+        Route::put('/{service_schedule}', [ServiceScheduleController::class, 'update'])->middleware('can:editar turnos')->name('servicio.update');
+        Route::delete('/{service_schedule}', [ServiceScheduleController::class, 'destroy'])->middleware('can:editar turnos')->name('servicio.destroy');
+    });
+
+    Route::prefix('reportes-diarios')->middleware('can:ver reportes')->group(function () {
+        Route::get('/', [DailyReportController::class, 'index'])->name('daily_reports.index');
+        Route::post('/generar', [DailyReportController::class, 'generar'])->middleware('can:crear reportes')->name('daily_reports.generar');
+        Route::get('/{daily_report}', [DailyReportController::class, 'show'])->name('daily_reports.show');
+        Route::get('/{daily_report}/descargar/{tipo}', [DailyReportController::class, 'descargar'])->middleware('can:ver reportes')->name('daily_reports.descargar');
+    });
+
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+    Route::get('/profile/password', [UserController::class, 'showChangePasswordForm'])->name('password.change');
+    Route::post('/profile/password', [UserController::class, 'updatePassword'])->name('password.update');
 });
 
 Route::get('/prueba-404', function () {
     return response()->view('errors.404', [], 404);
 });
-

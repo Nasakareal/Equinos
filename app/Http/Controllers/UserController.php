@@ -3,15 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Unidad;
-use App\Models\Turno;
-use App\Models\Patrulla;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -20,8 +17,7 @@ class UserController extends Controller
         $actor = Auth::user();
 
         $users = User::query()
-            ->visibleFor($actor)
-            ->with(['roles', 'unidad', 'turno', 'patrulla', 'unidades'])
+            ->with('roles')
             ->get();
 
         return view('admin.settings.users.index', compact('users'));
@@ -37,11 +33,7 @@ class UserController extends Controller
             })
             ->get();
 
-        $unidades = Unidad::query()->orderBy('nombre')->get();
-        $turnos = Turno::query()->orderBy('nombre')->get();
-        $patrullas = Patrulla::query()->orderBy('numero_economico')->get();
-
-        return view('admin.settings.users.create', compact('roles', 'unidades', 'turnos', 'patrullas'));
+        return view('admin.settings.users.create', compact('roles'));
     }
 
     public function store(Request $request)
@@ -52,15 +44,8 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
-            'area' => 'nullable|string|max:30',
+            'area' => 'nullable|string|max:120',
             'role' => 'required|exists:roles,name',
-
-            'unidad_id' => 'nullable|exists:unidades,id',
-            'turno_id' => 'nullable|exists:turnos,id',
-            'patrulla_id' => 'nullable|exists:patrullas,id',
-
-            'unidades_ids' => 'nullable|array',
-            'unidades_ids.*' => 'integer|exists:unidades,id',
         ]);
 
         if (!$actor->hasRole('Superadmin') && $validatedData['role'] === 'Superadmin') {
@@ -71,28 +56,19 @@ class UserController extends Controller
             $user = User::create([
                 'name' => $validatedData['name'],
                 'email' => $validatedData['email'],
-                'password' => bcrypt($validatedData['password']),
+                'password' => Hash::make($validatedData['password']),
                 'estado' => 'Activo',
                 'area' => $validatedData['area'] ?? null,
-
-                'unidad_id' => $validatedData['unidad_id'] ?? null,
-                'turno_id' => $validatedData['turno_id'] ?? null,
-                'patrulla_id' => $validatedData['patrulla_id'] ?? null,
             ]);
 
             $user->assignRole($validatedData['role']);
 
-            $unidadesExtra = $validatedData['unidades_ids'] ?? [];
-            if (!empty($unidadesExtra)) {
-                $user->unidades()->sync($unidadesExtra);
-            }
-
-            Log::info("Usuario creado exitosamente: {$user->name}");
+            Log::info("Usuario creado: {$user->id} {$user->name}");
 
             return redirect()->route('users.index')->with('success', 'Usuario creado correctamente.');
         } catch (\Exception $e) {
-            Log::error("Error al crear el usuario: " . $e->getMessage());
-            return redirect()->back()->withErrors('Hubo un error al crear el usuario. Inténtelo nuevamente.')->withInput();
+            Log::error("Error al crear usuario: " . $e->getMessage());
+            return redirect()->back()->withErrors('Hubo un error al crear el usuario.')->withInput();
         }
     }
 
@@ -101,8 +77,7 @@ class UserController extends Controller
         $actor = Auth::user();
 
         $user = User::query()
-            ->visibleFor($actor)
-            ->with(['roles', 'unidad', 'turno', 'patrulla', 'unidades'])
+            ->with('roles')
             ->findOrFail($id);
 
         return view('admin.settings.users.show', compact('user'));
@@ -113,8 +88,7 @@ class UserController extends Controller
         $actor = Auth::user();
 
         $user = User::query()
-            ->visibleFor($actor)
-            ->with(['roles', 'unidad', 'turno', 'patrulla', 'unidades'])
+            ->with('roles')
             ->findOrFail($id);
 
         $roles = Role::query()
@@ -123,13 +97,7 @@ class UserController extends Controller
             })
             ->get();
 
-        $unidades = Unidad::query()->orderBy('nombre')->get();
-        $turnos = Turno::query()->orderBy('nombre')->get();
-        $patrullas = Patrulla::query()->orderBy('numero_economico')->get();
-
-        $unidadesExtraSeleccionadas = $user->unidades->pluck('id')->all();
-
-        return view('admin.settings.users.edit', compact('user', 'roles', 'unidades', 'turnos', 'patrullas', 'unidadesExtraSeleccionadas'));
+        return view('admin.settings.users.edit', compact('user', 'roles'));
     }
 
     public function update(Request $request, $id)
@@ -137,23 +105,15 @@ class UserController extends Controller
         $actor = Auth::user();
 
         $user = User::query()
-            ->visibleFor($actor)
             ->with('roles')
             ->findOrFail($id);
 
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
-            'area' => 'nullable|string|max:30',
+            'area' => 'nullable|string|max:120',
             'role' => 'required|exists:roles,name',
             'password' => 'nullable|min:6|confirmed',
-
-            'unidad_id' => 'nullable|exists:unidades,id',
-            'turno_id' => 'nullable|exists:turnos,id',
-            'patrulla_id' => 'nullable|exists:patrullas,id',
-
-            'unidades_ids' => 'nullable|array',
-            'unidades_ids.*' => 'integer|exists:unidades,id',
         ]);
 
         if (!$actor->hasRole('Superadmin') && $validatedData['role'] === 'Superadmin') {
@@ -174,10 +134,6 @@ class UserController extends Controller
                 'name' => $validatedData['name'],
                 'email' => $validatedData['email'],
                 'area' => $validatedData['area'] ?? null,
-
-                'unidad_id' => $validatedData['unidad_id'] ?? null,
-                'turno_id' => $validatedData['turno_id'] ?? null,
-                'patrulla_id' => $validatedData['patrulla_id'] ?? null,
             ]);
 
             if (!empty($validatedData['password'])) {
@@ -187,17 +143,14 @@ class UserController extends Controller
 
             $user->syncRoles([$validatedData['role']]);
 
-            $unidadesExtra = $validatedData['unidades_ids'] ?? [];
-            $user->unidades()->sync($unidadesExtra);
-
-            Log::info("Usuario actualizado exitosamente: {$user->name}");
+            Log::info("Usuario actualizado: {$user->id} {$user->name}");
 
             return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente.');
         } catch (ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            Log::error("Error al actualizar el usuario: " . $e->getMessage());
-            return redirect()->back()->withErrors('Hubo un error al actualizar el usuario. Inténtelo nuevamente.')->withInput();
+            Log::error("Error al actualizar usuario: " . $e->getMessage());
+            return redirect()->back()->withErrors('Hubo un error al actualizar el usuario.')->withInput();
         }
     }
 
@@ -206,7 +159,7 @@ class UserController extends Controller
         $actor = Auth::user();
 
         try {
-            $user = User::query()->visibleFor($actor)->findOrFail($id);
+            $user = User::query()->findOrFail($id);
 
             if ($user->hasRole('Superadmin')) {
                 $superadmins = User::role('Superadmin')->count();
@@ -219,14 +172,14 @@ class UserController extends Controller
 
             $user->delete();
 
-            Log::info("Usuario eliminado exitosamente: {$user->name}");
+            Log::info("Usuario eliminado: {$user->id} {$user->name}");
 
             return redirect()->route('users.index')->with('success', 'Usuario eliminado correctamente.');
         } catch (ValidationException $e) {
             return redirect()->back()->withErrors($e->errors());
         } catch (\Exception $e) {
-            Log::error("Error al eliminar el usuario: " . $e->getMessage());
-            return redirect()->back()->withErrors('Hubo un error al eliminar el usuario. Inténtelo nuevamente.');
+            Log::error("Error al eliminar usuario: " . $e->getMessage());
+            return redirect()->back()->withErrors('Hubo un error al eliminar el usuario.');
         }
     }
 

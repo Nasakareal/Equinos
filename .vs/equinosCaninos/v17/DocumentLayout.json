@@ -3,16 +3,20 @@
   "WorkspaceRootPath": "C:\\wamp64\\www\\equinosCaninos\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\resources\\views\\welcome.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:resources\\views\\welcome.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\database\\seeders\\DatabaseSeeder.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:database\\seeders\\DatabaseSeeder.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\config\\view.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:config\\view.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\database\\seeders\\PersonalSeeder.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:database\\seeders\\PersonalSeeder.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\routes\\web.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:routes\\web.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\resources\\views\\personal\\index.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:resources\\views\\personal\\index.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\PersonalController.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Http\\Controllers\\PersonalController.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,45 +26,58 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "view.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\config\\view.php",
-              "RelativeDocumentMoniker": "config\\view.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\config\\view.php",
-              "RelativeToolTip": "config\\view.php",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "DatabaseSeeder.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\database\\seeders\\DatabaseSeeder.php",
+              "RelativeDocumentMoniker": "database\\seeders\\DatabaseSeeder.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\database\\seeders\\DatabaseSeeder.php",
+              "RelativeToolTip": "database\\seeders\\DatabaseSeeder.php",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-01-23T20:30:56.052Z",
+              "WhenOpened": "2026-01-29T00:56:18.943Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PersonalSeeder.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\database\\seeders\\PersonalSeeder.php",
+              "RelativeDocumentMoniker": "database\\seeders\\PersonalSeeder.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\database\\seeders\\PersonalSeeder.php",
+              "RelativeToolTip": "database\\seeders\\PersonalSeeder.php",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
+              "WhenOpened": "2026-01-29T00:55:42.19Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "web.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\routes\\web.php",
-              "RelativeDocumentMoniker": "routes\\web.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\routes\\web.php",
-              "RelativeToolTip": "routes\\web.php",
-              "ViewState": "AgIAAC0AAAAAAAAAAAAAAHQAAAAAAAAAAAAAAA==",
+              "Title": "index.blade.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\personal\\index.blade.php",
+              "RelativeDocumentMoniker": "resources\\views\\personal\\index.blade.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\personal\\index.blade.php",
+              "RelativeToolTip": "resources\\views\\personal\\index.blade.php",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-01-23T20:30:08.676Z",
+              "WhenOpened": "2026-01-29T00:48:58.463Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "welcome.blade.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\welcome.blade.php",
-              "RelativeDocumentMoniker": "resources\\views\\welcome.blade.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\welcome.blade.php",
-              "RelativeToolTip": "resources\\views\\welcome.blade.php",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAABGAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "PersonalController.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\PersonalController.php",
+              "RelativeDocumentMoniker": "app\\Http\\Controllers\\PersonalController.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\PersonalController.php",
+              "RelativeToolTip": "app\\Http\\Controllers\\PersonalController.php",
+              "ViewState": "AgIAAIcAAAAAAAAAAAAwwLgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-01-23T20:27:05.825Z",
+              "WhenOpened": "2026-01-29T00:41:37.41Z",
               "EditorCaption": ""
             }
           ]
