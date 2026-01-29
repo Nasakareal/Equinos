@@ -2,15 +2,13 @@
   "ExpandedNodes": [
     "",
     "\\app",
+    "\\app\\Http",
+    "\\app\\Http\\Controllers",
     "\\app\\Models",
     "\\resources",
     "\\resources\\views",
-    "\\resources\\views\\admin",
-    "\\resources\\views\\admin\\settings",
-    "\\resources\\views\\admin\\settings\\users",
-    "\\resources\\views\\incidencias",
-    "\\resources\\views\\personal"
+    "\\resources\\views\\armamento_asignaciones"
   ],
-  "SelectedNode": "\\resources\\views\\incidencias\\create.blade.php",
+  "SelectedNode": "\\app\\Models\\Weapon.php",
   "PreviewInSolutionExplorer": false
 }

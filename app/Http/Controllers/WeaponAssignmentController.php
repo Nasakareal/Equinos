@@ -17,11 +17,21 @@ class WeaponAssignmentController extends Controller
         $this->middleware('auth');
     }
 
+    private function armasDisponiblesQuery()
+    {
+        return Weapon::query()
+            ->whereDoesntHave('assignments', function ($q) {
+                $q->whereNull('fecha_devolucion')
+                  ->where('status', 'ASIGNADA');
+            });
+    }
+
     public function index()
     {
         $weapon_assignments = WeaponAssignment::query()
             ->with(['weapon', 'personal'])
             ->orderByDesc('fecha_asignacion')
+            ->orderByDesc('created_at')
             ->get();
 
         return view('armamento_asignaciones.index', compact('weapon_assignments'));
@@ -38,7 +48,7 @@ class WeaponAssignmentController extends Controller
             }
         }
 
-        $weapons = Weapon::query()
+        $weapons = $this->armasDisponiblesQuery()
             ->orderBy('tipo')
             ->orderBy('matricula')
             ->get();
@@ -72,7 +82,7 @@ class WeaponAssignmentController extends Controller
             $existsActive = WeaponAssignment::query()
                 ->where('weapon_id', $validated['weapon_id'])
                 ->whereNull('fecha_devolucion')
-                ->whereIn('status', ['ASIGNADA', 'ASIGNADO'])
+                ->where('status', 'ASIGNADA')
                 ->exists();
 
             if ($existsActive) {
@@ -110,8 +120,21 @@ class WeaponAssignmentController extends Controller
     {
         $weapon_assignment->load(['weapon', 'personal']);
 
-        $weapons = Weapon::query()->orderBy('tipo')->orderBy('matricula')->get();
-        $personals = Personal::query()->orderBy('nombres')->get();
+        $weapons = Weapon::query()
+            ->where(function ($q) use ($weapon_assignment) {
+                $q->whereDoesntHave('assignments', function ($qq) {
+                    $qq->whereNull('fecha_devolucion')
+                       ->where('status', 'ASIGNADA');
+                })
+                ->orWhere('id', $weapon_assignment->weapon_id);
+            })
+            ->orderBy('tipo')
+            ->orderBy('matricula')
+            ->get();
+
+        $personals = Personal::query()
+            ->orderBy('nombres')
+            ->get();
 
         return view('armamento_asignaciones.edit', compact('weapon_assignment', 'weapons', 'personals'));
     }
@@ -135,11 +158,11 @@ class WeaponAssignmentController extends Controller
                 ->where('weapon_id', $validated['weapon_id'])
                 ->where('id', '!=', $weapon_assignment->id)
                 ->whereNull('fecha_devolucion')
-                ->whereIn('status', ['ASIGNADA', 'ASIGNADO'])
+                ->where('status', 'ASIGNADA')
                 ->exists();
 
             if ($existsActive) {
-                return back()->withErrors('Esa arma ya está asignada en otro registro activo. Registra devolución o cambia status.')->withInput();
+                return back()->withErrors('Esa arma ya está asignada en otro registro activo. Registra devolución o cambia el arma.')->withInput();
             }
         }
 
