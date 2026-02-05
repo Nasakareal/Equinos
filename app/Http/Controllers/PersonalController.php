@@ -155,15 +155,27 @@ class PersonalController extends Controller
 
     public function show($id)
     {
-        // Cargamos también el servicio activo para mostrar su turno en show si quieres
         $personal = Personal::query()
             ->with('user')
             ->with(['servicios' => function ($q) {
                 $q->where('activo', 1)->latest('id');
             }])
+            ->with(['asignacionesArmamento' => function ($q) {
+                $q->with('weapon')
+                  ->orderByDesc('fecha_asignacion')
+                  ->orderByDesc('id');
+            }])
             ->findOrFail($id);
 
-        return view('personal.show', compact('personal'));
+        $armasActivas = $personal->asignacionesArmamento
+            ->filter(function ($a) {
+                return $a->status === 'ASIGNADA' && $a->fecha_devolucion === null;
+            })
+            ->values();
+
+        $historialArmamento = $personal->asignacionesArmamento;
+
+        return view('personal.show', compact('personal', 'armasActivas', 'historialArmamento'));
     }
 
     public function edit($id)
@@ -176,10 +188,8 @@ class PersonalController extends Controller
             ->findOrFail($id);
 
         $users = User::query()->orderBy('name')->get();
-
         $turnos = Turno::query()->orderBy('id')->get();
 
-        // servicio activo (si existe)
         $servicioActivo = $personal->servicios->first();
 
         return view('personal.edit', compact('personal', 'users', 'turnos', 'servicioActivo'));
@@ -190,7 +200,6 @@ class PersonalController extends Controller
         $personal = Personal::query()->findOrFail($id);
 
         $validatedData = $request->validate([
-            // ===== personal =====
             'user_id' => 'nullable|exists:users,id',
             'no_empleado' => 'nullable|string|max:50',
 
@@ -239,8 +248,6 @@ class PersonalController extends Controller
             'observaciones' => 'nullable|string|max:1000',
             'activo' => 'nullable|boolean',
 
-            // ===== servicio/turno =====
-            // si no mandas estos campos, no tocamos el turno
             'turno_id' => 'nullable|exists:turnos,id',
             'servicio_activo' => 'nullable|boolean',
             'tipo' => 'nullable|string|max:20',
@@ -258,7 +265,6 @@ class PersonalController extends Controller
         $validatedData['nombres'] = $this->normalizeText($validatedData['nombres'] ?? null) ?? $validatedData['nombres'];
 
         try {
-            // 1) actualiza personal
             $personal->update([
                 'user_id' => $validatedData['user_id'] ?? null,
                 'no_empleado' => $validatedData['no_empleado'] ?? null,
@@ -275,7 +281,6 @@ class PersonalController extends Controller
                 'activo' => (bool) ($validatedData['activo'] ?? true),
             ]);
 
-            // 2) turno / service_schedule (solo si viene algo de turno en el request)
             $tocoServicio = $request->hasAny([
                 'turno_id',
                 'servicio_activo',
@@ -289,7 +294,6 @@ class PersonalController extends Controller
             if ($tocoServicio) {
                 $servicio_activo = (bool) ($validatedData['servicio_activo'] ?? true);
 
-                // buscamos el registro activo actual
                 $servicioActual = ServiceSchedule::query()
                     ->where('personal_id', $personal->id)
                     ->where('activo', 1)
@@ -297,7 +301,6 @@ class PersonalController extends Controller
                     ->first();
 
                 if (!$servicio_activo) {
-                    // desactivar servicio actual si existe
                     if ($servicioActual) {
                         $servicioActual->update([
                             'activo' => 0,
@@ -305,15 +308,10 @@ class PersonalController extends Controller
                         ]);
                     }
                 } else {
-                    // si activas servicio, necesitamos fecha_inicio_ciclo (porque en tu tabla es NOT NULL)
                     $fecha_inicio_ciclo = $validatedData['fecha_inicio_ciclo'] ?? ($servicioActual->fecha_inicio_ciclo ?? now()->toDateString());
-
-                    // defaults coherentes
                     $tipo = $validatedData['tipo'] ?? ($servicioActual->tipo ?? 'CICLICO');
                     $horas_trabajo = (int) ($validatedData['horas_trabajo'] ?? ($servicioActual->horas_trabajo ?? 24));
                     $horas_descanso = (int) ($validatedData['horas_descanso'] ?? ($servicioActual->horas_descanso ?? 24));
-
-                    // si no mandan turno_id, no lo pisamos; si no existe servicio, sí exigimos turno_id para crear
                     $turno_id = $validatedData['turno_id'] ?? ($servicioActual->turno_id ?? null);
 
                     if (!$servicioActual && $turno_id === null) {
@@ -322,7 +320,6 @@ class PersonalController extends Controller
                             ->withInput();
                     }
 
-                    // si ya había uno activo y cambias turno/ciclo: lo actualizamos (no creamos otro)
                     if ($servicioActual) {
                         $servicioActual->update([
                             'turno_id' => $turno_id,
@@ -372,7 +369,7 @@ class PersonalController extends Controller
             return redirect()->route('personal.index')->with('success', 'Personal eliminado correctamente.');
         } catch (\Exception $e) {
             Log::error("Error al eliminar personal: " . $e->getMessage());
-            return redirect()->back()->withErrors('Hubo un error al eliminar el personal.');
+            return redirect()->back()->withErrors('Hubo un error al eliminar personal.');
         }
     }
 }

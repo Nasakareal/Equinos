@@ -8,6 +8,7 @@ use App\Models\Personal;
 use App\Models\ServiceSchedule;
 use App\Models\Turno;
 use App\Services\DailyReports\Exporters\ArmamentoExcelExporter;
+use App\Services\DailyReports\Exporters\ListaPersonalExcelExporter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -49,8 +50,8 @@ class DailyReportController extends Controller
         $now = Carbon::now('America/Mexico_City');
 
         $turno_id = $request->filled('turno_id')
-            ? (int)$request->turno_id
-            : (int)($this->getTurnoEnServicioId($now) ?? 0);
+            ? (int) $request->turno_id
+            : (int) ($this->getTurnoEnServicioId($now) ?? 0);
 
         if (empty($turno_id)) {
             return back()->with('error', 'No se pudo detectar el turno en servicio. Revisa service_schedules.');
@@ -59,8 +60,8 @@ class DailyReportController extends Controller
         $fecha_operativa = $this->getFechaOperativa($now);
         $fecha = $fecha_operativa->toDateString();
 
-        $tipo_reporte = $request->filled('tipo_reporte') ? (string)$request->tipo_reporte : 'ESTADO_FUERZA';
-        $notas = $request->filled('notas') ? (string)$request->notas : null;
+        $tipo_reporte = $request->filled('tipo_reporte') ? (string) $request->tipo_reporte : 'ESTADO_FUERZA';
+        $notas = $request->filled('notas') ? (string) $request->notas : null;
 
         $ya_existe = DailyReport::query()
             ->whereDate('fecha', $fecha)
@@ -83,7 +84,6 @@ class DailyReportController extends Controller
             ]);
 
             $estado_fuerza = $this->getEstadoDeFuerza($now, $turno_id);
-
             $orden = 1;
 
             foreach ($estado_fuerza['personals_laborando'] as $p) {
@@ -182,7 +182,7 @@ class DailyReportController extends Controller
             'total_filas' => $daily_report->rows->count(),
             'por_dependencia' => $daily_report->rows
                 ->groupBy('dependencia')
-                ->map(fn($items) => ['total' => $items->count()]),
+                ->map(fn ($items) => ['total' => $items->count()]),
         ];
 
         return view('daily_reports.show', compact('daily_report', 'totales'));
@@ -195,12 +195,17 @@ class DailyReportController extends Controller
             return app(ArmamentoExcelExporter::class)->download($daily_report, $dependencia);
         }
 
+        if ($tipo === 'excel_lista_personal') {
+            return app(ListaPersonalExcelExporter::class)->download($daily_report);
+        }
+
         return back()->with('error', 'Descarga "' . $tipo . '" todavía no implementada.');
     }
 
     private function getFechaOperativa(Carbon $now): Carbon
     {
         $corte = $now->copy()->setTime(7, 0, 0);
+
         return $now->lt($corte)
             ? $now->copy()->subDay()->startOfDay()
             : $now->copy()->startOfDay();
@@ -211,17 +216,58 @@ class DailyReportController extends Controller
         $schedules = ServiceSchedule::query()
             ->where('activo', 1)
             ->where('tipo', 'CICLICO')
-            ->orderByDesc('fecha_inicio_ciclo')
             ->get();
 
+        if ($schedules->isEmpty()) {
+            return null;
+        }
+
+        $turnos = Turno::query()
+            ->where('activo', 1)
+            ->get()
+            ->keyBy('id');
+
+        $conteoLaborando = [];
+
         foreach ($schedules as $sc) {
+            if (!$sc->turno_id) continue;
+
+            if (!isset($conteoLaborando[$sc->turno_id])) {
+                $conteoLaborando[$sc->turno_id] = 0;
+            }
+
             if ($this->estaLaborando($sc, $now)) {
-                return (int)$sc->turno_id;
+                $conteoLaborando[$sc->turno_id]++;
             }
         }
 
-        $fallback = $schedules->first();
-        return $fallback ? (int)$fallback->turno_id : null;
+        if (empty($conteoLaborando)) {
+            $fallback = $schedules->first();
+            return $fallback ? (int) $fallback->turno_id : null;
+        }
+
+        $mejorTurnoId = null;
+        $mejorConteo = -1;
+        $mejorPrioridad = -1;
+
+        foreach ($conteoLaborando as $turnoId => $cnt) {
+            $clave = strtoupper(trim((string)($turnos[$turnoId]->clave ?? '')));
+            $prioridad = 0;
+            if ($clave === 'A') $prioridad = 3;
+            elseif ($clave === 'B') $prioridad = 2;
+            elseif ($clave === 'MIXTO') $prioridad = 1;
+
+            if (
+                $cnt > $mejorConteo ||
+                ($cnt === $mejorConteo && $prioridad > $mejorPrioridad)
+            ) {
+                $mejorConteo = $cnt;
+                $mejorPrioridad = $prioridad;
+                $mejorTurnoId = (int) $turnoId;
+            }
+        }
+
+        return $mejorTurnoId;
     }
 
     private function getEstadoDeFuerza(Carbon $now, ?int $turno_id): array
@@ -265,7 +311,7 @@ class DailyReportController extends Controller
             ->groupBy('dependencia')
             ->map(function ($items) use ($laborando) {
                 $ids_laborando = $laborando->pluck('id')->flip();
-                $lab = $items->filter(fn($p) => $ids_laborando->has($p->id))->count();
+                $lab = $items->filter(fn ($p) => $ids_laborando->has($p->id))->count();
                 $des = $items->count() - $lab;
 
                 return [
@@ -291,8 +337,8 @@ class DailyReportController extends Controller
         $inicio = Carbon::parse($sc->fecha_inicio_ciclo, 'America/Mexico_City')->setTime(7, 0, 0);
         if ($now->lt($inicio)) return false;
 
-        $horas_trabajo = (int)$sc->horas_trabajo;
-        $horas_descanso = (int)$sc->horas_descanso;
+        $horas_trabajo = (int) $sc->horas_trabajo;
+        $horas_descanso = (int) $sc->horas_descanso;
 
         if ($horas_trabajo <= 0) return false;
         if ($horas_descanso < 0) $horas_descanso = 0;
@@ -328,7 +374,7 @@ class DailyReportController extends Controller
         $matricula_larga = null;
 
         foreach ($rows as $r) {
-            $tipo = strtoupper(trim((string)$r->tipo));
+            $tipo = strtoupper(trim((string) $r->tipo));
             if ($tipo === 'CORTA') {
                 $arma_corta = $r->marca_modelo ?: 'CORTA';
                 $matricula_corta = $r->matricula;

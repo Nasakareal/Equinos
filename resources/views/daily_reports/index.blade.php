@@ -46,24 +46,27 @@
                             <th><center>Turno</center></th>
                             <th><center>Generado por</center></th>
                             <th style="width:280px;"><center>Descarga Armamento</center></th>
+                            <th style="width:190px;"><center>Lista de Personal</center></th>
                             <th style="width:90px;"><center>Ver</center></th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($reportes as $r)
                             @php
-                                // Si NO traes rows en index, esto hará N+1.
-                                // Ideal: en el controller index() agrega withCount o un eager load básico.
-                                // Aquí lo dejamos simple, pero funcional.
                                 $deps = $r->rows()
                                     ->select('dependencia')
                                     ->whereNotNull('dependencia')
                                     ->where('dependencia','!=','')
+                                    ->where(function($q){
+                                        $q->whereNotNull('arma_corta')
+                                          ->orWhereNotNull('arma_larga');
+                                    })
                                     ->distinct()
                                     ->orderBy('dependencia')
                                     ->pluck('dependencia');
 
                                 $dep_default = $deps->first();
+                                $armamento_url_base = route('daily_reports.descargar', ['daily_report' => $r->id, 'tipo' => 'excel_armamento']);
                             @endphp
 
                             <tr>
@@ -81,21 +84,32 @@
                                                     {{ $d }}
                                                 </option>
                                             @empty
-                                                <option value="">Sin dependencia</option>
+                                                <option value="">Sin armamento</option>
                                             @endforelse
                                         </select>
 
                                         <a
-                                            href="{{ $deps->isEmpty()
-                                                ? '#'
-                                                : route('daily_reports.descargar', ['daily_report' => $r->id, 'tipo' => 'excel_armamento']) . '?dependencia=' . urlencode($dep_default)
-                                            }}"
+                                            href="{{ $deps->isEmpty() ? '#' : ($armamento_url_base . '?dependencia=' . urlencode($dep_default)) }}"
+                                            data-base="{{ $armamento_url_base }}"
                                             class="btn btn-success btn-sm js-btn-excel {{ $deps->isEmpty() ? 'disabled' : '' }}"
                                             title="Descargar Excel Armamento"
                                         >
                                             <i class="fa-solid fa-file-excel"></i>
                                         </a>
                                     </div>
+                                </td>
+
+                                <td>
+                                    <center>
+                                        <a
+                                            href="{{ route('daily_reports.descargar', ['daily_report' => $r->id, 'tipo' => 'excel_lista_personal']) }}"
+                                            class="btn btn-success btn-sm"
+                                            title="Descargar Lista de Personal"
+                                        >
+                                            <i class="fa-solid fa-file-excel"></i>
+                                            Lista
+                                        </a>
+                                    </center>
                                 </td>
 
                                 <td>
@@ -108,7 +122,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7"><center>Sin reportes todavía.</center></td>
+                                <td colspan="8"><center>Sin reportes todavía.</center></td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -128,14 +142,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const btn = tr.querySelector('.js-btn-excel');
         if (!sel || !btn) return;
 
-        const baseHref = btn.getAttribute('href');
-        if (!baseHref || baseHref === '#') return;
+        const base = btn.getAttribute('data-base');
+        if (!base) return;
 
-        sel.addEventListener('change', function () {
+        const setHref = function () {
             const dep = sel.value || '';
-            const clean = baseHref.split('?')[0];
-            btn.setAttribute('href', clean + '?dependencia=' + encodeURIComponent(dep));
-        });
+            btn.setAttribute('href', base + '?dependencia=' + encodeURIComponent(dep));
+        };
+
+        sel.addEventListener('change', setHref);
+        if (btn.getAttribute('href') !== '#') setHref();
     });
 });
 </script>

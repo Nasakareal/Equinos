@@ -3,15 +3,14 @@
     "",
     "\\app",
     "\\app\\Http",
-    "\\app\\Services",
-    "\\app\\Services\\DailyReports",
-    "\\app\\Services\\DailyReports\\Exporters",
-    "\\database",
-    "\\database\\seeders",
+    "\\app\\Http\\Controllers",
+    "\\app\\Models",
     "\\resources",
     "\\resources\\views",
-    "\\resources\\views\\personal"
+    "\\resources\\views\\daily_reports",
+    "\\resources\\views\\personal",
+    "\\routes"
   ],
-  "SelectedNode": "\\resources\\views\\personal\\index.blade.php",
+  "SelectedNode": "\\app\\Services\\DailyReports\\Exporters\\ListaPersonalExcelExporter.php",
   "PreviewInSolutionExplorer": false
 }

@@ -40,19 +40,16 @@
                 <div class="card-body">
                     <div class="row">
 
-                        <!-- Nombre -->
                         <div class="col-md-4">
                             <strong>Nombre completo</strong>
                             <p class="text-muted">{{ $personal->nombres }}</p>
                         </div>
 
-                        <!-- Grado -->
                         <div class="col-md-4">
                             <strong>Grado</strong>
                             <p class="text-muted">{{ $personal->grado ?? '—' }}</p>
                         </div>
 
-                        <!-- Cargo -->
                         <div class="col-md-4">
                             <strong>Cargo</strong>
                             <p class="text-muted">{{ $personal->cargo ?? '—' }}</p>
@@ -63,7 +60,6 @@
                     <hr>
 
                     <div class="row">
-                        <!-- Usuario -->
                         <div class="col-md-4">
                             <strong>Usuario del sistema</strong>
                             <p class="text-muted">
@@ -76,13 +72,11 @@
                             </p>
                         </div>
 
-                        <!-- No empleado -->
                         <div class="col-md-4">
                             <strong>No. empleado</strong>
                             <p class="text-muted">{{ $personal->no_empleado ?? '—' }}</p>
                         </div>
 
-                        <!-- Dependencia -->
                         <div class="col-md-4">
                             <strong>Dependencia</strong>
                             <p class="text-muted">{{ $personal->dependencia ?? '—' }}</p>
@@ -92,19 +86,16 @@
                     <hr>
 
                     <div class="row">
-                        <!-- CUIP -->
                         <div class="col-md-4">
                             <strong>CUIP</strong>
                             <p class="text-muted">{{ $personal->cuip ?? '—' }}</p>
                         </div>
 
-                        <!-- CRP -->
                         <div class="col-md-4">
                             <strong>CRP</strong>
                             <p class="text-muted">{{ $personal->crp ?? '—' }}</p>
                         </div>
 
-                        <!-- Celular -->
                         <div class="col-md-4">
                             <strong>Celular</strong>
                             <p class="text-muted">{{ $personal->celular ?? '—' }}</p>
@@ -114,13 +105,11 @@
                     <hr>
 
                     <div class="row">
-                        <!-- Área patrullaje -->
                         <div class="col-md-6">
                             <strong>Área de patrullaje</strong>
                             <p class="text-muted">{{ $personal->area_patrullaje ?? '—' }}</p>
                         </div>
 
-                        <!-- Responsable -->
                         <div class="col-md-3">
                             <strong>Responsable</strong>
                             <p class="text-muted">
@@ -132,7 +121,6 @@
                             </p>
                         </div>
 
-                        <!-- Activo -->
                         <div class="col-md-3">
                             <strong>Estatus</strong>
                             <p class="text-muted">
@@ -148,7 +136,6 @@
                     <hr>
 
                     <div class="row">
-                        <!-- Observaciones -->
                         <div class="col-md-12">
                             <strong>Observaciones</strong>
                             <p class="text-muted">
@@ -170,6 +157,75 @@
                             </a>
                         @endcan
                     </div>
+                </div>
+            </div>
+
+            <div class="card card-outline card-dark">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fa-solid fa-gun"></i> Armamento asignado
+                    </h3>
+                </div>
+
+                <div class="card-body">
+                    @if(isset($armasActivas) && $armasActivas->count())
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Matrícula</th>
+                                        <th>Estado</th>
+                                        <th>Fecha asignación</th>
+                                        <th>Observaciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($armasActivas as $a)
+                                        <tr>
+                                            <td>{{ $a->weapon->tipo ?? 'N/D' }}</td>
+                                            <td>{{ $a->weapon->matricula ?? 'N/D' }}</td>
+                                            <td>{{ $a->weapon->estado ?? 'N/D' }}</td>
+                                            <td>{{ optional($a->fecha_asignacion)->format('d/m/Y H:i') ?? 'N/D' }}</td>
+                                            <td>{{ $a->observaciones ?? '' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <span class="badge badge-secondary">Sin arma asignada</span>
+                    @endif
+
+                    @if(isset($historialArmamento) && $historialArmamento->count())
+                        <hr>
+                        <h5 class="mb-3"><i class="fa-solid fa-clock-rotate-left"></i> Historial</h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Matrícula</th>
+                                        <th>Status</th>
+                                        <th>Asignación</th>
+                                        <th>Devolución</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($historialArmamento as $a)
+                                        <tr>
+                                            <td>{{ $a->weapon->tipo ?? 'N/D' }}</td>
+                                            <td>{{ $a->weapon->matricula ?? 'N/D' }}</td>
+                                            <td>{{ $a->status ?? 'N/D' }}</td>
+                                            <td>{{ optional($a->fecha_asignacion)->format('d/m/Y H:i') ?? 'N/D' }}</td>
+                                            <td>{{ optional($a->fecha_devolucion)->format('d/m/Y H:i') ?? '---' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
                 </div>
             </div>
 

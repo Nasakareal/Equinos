@@ -7,7 +7,6 @@ use App\Models\Personal;
 use App\Models\ServiceSchedule;
 use App\Models\Turno;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
@@ -37,13 +36,19 @@ class ArmamentoExcelExporter
         $personals = Personal::query()
             ->where('activo', 1)
             ->where('dependencia', $dependencia)
-            ->orderByDesc('es_responsable')
+            ->whereHas('asignacionesArmamento', function ($q) {
+                $q->whereNull('fecha_devolucion')
+                  ->where('status', 'ASIGNADA')
+                  ->whereHas('weapon', function ($w) {
+                      $w->where('estado', 'ACTIVA');
+                  });
+            })
             ->orderBy('grado')
             ->orderBy('nombres')
             ->get();
 
         if ($personals->isEmpty()) {
-            return back()->with('error', 'No hay personal activo para esa dependencia.');
+            return back()->with('error', 'No hay personal activo con armamento asignado para esa dependencia.');
         }
 
         $turnoPorPersonal = ServiceSchedule::query()
@@ -60,12 +65,25 @@ class ArmamentoExcelExporter
             ->get()
             ->keyBy('id');
 
-        $encargados = $personals->where('es_responsable', 1)->values();
+        $esJefeAgrupamiento = function (Personal $p): bool {
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
+            return str_contains($cargo, 'ENCARGADO DE AGRUPAMIENTO');
+        };
+
+        $esEncargadoDeTurno = function (Personal $p): bool {
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
+            return str_contains($cargo, 'ENCARGADO TURNO');
+        };
+
+        $encargadosAgrupamiento = $personals->filter(fn($p) => $esJefeAgrupamiento($p))->values();
+        $encargadosTurno = $personals->filter(fn($p) => $esEncargadoDeTurno($p))->values();
+        $resto = $personals->reject(fn($p) => $esJefeAgrupamiento($p))->values();
+
         $grupoA = collect();
         $grupoB = collect();
         $grupoM = collect();
 
-        foreach ($personals->where('es_responsable', 0) as $p) {
+        foreach ($resto as $p) {
             $turno_id = $turnoPorPersonal->get($p->id)->turno_id ?? null;
             $clave = $turno_id ? ($turnos->get($turno_id)->clave ?? null) : null;
 
@@ -74,6 +92,10 @@ class ArmamentoExcelExporter
             elseif ($clave === 'MIXTO') $grupoM->push($p);
             else $grupoB->push($p);
         }
+
+        $grupoA = $this->ponerEncargadosDeTurnoAlInicio($grupoA, 'A');
+        $grupoB = $this->ponerEncargadosDeTurnoAlInicio($grupoB, 'B');
+        $grupoM = $this->ponerEncargadosDeTurnoAlInicio($grupoM, 'MIXTO');
 
         $turno_activo = strtoupper(trim($turno_clave));
         $forzar_franco_A = ($turno_activo === 'B');
@@ -123,7 +145,7 @@ class ArmamentoExcelExporter
         $row = $startRow + 1;
         $contador = 1;
 
-        foreach ($encargados as $enc) {
+        foreach ($encargadosAgrupamiento as $enc) {
             $sheet->setCellValue("A{$row}", $contador++);
             $sheet->setCellValue("B{$row}", $enc->grado);
             $sheet->setCellValue("C{$row}", $enc->nombres);
@@ -154,22 +176,16 @@ class ArmamentoExcelExporter
         $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $row++;
 
-        $nombreEncargado = $encargados->first()?->nombres ?? '';
+        $nombreEncargado = $encargadosAgrupamiento->first()?->nombres ?? '';
         $sheet->mergeCells("A{$row}:F{$row}");
         $sheet->setCellValue("A{$row}", $nombreEncargado ? ('CMTE. ' . $nombreEncargado) : '');
         $sheet->getStyle("A{$row}")->getFont()->setBold(true);
         $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        /* =========================
-           BORDES GENERALES
-        ========================== */
         $sheet->getStyle("A{$startRow}:F{$row}")
             ->getBorders()->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
 
-        /* =========================
-           FILAS SIN BORDES (43–46)
-        ========================== */
         foreach ([43, 44, 45, 46] as $r) {
             $sheet->getStyle("A{$r}:F{$r}")
                 ->getBorders()->getAllBorders()
@@ -182,8 +198,6 @@ class ArmamentoExcelExporter
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
     }
-
-    /* ======== helpers intactos ======== */
 
     private function styleHeaderRow($sheet, int $row): void
     {
@@ -253,5 +267,22 @@ class ArmamentoExcelExporter
         }
 
         return $row + 1;
+    }
+
+    private function ponerEncargadosDeTurnoAlInicio($grupo, string $claveTurno)
+    {
+        $claveTurnoUp = mb_strtoupper($claveTurno);
+
+        $enc = $grupo->filter(function ($p) use ($claveTurnoUp) {
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
+            return str_contains($cargo, 'ENCARGADO TURNO ' . $claveTurnoUp);
+        })->values();
+
+        $resto = $grupo->reject(function ($p) use ($claveTurnoUp) {
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
+            return str_contains($cargo, 'ENCARGADO TURNO ' . $claveTurnoUp);
+        })->values();
+
+        return $enc->concat($resto)->values();
     }
 }
