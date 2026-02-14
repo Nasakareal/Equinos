@@ -56,4 +56,14 @@ class Personal extends Model
     {
         return $this->hasMany(DailyReportRow::class, 'personal_id');
     }
+
+    public function patrolAssignments()
+    {
+        return $this->belongsToMany(
+            PatrolAssignment::class,
+            'patrol_assignment_personal',
+            'personal_id',
+            'patrol_assignment_id'
+        )->withPivot(['rol'])->withTimestamps();
+    }
 }

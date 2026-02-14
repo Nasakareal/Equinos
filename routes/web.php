@@ -15,6 +15,8 @@ use App\Http\Controllers\TurnoController;
 use App\Http\Controllers\TurnoHorarioController;
 use App\Http\Controllers\ServiceScheduleController;
 use App\Http\Controllers\DailyReportController;
+use App\Http\Controllers\PatrolController;
+use App\Http\Controllers\PatrolAssignmentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,6 +31,9 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin/settings')->middleware('can:ver configuraciones')->group(function () {
 
         Route::get('/', [SettingsController::class, 'index'])->name('settings.index');
+
+        Route::get('/turno-actual', [SettingsController::class, 'turnoActual'])->name('settings.turno_actual');
+        Route::post('/turno-actual', [SettingsController::class, 'updateTurnoActual'])->name('settings.turno_actual.update');
 
         Route::prefix('users')->middleware('can:ver usuarios')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('users.index');
@@ -51,7 +56,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/{role}/permissions', [RoleController::class, 'permissions'])->middleware('can:editar roles')->name('roles.permissions');
             Route::post('/{role}/permissions', [RoleController::class, 'assignPermissions'])->middleware('can:editar roles')->name('roles.assignPermissions');
         });
-
     });
 
     Route::prefix('personal')->middleware('can:ver personal')->group(function () {
@@ -140,6 +144,26 @@ Route::middleware('auth')->group(function () {
         Route::get('/{daily_report}', [DailyReportController::class, 'show'])->name('daily_reports.show');
         Route::get('/{daily_report}/descargar/{tipo}', [DailyReportController::class, 'descargar'])->middleware('can:ver reportes')->name('daily_reports.descargar');
         Route::get('/{daily_report}/descargar/excel-armamento', [DailyReportController::class, 'descargarExcelArmamento'])->middleware('can:ver reportes')->name('daily_reports.descargar.excel_armamento');
+    });
+
+    Route::prefix('patrullas')->middleware('can:ver turnos')->group(function () {
+        Route::get('/', [PatrolController::class, 'index'])->name('patrullas.index');
+        Route::get('/create', [PatrolController::class, 'create'])->middleware('can:editar turnos')->name('patrullas.create');
+        Route::post('/', [PatrolController::class, 'store'])->middleware('can:editar turnos')->name('patrullas.store');
+        Route::get('/{patrol}', [PatrolController::class, 'show'])->middleware('can:ver turnos')->name('patrullas.show');
+        Route::get('/{patrol}/edit', [PatrolController::class, 'edit'])->middleware('can:editar turnos')->name('patrullas.edit');
+        Route::put('/{patrol}', [PatrolController::class, 'update'])->middleware('can:editar turnos')->name('patrullas.update');
+        Route::delete('/{patrol}', [PatrolController::class, 'destroy'])->middleware('can:editar turnos')->name('patrullas.destroy');
+    });
+
+    Route::prefix('patrullas-asignaciones')->middleware('can:ver turnos')->group(function () {
+        Route::get('/', [PatrolAssignmentController::class, 'index'])->name('patrullas_asignaciones.index');
+        Route::get('/create', [PatrolAssignmentController::class, 'create'])->middleware('can:editar turnos')->name('patrullas_asignaciones.create');
+        Route::post('/', [PatrolAssignmentController::class, 'store'])->middleware('can:editar turnos')->name('patrullas_asignaciones.store');
+        Route::get('/{patrol_assignment}', [PatrolAssignmentController::class, 'show'])->middleware('can:ver turnos')->name('patrullas_asignaciones.show');
+        Route::get('/{patrol_assignment}/edit', [PatrolAssignmentController::class, 'edit'])->middleware('can:editar turnos')->name('patrullas_asignaciones.edit');
+        Route::put('/{patrol_assignment}', [PatrolAssignmentController::class, 'update'])->middleware('can:editar turnos')->name('patrullas_asignaciones.update');
+        Route::delete('/{patrol_assignment}', [PatrolAssignmentController::class, 'destroy'])->middleware('can:editar turnos')->name('patrullas_asignaciones.destroy');
     });
 
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');

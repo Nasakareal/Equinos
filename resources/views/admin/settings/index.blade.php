@@ -56,6 +56,23 @@
             </div>
         </div>
 
+        {{-- TURNO EN SERVICIO --}}
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="sv-card">
+                <div class="sv-card__icon bg-info">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <div class="sv-card__body">
+                    <div class="sv-card__title">Turno en servicio</div>
+                    <div class="sv-card__desc">Selecciona el turno que está laborando.</div>
+                    <a href="{{ url('/admin/settings/turno-actual') }}" class="btn sv-btn">
+                        <i class="fas fa-arrow-right"></i> Acceder
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
         {{-- ESTADISTICAS --}}
         <div class="col-md-3 col-sm-6 col-12">
             <div class="sv-card">

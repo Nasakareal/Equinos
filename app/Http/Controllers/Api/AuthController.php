@@ -10,38 +10,41 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email'    => ['required', 'email'],
-            'password' => ['required'],
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required'
         ]);
 
-        if (!Auth::attempt($credentials)) {
+        if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
                 'message' => 'Credenciales incorrectas'
             ], 401);
         }
 
-        $user = Auth::user();
+        $user = $request->user();
+
+        $token = $user->createToken('flutter-token')->plainTextToken;
 
         return response()->json([
-            'token' => $user->createToken('mobile')->plainTextToken,
-            'user'  => $user,
+            'message' => 'Login correcto',
+            'token'   => $token,
+            'user'    => $user
         ]);
     }
 
     public function me(Request $request)
     {
         return response()->json([
-            'user' => $request->user(),
+            'user' => $request->user()
         ]);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $request->user()->tokens()->delete();
 
         return response()->json([
-            'message' => 'Sesión cerrada',
+            'message' => 'Sesión cerrada correctamente'
         ]);
     }
 }

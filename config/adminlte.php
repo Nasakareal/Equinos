@@ -316,6 +316,43 @@ return [
         ],
 
         [
+            'text' => 'Patrullas',
+            'icon' => 'fa-solid fa-car',
+            'classes' => 'bg-info text-white',
+            'can' => 'ver turnos',
+            'submenu' => [
+                [
+                    'text' => 'Listado',
+                    'icon' => 'fa-solid fa-list',
+                    'classes' => 'text-white',
+                    'url' => 'patrullas',
+                    'can' => 'ver turnos',
+                ],
+                [
+                    'text' => 'Agregar',
+                    'icon' => 'fa-solid fa-plus',
+                    'classes' => 'text-white',
+                    'url' => 'patrullas/create',
+                    'can' => 'editar turnos',
+                ],
+                [
+                    'text' => 'Asignaciones diarias',
+                    'icon' => 'fa-solid fa-clipboard-list',
+                    'classes' => 'text-white',
+                    'url' => 'patrullas-asignaciones',
+                    'can' => 'ver turnos',
+                ],
+                [
+                    'text' => 'Nueva asignación',
+                    'icon' => 'fa-solid fa-plus',
+                    'classes' => 'text-white',
+                    'url' => 'patrullas-asignaciones/create',
+                    'can' => 'editar turnos',
+                ],
+            ],
+        ],
+
+        [
             'text' => 'Turnos y servicio',
             'icon' => 'fa-solid fa-calendar-days',
             'classes' => 'bg-secondary text-white',

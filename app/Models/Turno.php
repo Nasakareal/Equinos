@@ -21,4 +21,9 @@ class Turno extends Model
     protected $casts = [
         'activo' => 'boolean',
     ];
+
+    public function patrolAssignments()
+    {
+        return $this->hasMany(PatrolAssignment::class, 'turno_id');
+    }
 }

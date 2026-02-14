@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
         'name',
@@ -18,6 +20,7 @@ class User extends Authenticatable
         'estado',
         'foto_perfil',
         'area',
+        'foto_perfil',
     ];
 
     protected $hidden = [
@@ -42,5 +45,10 @@ class User extends Authenticatable
     public function reportesGenerados()
     {
         return $this->hasMany(DailyReport::class, 'generado_por');
+    }
+
+    public function patrolAssignmentsCreados()
+    {
+        return $this->hasMany(PatrolAssignment::class, 'created_by');
     }
 }

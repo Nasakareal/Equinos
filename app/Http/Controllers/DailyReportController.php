@@ -9,6 +9,7 @@ use App\Models\ServiceSchedule;
 use App\Models\Turno;
 use App\Services\DailyReports\Exporters\ArmamentoExcelExporter;
 use App\Services\DailyReports\Exporters\ListaPersonalExcelExporter;
+use App\Services\TurnoActual;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,8 +32,15 @@ class DailyReportController extends Controller
 
         $now = Carbon::now('America/Mexico_City');
         $fecha_operativa = $this->getFechaOperativa($now);
+
         $turno_en_servicio_id = $this->getTurnoEnServicioId($now);
-        $turnos = Turno::query()->orderBy('id')->get();
+
+        $turnos = Turno::query()
+            ->where('activo', 1)
+            ->whereIn('clave', ['A', 'B'])
+            ->orderBy('id')
+            ->get();
+
         $estado_fuerza = $this->getEstadoDeFuerza($now, $turno_en_servicio_id);
 
         return view('daily_reports.index', compact(
@@ -49,19 +57,33 @@ class DailyReportController extends Controller
     {
         $now = Carbon::now('America/Mexico_City');
 
+        $turnoAId = (int)(Turno::query()->where('clave', 'A')->value('id') ?: 0);
+        $turnoBId = (int)(Turno::query()->where('clave', 'B')->value('id') ?: 0);
+        $permitidos = array_values(array_filter([$turnoAId, $turnoBId], fn ($x) => (int)$x > 0));
+
+        if (empty($permitidos)) {
+            return back()->with('error', 'No existen turnos A/B.');
+        }
+
+        $request->validate([
+            'turno_id' => ['nullable', 'integer', 'in:' . implode(',', $permitidos)],
+            'tipo_reporte' => ['nullable', 'string', 'max:100'],
+            'notas' => ['nullable', 'string'],
+        ]);
+
         $turno_id = $request->filled('turno_id')
-            ? (int) $request->turno_id
-            : (int) ($this->getTurnoEnServicioId($now) ?? 0);
+            ? (int)$request->turno_id
+            : (int)($this->getTurnoEnServicioId($now) ?? 0);
 
         if (empty($turno_id)) {
-            return back()->with('error', 'No se pudo detectar el turno en servicio. Revisa service_schedules.');
+            return back()->with('error', 'No se pudo detectar el turno en servicio.');
         }
 
         $fecha_operativa = $this->getFechaOperativa($now);
         $fecha = $fecha_operativa->toDateString();
 
-        $tipo_reporte = $request->filled('tipo_reporte') ? (string) $request->tipo_reporte : 'ESTADO_FUERZA';
-        $notas = $request->filled('notas') ? (string) $request->notas : null;
+        $tipo_reporte = $request->filled('tipo_reporte') ? (string)$request->tipo_reporte : 'ESTADO_FUERZA';
+        $notas = $request->filled('notas') ? (string)$request->notas : null;
 
         $ya_existe = DailyReport::query()
             ->whereDate('fecha', $fecha)
@@ -213,61 +235,19 @@ class DailyReportController extends Controller
 
     private function getTurnoEnServicioId(Carbon $now): ?int
     {
-        $schedules = ServiceSchedule::query()
-            ->where('activo', 1)
-            ->where('tipo', 'CICLICO')
-            ->get();
+        $id = TurnoActual::getTurnoActualId();
 
-        if ($schedules->isEmpty()) {
-            return null;
+        if (empty($id)) {
+            TurnoActual::syncTurnoActualHoy();
+            $id = TurnoActual::getTurnoActualId();
         }
 
-        $turnos = Turno::query()
-            ->where('activo', 1)
-            ->get()
-            ->keyBy('id');
+        if (empty($id)) return null;
 
-        $conteoLaborando = [];
+        $clave = (string)(Turno::query()->where('id', (int)$id)->value('clave') ?: '');
+        if (!in_array($clave, ['A', 'B'], true)) return null;
 
-        foreach ($schedules as $sc) {
-            if (!$sc->turno_id) continue;
-
-            if (!isset($conteoLaborando[$sc->turno_id])) {
-                $conteoLaborando[$sc->turno_id] = 0;
-            }
-
-            if ($this->estaLaborando($sc, $now)) {
-                $conteoLaborando[$sc->turno_id]++;
-            }
-        }
-
-        if (empty($conteoLaborando)) {
-            $fallback = $schedules->first();
-            return $fallback ? (int) $fallback->turno_id : null;
-        }
-
-        $mejorTurnoId = null;
-        $mejorConteo = -1;
-        $mejorPrioridad = -1;
-
-        foreach ($conteoLaborando as $turnoId => $cnt) {
-            $clave = strtoupper(trim((string)($turnos[$turnoId]->clave ?? '')));
-            $prioridad = 0;
-            if ($clave === 'A') $prioridad = 3;
-            elseif ($clave === 'B') $prioridad = 2;
-            elseif ($clave === 'MIXTO') $prioridad = 1;
-
-            if (
-                $cnt > $mejorConteo ||
-                ($cnt === $mejorConteo && $prioridad > $mejorPrioridad)
-            ) {
-                $mejorConteo = $cnt;
-                $mejorPrioridad = $prioridad;
-                $mejorTurnoId = (int) $turnoId;
-            }
-        }
-
-        return $mejorTurnoId;
+        return (int)$id;
     }
 
     private function getEstadoDeFuerza(Carbon $now, ?int $turno_id): array
