@@ -24,86 +24,124 @@
 @section('content')
     <div class="row">
 
-        {{-- USUARIOS --}}
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-orange">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Usuarios</div>
-                    <div class="sv-card__desc">Alta, edición y control de accesos.</div>
-                    <a href="{{ url('/admin/settings/users') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        {{-- ROLES --}}
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-navy">
-                    <i class="fa-regular fa-flag"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Roles</div>
-                    <div class="sv-card__desc">Permisos, roles y asignaciones.</div>
-                    <a href="{{ url('/admin/settings/roles') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
+        @can('ver usuarios')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-orange">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Usuarios</div>
+                        <div class="sv-card__desc">Alta, edición y control de accesos.</div>
+                        <a href="{{ route('users.index') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endcan
 
-        {{-- TURNO EN SERVICIO --}}
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-info">
-                    <i class="fa-solid fa-clock"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Turno en servicio</div>
-                    <div class="sv-card__desc">Selecciona el turno que está laborando.</div>
-                    <a href="{{ url('/admin/settings/turno-actual') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
+        @can('ver roles')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-navy">
+                        <i class="fa-regular fa-flag"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Roles</div>
+                        <div class="sv-card__desc">Permisos, roles y asignaciones.</div>
+                        <a href="{{ route('roles.index') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endcan
 
-
-        {{-- ESTADISTICAS --}}
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-success">
-                    <i class="fa-solid fa-chart-pie"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Estadísticas</div>
-                    <div class="sv-card__desc">Reportes, exportaciones y análisis.</div>
-                    <a href="{{ url('/admin/settings/estadisticas') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
+        @can('ver areas')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-teal">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Áreas</div>
+                        <div class="sv-card__desc">Gestión de áreas (p. ej. Canina, Operativa, etc.).</div>
+                        <a href="{{ route('areas.index') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endcan
 
-        {{-- VACIAR BD --}}
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-danger">
-                    <i class="fa-solid fa-dumpster"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Vaciar Base de Datos</div>
-                    <div class="sv-card__desc">Herramienta de mantenimiento (con cuidado).</div>
-                    <a href="{{ url('/admin/vaciados') }}" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
+        @can('ver responsables')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-warning">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Responsables</div>
+                        <div class="sv-card__desc">Asignación de responsables por área/personal.</div>
+                        <a href="{{ route('responsables.index') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endcan
+
+        @can('ver configuraciones')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-info">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Turno en servicio</div>
+                        <div class="sv-card__desc">Selecciona el turno que está laborando.</div>
+                        <a href="{{ route('settings.turno_actual') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endcan
+
+        @can('ver estadisticas')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-success">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Estadísticas</div>
+                        <div class="sv-card__desc">Reportes, exportaciones y análisis.</div>
+                        <a href="{{ url('/admin/settings/estadisticas') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endcan
+
+        @can('ver vaciados')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-danger">
+                        <i class="fa-solid fa-dumpster"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Vaciar Base de Datos</div>
+                        <div class="sv-card__desc">Herramienta de mantenimiento (con cuidado).</div>
+                        <a href="{{ url('/admin/vaciados') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endcan
 
     </div>
 @stop
@@ -120,7 +158,6 @@
         --sv-radius: 22px;
     }
 
-    /* Hero */
     .sv-hero{
         margin: 10px 0 12px;
         border-radius: 26px;
@@ -164,7 +201,6 @@
         color: var(--sv-muted);
     }
 
-    /* Cards */
     .sv-card{
         display:flex;
         gap: 14px;

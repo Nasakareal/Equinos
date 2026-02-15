@@ -116,6 +116,25 @@ class TurnoActual
             ->toArray();
     }
 
+    public static function siempreVisiblesIds(): array
+    {
+        return \App\Models\Personal::query()
+            ->where('activo', 1)
+            ->where('siempre_visible', 1)
+            ->pluck('id')
+            ->unique()
+            ->values()
+            ->toArray();
+    }
+
+    public static function requeridosIds(): array
+    {
+        $ids = array_merge(self::laborandoIds(), self::siempreVisiblesIds());
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+        sort($ids);
+        return $ids;
+    }
+
     public static function turnoActual(): ?Turno
     {
         $id = self::getTurnoActualId();

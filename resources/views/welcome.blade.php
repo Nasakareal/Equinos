@@ -580,7 +580,6 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // contador suave para los números del hero
     (function(){
       const els = document.querySelectorAll('[data-count]');
       const easeOut = t => 1 - Math.pow(1 - t, 3);

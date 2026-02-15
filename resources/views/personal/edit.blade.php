@@ -1,5 +1,3 @@
-{{-- resources/views/personal/edit.blade.php --}}
-
 @extends('adminlte::page')
 
 @section('title', 'Editar Personal')
@@ -22,7 +20,6 @@
                         @method('PUT')
 
                         <div class="row">
-                            <!-- Usuario -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="user_id">Usuario del sistema</label>
@@ -41,7 +38,6 @@
                                 </div>
                             </div>
 
-                            <!-- Nombres -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="nombres">Nombre completo</label>
@@ -57,7 +53,6 @@
                                 </div>
                             </div>
 
-                            <!-- Grado -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="grado">Grado</label>
@@ -74,7 +69,6 @@
                         </div>
 
                         <div class="row">
-                            <!-- No empleado -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="no_empleado">No. empleado</label>
@@ -89,7 +83,6 @@
                                 </div>
                             </div>
 
-                            <!-- CUIP -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="cuip">CUIP</label>
@@ -104,7 +97,6 @@
                                 </div>
                             </div>
 
-                            <!-- CRP -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="crp">CRP</label>
@@ -121,7 +113,6 @@
                         </div>
 
                         <div class="row">
-                            <!-- Dependencia -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="dependencia">Dependencia</label>
@@ -136,7 +127,6 @@
                                 </div>
                             </div>
 
-                            <!-- Celular -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="celular">Celular</label>
@@ -151,7 +141,6 @@
                                 </div>
                             </div>
 
-                            <!-- Cargo -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="cargo">Cargo</label>
@@ -168,7 +157,6 @@
                         </div>
 
                         <div class="row">
-                            <!-- Área patrullaje -->
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="area_patrullaje">Área de patrullaje</label>
@@ -183,8 +171,7 @@
                                 </div>
                             </div>
 
-                            <!-- Responsable -->
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="es_responsable">¿Es responsable?</label>
                                     <div class="custom-control custom-checkbox mt-2">
@@ -199,8 +186,22 @@
                                 </div>
                             </div>
 
-                            <!-- Activo -->
-                            <div class="col-md-3">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="siempre_visible">Siempre visible</label>
+                                    <div class="custom-control custom-checkbox mt-2">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="siempre_visible"
+                                               name="siempre_visible"
+                                               value="1"
+                                               {{ old('siempre_visible', $personal->siempre_visible ?? 0) ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="siempre_visible">Sí</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="activo">Estatus</label>
                                     <div class="custom-control custom-checkbox mt-2">
@@ -217,7 +218,6 @@
                         </div>
 
                         <div class="row">
-                            <!-- Observaciones -->
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="observaciones">Observaciones</label>
@@ -234,9 +234,6 @@
 
                         <hr>
 
-                        {{-- =======================
-                             ASIGNACIÓN DE TURNO / SERVICIO (service_schedules)
-                             ======================= --}}
                         @php
                             $servicioActivo = $servicioActivo ?? null;
 
@@ -257,7 +254,6 @@
                                 </div>
                             </div>
 
-                            <!-- Activar/Desactivar servicio -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="servicio_activo">Servicio activo</label>
@@ -276,7 +272,6 @@
                                 </div>
                             </div>
 
-                            <!-- Turno -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="turno_id">Turno</label>
@@ -294,7 +289,6 @@
                                 </div>
                             </div>
 
-                            <!-- Tipo -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="tipo">Tipo</label>
@@ -307,11 +301,9 @@
                                     @error('tipo')
                                         <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                     @enderror
-                                    <small class="text-muted">Por ahora se maneja como CICLICO.</small>
                                 </div>
                             </div>
 
-                            <!-- Fecha inicio ciclo -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="fecha_inicio_ciclo">Inicio de ciclo</label>
@@ -328,7 +320,6 @@
                         </div>
 
                         <div class="row">
-                            <!-- Horas trabajo -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="horas_trabajo">Horas de trabajo</label>
@@ -345,7 +336,6 @@
                                 </div>
                             </div>
 
-                            <!-- Horas descanso -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="horas_descanso">Horas de descanso</label>
@@ -362,7 +352,6 @@
                                 </div>
                             </div>
 
-                            <!-- Observaciones del servicio -->
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="servicio_observaciones">Observaciones del servicio</label>
@@ -421,7 +410,6 @@
             });
         @endif
 
-        // UI simple: si desactivas servicio, deshabilita campos de turno
         (function(){
             const chk = document.getElementById('servicio_activo');
             const campos = [

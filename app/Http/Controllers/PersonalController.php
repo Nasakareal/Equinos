@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Personal;
 use App\Models\User;
 use App\Models\Turno;
+use App\Models\Area;
 use App\Models\ServiceSchedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,6 +28,7 @@ class PersonalController extends Controller
     {
         $personals = Personal::query()
             ->with('user')
+            ->with('area')
             ->orderBy('nombres')
             ->get();
 
@@ -39,7 +41,12 @@ class PersonalController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('personal.create', compact('users'));
+        $areas = Area::query()
+            ->where('activo', 1)
+            ->orderBy('nombre')
+            ->get();
+
+        return view('personal.create', compact('users', 'areas'));
     }
 
     private function normalizeText(?string $value): ?string
@@ -97,6 +104,7 @@ class PersonalController extends Controller
             ],
 
             'dependencia' => 'nullable|string|max:120',
+            'area_id' => 'nullable|exists:areas,id',
             'crp' => 'nullable|string|max:60',
 
             'celular' => [
@@ -135,6 +143,7 @@ class PersonalController extends Controller
                 'grado' => $validatedData['grado'] ?? null,
                 'nombres' => $validatedData['nombres'],
                 'dependencia' => $validatedData['dependencia'] ?? null,
+                'area_id' => $validatedData['area_id'] ?? null,
                 'crp' => $validatedData['crp'] ?? null,
                 'celular' => $validatedData['celular'] ?? null,
                 'cargo' => $validatedData['cargo'] ?? null,
@@ -157,6 +166,7 @@ class PersonalController extends Controller
     {
         $personal = Personal::query()
             ->with('user')
+            ->with('area')
             ->with(['servicios' => function ($q) {
                 $q->where('activo', 1)->latest('id');
             }])
@@ -182,6 +192,7 @@ class PersonalController extends Controller
     {
         $personal = Personal::query()
             ->with('user')
+            ->with('area')
             ->with(['servicios' => function ($q) {
                 $q->where('activo', 1)->latest('id');
             }])
@@ -190,9 +201,14 @@ class PersonalController extends Controller
         $users = User::query()->orderBy('name')->get();
         $turnos = Turno::query()->orderBy('id')->get();
 
+        $areas = Area::query()
+            ->where('activo', 1)
+            ->orderBy('nombre')
+            ->get();
+
         $servicioActivo = $personal->servicios->first();
 
-        return view('personal.edit', compact('personal', 'users', 'turnos', 'servicioActivo'));
+        return view('personal.edit', compact('personal', 'users', 'turnos', 'areas', 'servicioActivo'));
     }
 
     public function update(Request $request, $id)
@@ -233,6 +249,7 @@ class PersonalController extends Controller
             ],
 
             'dependencia' => 'nullable|string|max:120',
+            'area_id' => 'nullable|exists:areas,id',
             'crp' => 'nullable|string|max:60',
 
             'celular' => [
@@ -272,6 +289,7 @@ class PersonalController extends Controller
                 'grado' => $validatedData['grado'] ?? null,
                 'nombres' => $validatedData['nombres'],
                 'dependencia' => $validatedData['dependencia'] ?? null,
+                'area_id' => $validatedData['area_id'] ?? null,
                 'crp' => $validatedData['crp'] ?? null,
                 'celular' => $validatedData['celular'] ?? null,
                 'cargo' => $validatedData['cargo'] ?? null,

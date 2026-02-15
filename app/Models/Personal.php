@@ -18,10 +18,12 @@ class Personal extends Model
         'grado',
         'nombres',
         'dependencia',
+        'area_id',
         'crp',
         'celular',
         'cargo',
         'es_responsable',
+        'siempre_visible',
         'area_patrullaje',
         'observaciones',
         'activo',
@@ -29,12 +31,23 @@ class Personal extends Model
 
     protected $casts = [
         'es_responsable' => 'boolean',
+        'siempre_visible' => 'boolean',
         'activo' => 'boolean',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'area_id');
+    }
+
+    public function responsabilidades()
+    {
+        return $this->hasMany(Responsable::class, 'personal_id');
     }
 
     public function incidencias()

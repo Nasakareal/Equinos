@@ -17,6 +17,9 @@ use App\Http\Controllers\ServiceScheduleController;
 use App\Http\Controllers\DailyReportController;
 use App\Http\Controllers\PatrolController;
 use App\Http\Controllers\PatrolAssignmentController;
+use App\Http\Controllers\AreaController;
+use App\Http\Controllers\ResponsableController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,36 +30,6 @@ Auth::routes();
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::middleware('auth')->group(function () {
-
-    Route::prefix('admin/settings')->middleware('can:ver configuraciones')->group(function () {
-
-        Route::get('/', [SettingsController::class, 'index'])->name('settings.index');
-
-        Route::get('/turno-actual', [SettingsController::class, 'turnoActual'])->name('settings.turno_actual');
-        Route::post('/turno-actual', [SettingsController::class, 'updateTurnoActual'])->name('settings.turno_actual.update');
-
-        Route::prefix('users')->middleware('can:ver usuarios')->group(function () {
-            Route::get('/', [UserController::class, 'index'])->name('users.index');
-            Route::get('/create', [UserController::class, 'create'])->middleware('can:crear usuarios')->name('users.create');
-            Route::post('/', [UserController::class, 'store'])->middleware('can:crear usuarios')->name('users.store');
-            Route::get('/{user}', [UserController::class, 'show'])->middleware('can:ver usuarios')->name('users.show');
-            Route::get('/{user}/edit', [UserController::class, 'edit'])->middleware('can:editar usuarios')->name('users.edit');
-            Route::put('/{user}', [UserController::class, 'update'])->middleware('can:editar usuarios')->name('users.update');
-            Route::delete('/{user}', [UserController::class, 'destroy'])->middleware('can:eliminar usuarios')->name('users.destroy');
-        });
-
-        Route::prefix('roles')->middleware('can:ver roles')->group(function () {
-            Route::get('/', [RoleController::class, 'index'])->name('roles.index');
-            Route::get('/create', [RoleController::class, 'create'])->middleware('can:crear roles')->name('roles.create');
-            Route::post('/', [RoleController::class, 'store'])->middleware('can:crear roles')->name('roles.store');
-            Route::get('/{role}', [RoleController::class, 'show'])->middleware('can:ver roles')->name('roles.show');
-            Route::get('/{role}/edit', [RoleController::class, 'edit'])->middleware('can:editar roles')->name('roles.edit');
-            Route::put('/{role}', [RoleController::class, 'update'])->middleware('can:editar roles')->name('roles.update');
-            Route::delete('/{role}', [RoleController::class, 'destroy'])->middleware('can:eliminar roles')->name('roles.destroy');
-            Route::get('/{role}/permissions', [RoleController::class, 'permissions'])->middleware('can:editar roles')->name('roles.permissions');
-            Route::post('/{role}/permissions', [RoleController::class, 'assignPermissions'])->middleware('can:editar roles')->name('roles.assignPermissions');
-        });
-    });
 
     Route::prefix('personal')->middleware('can:ver personal')->group(function () {
         Route::get('/', [PersonalController::class, 'index'])->name('personal.index');
@@ -169,6 +142,54 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
     Route::get('/profile/password', [UserController::class, 'showChangePasswordForm'])->name('password.change');
     Route::post('/profile/password', [UserController::class, 'updatePassword'])->name('password.update');
+
+    Route::prefix('admin/settings')->middleware('can:ver configuraciones')->group(function () {
+
+        Route::get('/', [SettingsController::class, 'index'])->name('settings.index');
+
+        Route::get('/turno-actual', [SettingsController::class, 'turnoActual'])->name('settings.turno_actual');
+        Route::post('/turno-actual', [SettingsController::class, 'updateTurnoActual'])->name('settings.turno_actual.update');
+
+        Route::prefix('users')->middleware('can:ver usuarios')->group(function () {
+            Route::get('/', [UserController::class, 'index'])->name('users.index');
+            Route::get('/create', [UserController::class, 'create'])->middleware('can:crear usuarios')->name('users.create');
+            Route::post('/', [UserController::class, 'store'])->middleware('can:crear usuarios')->name('users.store');
+            Route::get('/{user}', [UserController::class, 'show'])->middleware('can:ver usuarios')->name('users.show');
+            Route::get('/{user}/edit', [UserController::class, 'edit'])->middleware('can:editar usuarios')->name('users.edit');
+            Route::put('/{user}', [UserController::class, 'update'])->middleware('can:editar usuarios')->name('users.update');
+            Route::delete('/{user}', [UserController::class, 'destroy'])->middleware('can:eliminar usuarios')->name('users.destroy');
+        });
+
+        Route::prefix('roles')->middleware('can:ver roles')->group(function () {
+            Route::get('/', [RoleController::class, 'index'])->name('roles.index');
+            Route::get('/create', [RoleController::class, 'create'])->middleware('can:crear roles')->name('roles.create');
+            Route::post('/', [RoleController::class, 'store'])->middleware('can:crear roles')->name('roles.store');
+            Route::get('/{role}', [RoleController::class, 'show'])->middleware('can:ver roles')->name('roles.show');
+            Route::get('/{role}/edit', [RoleController::class, 'edit'])->middleware('can:editar roles')->name('roles.edit');
+            Route::put('/{role}', [RoleController::class, 'update'])->middleware('can:editar roles')->name('roles.update');
+            Route::delete('/{role}', [RoleController::class, 'destroy'])->middleware('can:eliminar roles')->name('roles.destroy');
+            Route::get('/{role}/permissions', [RoleController::class, 'permissions'])->middleware('can:editar roles')->name('roles.permissions');
+            Route::post('/{role}/permissions', [RoleController::class, 'assignPermissions'])->middleware('can:editar roles')->name('roles.assignPermissions');
+        });
+
+        Route::prefix('areas')->middleware('can:ver areas')->group(function () {
+            Route::get('/', [AreaController::class, 'index'])->name('areas.index');
+            Route::get('/create', [AreaController::class, 'create'])->middleware('can:crear areas')->name('areas.create');
+            Route::post('/', [AreaController::class, 'store'])->middleware('can:crear areas')->name('areas.store');
+            Route::get('/{area}/edit', [AreaController::class, 'edit'])->middleware('can:editar areas')->name('areas.edit');
+            Route::put('/{area}', [AreaController::class, 'update'])->middleware('can:editar areas')->name('areas.update');
+            Route::delete('/{area}', [AreaController::class, 'destroy'])->middleware('can:eliminar areas')->name('areas.destroy');
+        });
+
+        Route::prefix('responsables')->middleware('can:ver responsables')->group(function () {
+            Route::get('/', [ResponsableController::class, 'index'])->name('responsables.index');
+            Route::get('/create', [ResponsableController::class, 'create'])->middleware('can:crear responsables')->name('responsables.create');
+            Route::post('/', [ResponsableController::class, 'store'])->middleware('can:crear responsables')->name('responsables.store');
+            Route::get('/{responsable}/edit', [ResponsableController::class, 'edit'])->middleware('can:editar responsables')->name('responsables.edit');
+            Route::put('/{responsable}', [ResponsableController::class, 'update'])->middleware('can:editar responsables')->name('responsables.update');
+            Route::delete('/{responsable}', [ResponsableController::class, 'destroy'])->middleware('can:eliminar responsables')->name('responsables.destroy');
+        });
+    });
 });
 
 Route::get('/prueba-404', function () {

@@ -20,7 +20,6 @@ class User extends Authenticatable
         'estado',
         'foto_perfil',
         'area',
-        'foto_perfil',
     ];
 
     protected $hidden = [

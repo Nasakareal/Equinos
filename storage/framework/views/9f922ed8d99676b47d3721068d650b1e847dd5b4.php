@@ -1,4 +1,5 @@
-<aside class="main-sidebar" style="background-color: #4682B4; color: #000;">
+<aside class="main-sidebar" style="background-color: #4682B4;">
+
 
 
     

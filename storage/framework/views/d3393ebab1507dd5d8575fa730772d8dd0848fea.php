@@ -22,86 +22,124 @@
 <?php $__env->startSection('content'); ?>
     <div class="row">
 
-        
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-orange">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Usuarios</div>
-                    <div class="sv-card__desc">Alta, edición y control de accesos.</div>
-                    <a href="<?php echo e(url('/admin/settings/users')); ?>" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-navy">
-                    <i class="fa-regular fa-flag"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Roles</div>
-                    <div class="sv-card__desc">Permisos, roles y asignaciones.</div>
-                    <a href="<?php echo e(url('/admin/settings/roles')); ?>" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver usuarios')): ?>
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-orange">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Usuarios</div>
+                        <div class="sv-card__desc">Alta, edición y control de accesos.</div>
+                        <a href="<?php echo e(route('users.index')); ?>" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        <?php endif; ?>
 
-        
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-info">
-                    <i class="fa-solid fa-clock"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Turno en servicio</div>
-                    <div class="sv-card__desc">Selecciona el turno que está laborando.</div>
-                    <a href="<?php echo e(url('/admin/settings/turno-actual')); ?>" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver roles')): ?>
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-navy">
+                        <i class="fa-regular fa-flag"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Roles</div>
+                        <div class="sv-card__desc">Permisos, roles y asignaciones.</div>
+                        <a href="<?php echo e(route('roles.index')); ?>" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        <?php endif; ?>
 
-
-        
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-success">
-                    <i class="fa-solid fa-chart-pie"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Estadísticas</div>
-                    <div class="sv-card__desc">Reportes, exportaciones y análisis.</div>
-                    <a href="<?php echo e(url('/admin/settings/estadisticas')); ?>" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver areas')): ?>
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-teal">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Áreas</div>
+                        <div class="sv-card__desc">Gestión de áreas (p. ej. Canina, Operativa, etc.).</div>
+                        <a href="<?php echo e(route('areas.index')); ?>" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        <?php endif; ?>
 
-        
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="sv-card">
-                <div class="sv-card__icon bg-danger">
-                    <i class="fa-solid fa-dumpster"></i>
-                </div>
-                <div class="sv-card__body">
-                    <div class="sv-card__title">Vaciar Base de Datos</div>
-                    <div class="sv-card__desc">Herramienta de mantenimiento (con cuidado).</div>
-                    <a href="<?php echo e(url('/admin/vaciados')); ?>" class="btn sv-btn">
-                        <i class="fas fa-arrow-right"></i> Acceder
-                    </a>
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver responsables')): ?>
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-warning">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Responsables</div>
+                        <div class="sv-card__desc">Asignación de responsables por área/personal.</div>
+                        <a href="<?php echo e(route('responsables.index')); ?>" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+        <?php endif; ?>
+
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver configuraciones')): ?>
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-info">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Turno en servicio</div>
+                        <div class="sv-card__desc">Selecciona el turno que está laborando.</div>
+                        <a href="<?php echo e(route('settings.turno_actual')); ?>" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver estadisticas')): ?>
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-success">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Estadísticas</div>
+                        <div class="sv-card__desc">Reportes, exportaciones y análisis.</div>
+                        <a href="<?php echo e(url('/admin/settings/estadisticas')); ?>" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver vaciados')): ?>
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-danger">
+                        <i class="fa-solid fa-dumpster"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Vaciar Base de Datos</div>
+                        <div class="sv-card__desc">Herramienta de mantenimiento (con cuidado).</div>
+                        <a href="<?php echo e(url('/admin/vaciados')); ?>" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
 
     </div>
 <?php $__env->stopSection(); ?>
@@ -118,7 +156,6 @@
         --sv-radius: 22px;
     }
 
-    /* Hero */
     .sv-hero{
         margin: 10px 0 12px;
         border-radius: 26px;
@@ -162,7 +199,6 @@
         color: var(--sv-muted);
     }
 
-    /* Cards */
     .sv-card{
         display:flex;
         gap: 14px;

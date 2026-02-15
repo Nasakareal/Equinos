@@ -21,7 +21,6 @@
                         @csrf
 
                         <div class="row">
-                            <!-- Usuario (opcional) -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="user_id">Usuario del sistema (opcional)</label>
@@ -40,7 +39,6 @@
                                 </div>
                             </div>
 
-                            <!-- Nombres -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="nombres">Nombre completo</label>
@@ -57,7 +55,6 @@
                                 </div>
                             </div>
 
-                            <!-- Grado -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="grado">Grado</label>
@@ -75,7 +72,6 @@
                         </div>
 
                         <div class="row">
-                            <!-- No empleado -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="no_empleado">No. empleado</label>
@@ -91,7 +87,6 @@
                                 </div>
                             </div>
 
-                            <!-- CUIP -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="cuip">CUIP</label>
@@ -107,7 +102,6 @@
                                 </div>
                             </div>
 
-                            <!-- CRP -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="crp">CRP</label>
@@ -125,7 +119,6 @@
                         </div>
 
                         <div class="row">
-                            <!-- Dependencia -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="dependencia">Dependencia</label>
@@ -141,7 +134,23 @@
                                 </div>
                             </div>
 
-                            <!-- Celular -->
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="area_id">Área</label>
+                                    <select name="area_id" id="area_id" class="form-control @error('area_id') is-invalid @enderror">
+                                        <option value="" selected>Sin área</option>
+                                        @foreach ($areas as $a)
+                                            <option value="{{ $a->id }}" {{ old('area_id') == $a->id ? 'selected' : '' }}>
+                                                {{ $a->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('area_id')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+                            </div>
+
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="celular">Celular</label>
@@ -157,8 +166,9 @@
                                     <small class="text-muted">Si quieres, luego lo validamos con máscara/regex sin romper tu controller.</small>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Cargo -->
+                        <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="cargo">Cargo</label>
@@ -173,11 +183,8 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="row">
-                            <!-- Área patrullaje -->
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="area_patrullaje">Área de patrullaje</label>
                                     <input type="text"
@@ -192,8 +199,7 @@
                                 </div>
                             </div>
 
-                            <!-- Responsable -->
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="es_responsable">¿Es responsable?</label>
                                     <div class="custom-control custom-checkbox mt-2">
@@ -211,8 +217,7 @@
                                 </div>
                             </div>
 
-                            <!-- Activo -->
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="activo">Estatus</label>
                                     <div class="custom-control custom-checkbox mt-2">
@@ -232,7 +237,6 @@
                         </div>
 
                         <div class="row">
-                            <!-- Observaciones -->
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="observaciones">Observaciones</label>

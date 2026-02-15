@@ -70,11 +70,27 @@ class RoleController extends Controller
     public function permissions($id)
     {
         $role = Role::findOrFail($id);
+
         $permissions = Permission::all();
         $rolePermissions = $role->permissions->pluck('id')->toArray();
 
-        return view('admin.settings.roles.permissions', compact('role', 'permissions', 'rolePermissions'));
+        $groupedPermissions = $permissions->groupBy(function ($perm) {
+            $name = trim($perm->name);
+            $parts = preg_split('/\s+/', $name, 2);
+
+            if (count($parts) < 2) return 'Otros';
+
+            return ucfirst($parts[1]);
+        });
+
+        return view('admin.settings.roles.permissions', compact(
+            'role',
+            'permissions',
+            'rolePermissions',
+            'groupedPermissions'
+        ));
     }
+
 
     public function assignPermissions(Request $request, $id)
     {

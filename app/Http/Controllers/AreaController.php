@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Area;
+use Illuminate\Http\Request;
+
+class AreaController extends Controller
+{
+
+    public function index()
+    {
+        $areas = Area::query()
+            ->orderBy('nombre')
+            ->get();
+
+        return view('admin.settings.areas.index', compact('areas'));
+    }
+
+    public function create()
+    {
+        return view('admin.settings.areas.create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'clave' => 'required|string|max:40|unique:areas,clave',
+            'nombre' => 'required|string|max:120',
+            'activo' => 'nullable|boolean',
+        ]);
+
+        Area::create([
+            'clave' => strtoupper(trim($validated['clave'])),
+            'nombre' => strtoupper(trim($validated['nombre'])),
+            'activo' => (bool) ($validated['activo'] ?? true),
+        ]);
+
+        return redirect()->route('areas.index')
+            ->with('success', 'Área creada correctamente.');
+    }
+
+    public function edit(Area $area)
+    {
+        return view('admin.settings.areas.edit', compact('area'));
+    }
+
+    public function update(Request $request, Area $area)
+    {
+        $validated = $request->validate([
+            'clave' => 'required|string|max:40|unique:areas,clave,' . $area->id,
+            'nombre' => 'required|string|max:120',
+            'activo' => 'nullable|boolean',
+        ]);
+
+        $area->update([
+            'clave' => strtoupper(trim($validated['clave'])),
+            'nombre' => strtoupper(trim($validated['nombre'])),
+            'activo' => (bool) ($validated['activo'] ?? true),
+        ]);
+
+        return redirect()->route('areas.index')
+            ->with('success', 'Área actualizada correctamente.');
+    }
+
+    public function destroy(Area $area)
+    {
+        $area->delete();
+
+        return redirect()->route('areas.index')
+            ->with('success', 'Área eliminada correctamente.');
+    }
+}
