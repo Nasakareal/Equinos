@@ -19,6 +19,8 @@ use App\Http\Controllers\PatrolController;
 use App\Http\Controllers\PatrolAssignmentController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\ResponsableController;
+use App\Http\Controllers\PersonalHorarioController;
+use App\Http\Controllers\PersonalHorarioDetalleController;
 
 
 Route::get('/', function () {
@@ -39,7 +41,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/{personal}/edit', [PersonalController::class, 'edit'])->middleware('can:editar personal')->name('personal.edit');
         Route::put('/{personal}', [PersonalController::class, 'update'])->middleware('can:editar personal')->name('personal.update');
         Route::delete('/{personal}', [PersonalController::class, 'destroy'])->middleware('can:eliminar personal')->name('personal.destroy');
+
+        Route::get('/{personal}/horario', [PersonalHorarioController::class, 'edit'])->middleware('can:editar personal')->name('personal.horario.edit');
+        Route::post('/{personal}/horario', [PersonalHorarioController::class, 'store'])->middleware('can:editar personal')->name('personal.horario.store');
+
+        Route::post('/{personal}/horario/{personal_horario}/detalles', [PersonalHorarioDetalleController::class, 'store'])->middleware('can:editar personal')->name('personal.horario_detalles.store');
+        Route::put('/{personal}/horario/{personal_horario}/detalles/{detalle}', [PersonalHorarioDetalleController::class, 'update'])->middleware('can:editar personal')->name('personal.horario_detalles.update');
+        Route::delete('/{personal}/horario/{personal_horario}/detalles/{detalle}', [PersonalHorarioDetalleController::class, 'destroy'])->middleware('can:editar personal')->name('personal.horario_detalles.destroy');
     });
+
 
     Route::prefix('armamento')->middleware('can:ver armamento')->group(function () {
         Route::get('/', [WeaponController::class, 'index'])->name('armamento.index');

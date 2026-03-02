@@ -1,7 +1,5 @@
 
 
-
-
 <?php $__env->startSection('title', 'Editar Personal'); ?>
 
 <?php $__env->startSection('content_header'); ?>
@@ -22,7 +20,6 @@
                         <?php echo method_field('PUT'); ?>
 
                         <div class="row">
-                            <!-- Usuario -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="user_id">Usuario del sistema</label>
@@ -36,8 +33,7 @@ endif;
 unset($__errorArgs, $__bag); ?>">
                                         <option value="">Sin usuario</option>
                                         <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $u): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($u->id); ?>"
-                                                <?php echo e(old('user_id', $personal->user_id) == $u->id ? 'selected' : ''); ?>>
+                                            <option value="<?php echo e($u->id); ?>" <?php echo e(old('user_id', $personal->user_id) == $u->id ? 'selected' : ''); ?>>
                                                 <?php echo e($u->name); ?> (<?php echo e($u->email); ?>)
                                             </option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -55,7 +51,6 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            <!-- Nombres -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="nombres">Nombre completo</label>
@@ -85,7 +80,6 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            <!-- Grado -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="grado">Grado</label>
@@ -116,7 +110,6 @@ unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <div class="row">
-                            <!-- No empleado -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="no_empleado">No. empleado</label>
@@ -145,7 +138,6 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            <!-- CUIP -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="cuip">CUIP</label>
@@ -174,7 +166,6 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            <!-- CRP -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="crp">CRP</label>
@@ -205,7 +196,6 @@ unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <div class="row">
-                            <!-- Dependencia -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="dependencia">Dependencia</label>
@@ -234,7 +224,72 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            <!-- Celular -->
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="area_id">Área</label>
+                                    <select name="area_id" id="area_id" class="form-control <?php $__errorArgs = ['area_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                                        <option value="">Sin área</option>
+                                        <?php $__currentLoopData = $areas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $a): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($a->id); ?>" <?php echo e(old('area_id', $personal->area_id) == $a->id ? 'selected' : ''); ?>>
+                                                <?php echo e($a->nombre); ?>
+
+                                            </option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                    <?php $__errorArgs = ['area_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <span class="invalid-feedback" role="alert"><strong><?php echo e($message); ?></strong></span>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="turno_id">Turno</label>
+                                    <select name="turno_id" id="turno_id" class="form-control <?php $__errorArgs = ['turno_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                                        <option value="">Sin turno</option>
+                                        <?php $__currentLoopData = $turnos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($t->id); ?>" <?php echo e((string)old('turno_id', $personal->turno_id) === (string)$t->id ? 'selected' : ''); ?>>
+                                                <?php echo e($t->clave); ?> - <?php echo e($t->nombre); ?>
+
+                                            </option>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </select>
+                                    <?php $__errorArgs = ['turno_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <span class="invalid-feedback" role="alert"><strong><?php echo e($message); ?></strong></span>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="celular">Celular</label>
@@ -263,7 +318,6 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            <!-- Cargo -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="cargo">Cargo</label>
@@ -291,11 +345,8 @@ endif;
 unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="row">
-                            <!-- Área patrullaje -->
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="area_patrullaje">Área de patrullaje</label>
                                     <input type="text"
@@ -322,9 +373,10 @@ endif;
 unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Responsable -->
-                            <div class="col-md-3">
+                        <div class="row">
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="es_responsable">¿Es responsable?</label>
                                     <div class="custom-control custom-checkbox mt-2">
@@ -336,11 +388,45 @@ unset($__errorArgs, $__bag); ?>
                                                <?php echo e(old('es_responsable', $personal->es_responsable) ? 'checked' : ''); ?>>
                                         <label class="custom-control-label" for="es_responsable">Sí</label>
                                     </div>
+                                    <?php $__errorArgs = ['es_responsable'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <span class="invalid-feedback d-block" role="alert"><strong><?php echo e($message); ?></strong></span>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            <!-- Activo -->
-                            <div class="col-md-3">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="siempre_visible">Siempre visible</label>
+                                    <div class="custom-control custom-checkbox mt-2">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="siempre_visible"
+                                               name="siempre_visible"
+                                               value="1"
+                                               <?php echo e(old('siempre_visible', $personal->siempre_visible ?? 0) ? 'checked' : ''); ?>>
+                                        <label class="custom-control-label" for="siempre_visible">Sí</label>
+                                    </div>
+                                    <?php $__errorArgs = ['siempre_visible'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <span class="invalid-feedback d-block" role="alert"><strong><?php echo e($message); ?></strong></span>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="activo">Estatus</label>
                                     <div class="custom-control custom-checkbox mt-2">
@@ -352,12 +438,23 @@ unset($__errorArgs, $__bag); ?>
                                                <?php echo e(old('activo', $personal->activo) ? 'checked' : ''); ?>>
                                         <label class="custom-control-label" for="activo">Activo</label>
                                     </div>
+                                    <?php $__errorArgs = ['activo'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <span class="invalid-feedback d-block" role="alert"><strong><?php echo e($message); ?></strong></span>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
+
+                            <div class="col-md-6"></div>
                         </div>
 
                         <div class="row">
-                            <!-- Observaciones -->
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="observaciones">Observaciones</label>
@@ -388,12 +485,10 @@ unset($__errorArgs, $__bag); ?>
 
                         <hr>
 
-                        
                         <?php
                             $servicioActivo = $servicioActivo ?? null;
 
                             $servicio_activo_val = old('servicio_activo', $servicioActivo ? (int)$servicioActivo->activo : 0);
-                            $turno_id_val = old('turno_id', $servicioActivo->turno_id ?? '');
                             $tipo_val = old('tipo', $servicioActivo->tipo ?? 'CICLICO');
                             $fecha_inicio_ciclo_val = old('fecha_inicio_ciclo', $servicioActivo->fecha_inicio_ciclo ?? now()->toDateString());
                             $horas_trabajo_val = old('horas_trabajo', $servicioActivo->horas_trabajo ?? 24);
@@ -405,11 +500,10 @@ unset($__errorArgs, $__bag); ?>
                             <div class="col-md-12">
                                 <div class="alert alert-info mb-2">
                                     <i class="fa-solid fa-circle-info"></i>
-                                    Aquí asignas el turno del personal (se guarda en <b>service_schedules</b>, no en <b>personals</b>).
+                                    Configuración del servicio (se guarda en <b>service_schedules</b>).
                                 </div>
                             </div>
 
-                            <!-- Activar/Desactivar servicio -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="servicio_activo">Servicio activo</label>
@@ -435,40 +529,6 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            <!-- Turno -->
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="turno_id">Turno</label>
-                                    <select name="turno_id" id="turno_id" class="form-control <?php $__errorArgs = ['turno_id'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>">
-                                        <option value="">Seleccione...</option>
-                                        <?php $__currentLoopData = $turnos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($t->id); ?>" <?php echo e((string)$turno_id_val === (string)$t->id ? 'selected' : ''); ?>>
-                                                <?php echo e($t->nombre ?? ('TURNO #' . $t->id)); ?>
-
-                                            </option>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </select>
-                                    <?php $__errorArgs = ['turno_id'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                        <span class="invalid-feedback" role="alert"><strong><?php echo e($message); ?></strong></span>
-                                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                                </div>
-                            </div>
-
-                            <!-- Tipo -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="tipo">Tipo</label>
@@ -495,11 +555,9 @@ $message = $__bag->first($__errorArgs[0]); ?>
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                                    <small class="text-muted">Por ahora se maneja como CICLICO.</small>
                                 </div>
                             </div>
 
-                            <!-- Fecha inicio ciclo -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="fecha_inicio_ciclo">Inicio de ciclo</label>
@@ -527,10 +585,11 @@ endif;
 unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
+
+                            <div class="col-md-3"></div>
                         </div>
 
                         <div class="row">
-                            <!-- Horas trabajo -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="horas_trabajo">Horas de trabajo</label>
@@ -561,7 +620,6 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            <!-- Horas descanso -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="horas_descanso">Horas de descanso</label>
@@ -592,7 +650,6 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            <!-- Observaciones del servicio -->
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="servicio_observaciones">Observaciones del servicio</label>
@@ -665,11 +722,10 @@ unset($__errorArgs, $__bag); ?>
             });
         <?php endif; ?>
 
-        // UI simple: si desactivas servicio, deshabilita campos de turno
         (function(){
             const chk = document.getElementById('servicio_activo');
             const campos = [
-                'turno_id','fecha_inicio_ciclo','horas_trabajo','horas_descanso','servicio_observaciones'
+                'fecha_inicio_ciclo','horas_trabajo','horas_descanso','servicio_observaciones'
             ].map(id => document.getElementById(id)).filter(Boolean);
 
             function sync(){

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Personal;
-use App\Models\User;
-use App\Models\Turno;
 use App\Models\Area;
+use App\Models\Personal;
 use App\Models\ServiceSchedule;
+use App\Models\Turno;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -29,6 +29,7 @@ class PersonalController extends Controller
         $personals = Personal::query()
             ->with('user')
             ->with('area')
+            ->with('turno')
             ->orderBy('nombres')
             ->get();
 
@@ -37,16 +38,19 @@ class PersonalController extends Controller
 
     public function create()
     {
-        $users = User::query()
-            ->orderBy('name')
-            ->get();
+        $users = User::query()->orderBy('name')->get();
 
         $areas = Area::query()
             ->where('activo', 1)
             ->orderBy('nombre')
             ->get();
 
-        return view('personal.create', compact('users', 'areas'));
+        $turnos = Turno::query()
+            ->where('activo', 1)
+            ->orderBy('id')
+            ->get();
+
+        return view('personal.create', compact('users', 'areas', 'turnos'));
     }
 
     private function normalizeText(?string $value): ?string
@@ -105,6 +109,7 @@ class PersonalController extends Controller
 
             'dependencia' => 'nullable|string|max:120',
             'area_id' => 'nullable|exists:areas,id',
+            'turno_id' => 'nullable|exists:turnos,id',
             'crp' => 'nullable|string|max:60',
 
             'celular' => [
@@ -123,6 +128,7 @@ class PersonalController extends Controller
 
             'cargo' => 'nullable|string|max:160',
             'es_responsable' => 'nullable|boolean',
+            'siempre_visible' => 'nullable|boolean',
             'area_patrullaje' => 'nullable|string|max:180',
             'observaciones' => 'nullable|string|max:1000',
             'activo' => 'nullable|boolean',
@@ -144,10 +150,12 @@ class PersonalController extends Controller
                 'nombres' => $validatedData['nombres'],
                 'dependencia' => $validatedData['dependencia'] ?? null,
                 'area_id' => $validatedData['area_id'] ?? null,
+                'turno_id' => $validatedData['turno_id'] ?? null,
                 'crp' => $validatedData['crp'] ?? null,
                 'celular' => $validatedData['celular'] ?? null,
                 'cargo' => $validatedData['cargo'] ?? null,
                 'es_responsable' => (bool) ($validatedData['es_responsable'] ?? false),
+                'siempre_visible' => (bool) ($validatedData['siempre_visible'] ?? false),
                 'area_patrullaje' => $validatedData['area_patrullaje'] ?? null,
                 'observaciones' => $validatedData['observaciones'] ?? null,
                 'activo' => (bool) ($validatedData['activo'] ?? true),
@@ -167,15 +175,38 @@ class PersonalController extends Controller
         $personal = Personal::query()
             ->with('user')
             ->with('area')
+            ->with('turno')
             ->with(['servicios' => function ($q) {
                 $q->where('activo', 1)->latest('id');
             }])
             ->with(['asignacionesArmamento' => function ($q) {
                 $q->with('weapon')
-                  ->orderByDesc('fecha_asignacion')
-                  ->orderByDesc('id');
+                    ->orderByDesc('fecha_asignacion')
+                    ->orderByDesc('id');
             }])
             ->findOrFail($id);
+
+        $horario = \App\Models\PersonalHorario::query()
+            ->where('personal_id', $personal->id)
+            ->where('activo', 1)
+            ->with(['detalles' => function ($q) {
+                $q->orderBy('dia_semana')->orderBy('hora_entrada');
+            }])
+            ->first();
+
+        if (!$horario) {
+            $horario = \App\Models\PersonalHorario::create([
+                'personal_id' => $personal->id,
+                'activo' => 1,
+                'nombre' => 'HORARIO MIXTO',
+                'fecha_inicio' => now()->toDateString(),
+                'fecha_fin' => null,
+            ]);
+
+            $horario->load(['detalles' => function ($q) {
+                $q->orderBy('dia_semana')->orderBy('hora_entrada');
+            }]);
+        }
 
         $armasActivas = $personal->asignacionesArmamento
             ->filter(function ($a) {
@@ -185,7 +216,7 @@ class PersonalController extends Controller
 
         $historialArmamento = $personal->asignacionesArmamento;
 
-        return view('personal.show', compact('personal', 'armasActivas', 'historialArmamento'));
+        return view('personal.show', compact('personal', 'armasActivas', 'historialArmamento', 'horario'));
     }
 
     public function edit($id)
@@ -193,13 +224,18 @@ class PersonalController extends Controller
         $personal = Personal::query()
             ->with('user')
             ->with('area')
+            ->with('turno')
             ->with(['servicios' => function ($q) {
                 $q->where('activo', 1)->latest('id');
             }])
             ->findOrFail($id);
 
         $users = User::query()->orderBy('name')->get();
-        $turnos = Turno::query()->orderBy('id')->get();
+
+        $turnos = Turno::query()
+            ->where('activo', 1)
+            ->orderBy('id')
+            ->get();
 
         $areas = Area::query()
             ->where('activo', 1)
@@ -250,6 +286,7 @@ class PersonalController extends Controller
 
             'dependencia' => 'nullable|string|max:120',
             'area_id' => 'nullable|exists:areas,id',
+            'turno_id' => 'nullable|exists:turnos,id',
             'crp' => 'nullable|string|max:60',
 
             'celular' => [
@@ -261,11 +298,11 @@ class PersonalController extends Controller
 
             'cargo' => 'nullable|string|max:160',
             'es_responsable' => 'nullable|boolean',
+            'siempre_visible' => 'nullable|boolean',
             'area_patrullaje' => 'nullable|string|max:180',
             'observaciones' => 'nullable|string|max:1000',
             'activo' => 'nullable|boolean',
 
-            'turno_id' => 'nullable|exists:turnos,id',
             'servicio_activo' => 'nullable|boolean',
             'tipo' => 'nullable|string|max:20',
             'fecha_inicio_ciclo' => 'nullable|date',
@@ -290,10 +327,12 @@ class PersonalController extends Controller
                 'nombres' => $validatedData['nombres'],
                 'dependencia' => $validatedData['dependencia'] ?? null,
                 'area_id' => $validatedData['area_id'] ?? null,
+                'turno_id' => $validatedData['turno_id'] ?? null,
                 'crp' => $validatedData['crp'] ?? null,
                 'celular' => $validatedData['celular'] ?? null,
                 'cargo' => $validatedData['cargo'] ?? null,
                 'es_responsable' => (bool) ($validatedData['es_responsable'] ?? false),
+                'siempre_visible' => (bool) ($validatedData['siempre_visible'] ?? false),
                 'area_patrullaje' => $validatedData['area_patrullaje'] ?? null,
                 'observaciones' => $validatedData['observaciones'] ?? null,
                 'activo' => (bool) ($validatedData['activo'] ?? true),
@@ -330,17 +369,10 @@ class PersonalController extends Controller
                     $tipo = $validatedData['tipo'] ?? ($servicioActual->tipo ?? 'CICLICO');
                     $horas_trabajo = (int) ($validatedData['horas_trabajo'] ?? ($servicioActual->horas_trabajo ?? 24));
                     $horas_descanso = (int) ($validatedData['horas_descanso'] ?? ($servicioActual->horas_descanso ?? 24));
-                    $turno_id = $validatedData['turno_id'] ?? ($servicioActual->turno_id ?? null);
-
-                    if (!$servicioActual && $turno_id === null) {
-                        return redirect()->back()
-                            ->withErrors('Selecciona un turno para activar el servicio.')
-                            ->withInput();
-                    }
 
                     if ($servicioActual) {
                         $servicioActual->update([
-                            'turno_id' => $turno_id,
+                            'turno_id' => $personal->turno_id,
                             'tipo' => $tipo,
                             'fecha_inicio_ciclo' => $fecha_inicio_ciclo,
                             'horas_trabajo' => $horas_trabajo,
@@ -349,9 +381,15 @@ class PersonalController extends Controller
                             'observaciones' => $validatedData['servicio_observaciones'] ?? $servicioActual->observaciones,
                         ]);
                     } else {
+                        if ($personal->turno_id === null) {
+                            return redirect()->back()
+                                ->withErrors('Selecciona un turno para activar el servicio.')
+                                ->withInput();
+                        }
+
                         ServiceSchedule::create([
                             'personal_id' => $personal->id,
-                            'turno_id' => $turno_id,
+                            'turno_id' => $personal->turno_id,
                             'tipo' => $tipo,
                             'fecha_inicio_ciclo' => $fecha_inicio_ciclo,
                             'horas_trabajo' => $horas_trabajo,

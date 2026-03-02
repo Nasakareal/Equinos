@@ -60,6 +60,22 @@
                                                     </a>
                                                 @endcan
 
+                                                @can('editar personal')
+                                                    @php
+                                                        $turnoClave = strtoupper((string)($personal->turno->clave ?? ''));
+                                                        $turnoNombre = strtoupper((string)($personal->turno->nombre ?? ''));
+                                                        $esMixto = ($turnoClave === 'MIXTO') || ($turnoNombre === 'MIXTO');
+                                                    @endphp
+
+                                                    @if ($esMixto)
+                                                        <a href="{{ route('personal.horario.edit', $personal->id) }}"
+                                                           class="btn btn-warning btn-sm"
+                                                           title="Configurar horario">
+                                                            <i class="fa-solid fa-clock"></i>
+                                                        </a>
+                                                    @endif
+                                                @endcan
+
                                                 @can('eliminar personal')
                                                     <form action="{{ url('/personal/' . $personal->id) }}" method="POST" style="display:inline-block;">
                                                         @csrf

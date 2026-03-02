@@ -1,5 +1,3 @@
-{{-- resources/views/personal/show.blade.php --}}
-
 @extends('adminlte::page')
 
 @section('title', 'Detalle de Personal')
@@ -156,6 +154,102 @@
                                 <i class="fa-solid fa-pen-to-square"></i> Editar
                             </a>
                         @endcan
+                    </div>
+                </div>
+            </div>
+
+            @php
+                $dias = [
+                    0 => 'Lunes',
+                    1 => 'Martes',
+                    2 => 'Miércoles',
+                    3 => 'Jueves',
+                    4 => 'Viernes',
+                    5 => 'Sábado',
+                    6 => 'Domingo',
+                ];
+
+                $horariosPorDia = [];
+
+                if (isset($horario) && isset($horario->detalles) && is_iterable($horario->detalles)) {
+                    foreach ($horario->detalles as $h) {
+                        $k = (int)($h->dia_semana ?? -1);
+                        if (!isset($horariosPorDia[$k])) $horariosPorDia[$k] = [];
+                        $horariosPorDia[$k][] = $h;
+                    }
+                }
+
+                foreach ($horariosPorDia as $k => $arr) {
+                    usort($arr, function ($a, $b) {
+                        return strcmp((string)($a->hora_entrada ?? ''), (string)($b->hora_entrada ?? ''));
+                    });
+                    $horariosPorDia[$k] = $arr;
+                }
+            @endphp
+
+            <div class="card card-outline card-primary">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h3 class="card-title">
+                        <i class="fa-regular fa-clock"></i> Horario
+                    </h3>
+
+                    @can('editar personal')
+                        <a href="{{ route('personal.horario.edit', $personal->id) }}" class="btn btn-primary btn-sm">
+                            <i class="fa-regular fa-clock"></i> Configurar
+                        </a>
+                    @endcan
+                </div>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-sm w-100">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th style="width: 140px; text-align:center;">Día</th>
+                                    <th>Tramos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($dias as $diaKey => $diaLabel)
+                                    @php
+                                        $tramos = $horariosPorDia[$diaKey] ?? [];
+                                    @endphp
+                                    <tr>
+                                        <td class="text-center font-weight-bold align-middle">{{ $diaLabel }}</td>
+                                        <td class="align-middle">
+                                            @if (count($tramos) === 0)
+                                                <span class="badge badge-secondary">Sin tramos</span>
+                                            @else
+                                                <div class="d-flex flex-wrap" style="gap:10px;">
+                                                    @foreach ($tramos as $t)
+                                                        @php
+                                                            $hi = substr((string)($t->hora_entrada ?? ''), 0, 5);
+                                                            $hf = substr((string)($t->hora_salida ?? ''), 0, 5);
+                                                            $tb = trim((string)($t->bloque ?? ''));
+                                                        @endphp
+                                                        <div class="border rounded px-2 py-1">
+                                                            <div class="font-weight-bold">
+                                                                {{ $hi }} - {{ $hf }}
+                                                                @if (!empty($t->cruza_dia))
+                                                                    <span class="badge badge-warning">Cruza día</span>
+                                                                @endif
+                                                                @if ($tb !== '')
+                                                                    <span class="badge badge-info">{{ $tb }}</span>
+                                                                @endif
+                                                            </div>
+
+                                                            @if (!empty($t->notas))
+                                                                <div class="text-muted small">{{ $t->notas }}</div>
+                                                            @endif
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

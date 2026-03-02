@@ -1,7 +1,5 @@
 
 
-
-
 <?php $__env->startSection('title', 'Detalle de Personal'); ?>
 
 <?php $__env->startSection('content_header'); ?>
@@ -157,6 +155,103 @@
                                 <i class="fa-solid fa-pen-to-square"></i> Editar
                             </a>
                         <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <?php
+                $dias = [
+                    0 => 'Lunes',
+                    1 => 'Martes',
+                    2 => 'Miércoles',
+                    3 => 'Jueves',
+                    4 => 'Viernes',
+                    5 => 'Sábado',
+                    6 => 'Domingo',
+                ];
+
+                $horariosPorDia = [];
+
+                if (isset($horario) && isset($horario->detalles) && is_iterable($horario->detalles)) {
+                    foreach ($horario->detalles as $h) {
+                        $k = (int)($h->dia_semana ?? -1);
+                        if (!isset($horariosPorDia[$k])) $horariosPorDia[$k] = [];
+                        $horariosPorDia[$k][] = $h;
+                    }
+                }
+
+                foreach ($horariosPorDia as $k => $arr) {
+                    usort($arr, function ($a, $b) {
+                        return strcmp((string)($a->hora_entrada ?? ''), (string)($b->hora_entrada ?? ''));
+                    });
+                    $horariosPorDia[$k] = $arr;
+                }
+            ?>
+
+            <div class="card card-outline card-primary">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h3 class="card-title">
+                        <i class="fa-regular fa-clock"></i> Horario
+                    </h3>
+
+                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('editar personal')): ?>
+                        <a href="<?php echo e(route('personal.horario.edit', $personal->id)); ?>" class="btn btn-primary btn-sm">
+                            <i class="fa-regular fa-clock"></i> Configurar
+                        </a>
+                    <?php endif; ?>
+                </div>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-sm w-100">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th style="width: 140px; text-align:center;">Día</th>
+                                    <th>Tramos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $__currentLoopData = $dias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $diaKey => $diaLabel): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php
+                                        $tramos = $horariosPorDia[$diaKey] ?? [];
+                                    ?>
+                                    <tr>
+                                        <td class="text-center font-weight-bold align-middle"><?php echo e($diaLabel); ?></td>
+                                        <td class="align-middle">
+                                            <?php if(count($tramos) === 0): ?>
+                                                <span class="badge badge-secondary">Sin tramos</span>
+                                            <?php else: ?>
+                                                <div class="d-flex flex-wrap" style="gap:10px;">
+                                                    <?php $__currentLoopData = $tramos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <?php
+                                                            $hi = substr((string)($t->hora_entrada ?? ''), 0, 5);
+                                                            $hf = substr((string)($t->hora_salida ?? ''), 0, 5);
+                                                            $tb = trim((string)($t->bloque ?? ''));
+                                                        ?>
+                                                        <div class="border rounded px-2 py-1">
+                                                            <div class="font-weight-bold">
+                                                                <?php echo e($hi); ?> - <?php echo e($hf); ?>
+
+                                                                <?php if(!empty($t->cruza_dia)): ?>
+                                                                    <span class="badge badge-warning">Cruza día</span>
+                                                                <?php endif; ?>
+                                                                <?php if($tb !== ''): ?>
+                                                                    <span class="badge badge-info"><?php echo e($tb); ?></span>
+                                                                <?php endif; ?>
+                                                            </div>
+
+                                                            <?php if(!empty($t->notas)): ?>
+                                                                <div class="text-muted small"><?php echo e($t->notas); ?></div>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

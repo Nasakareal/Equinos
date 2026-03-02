@@ -8,10 +8,12 @@ class TurnoResolver
 {
     public static function turnoQueLabora(string $fechaYmd, int $turnoAId, int $turnoBId, string $inicioSemanaA): int
     {
-        $fecha = Carbon::parse($fechaYmd)->startOfDay();
-        $base  = Carbon::parse($inicioSemanaA)->startOfDay();
+        $tz = 'America/Mexico_City';
 
-        $semanas = $base->diffInWeeks($fecha, false);
+        $fecha = Carbon::parse($fechaYmd, $tz)->startOfDay();
+        $base  = Carbon::parse($inicioSemanaA, $tz)->startOfDay()->startOfWeek(Carbon::MONDAY);
+
+        $semanas = $base->diffInWeeks($fecha->copy()->startOfWeek(Carbon::MONDAY), false);
         $paridadPar = (abs($semanas) % 2) === 0;
 
         $dia = (int) $fecha->dayOfWeekIso;

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Personal extends Model
 {
@@ -19,6 +19,7 @@ class Personal extends Model
         'nombres',
         'dependencia',
         'area_id',
+        'turno_id',
         'crp',
         'celular',
         'cargo',
@@ -33,6 +34,7 @@ class Personal extends Model
         'es_responsable' => 'boolean',
         'siempre_visible' => 'boolean',
         'activo' => 'boolean',
+        'turno_id' => 'integer',
     ];
 
     public function user()
@@ -43,6 +45,11 @@ class Personal extends Model
     public function area()
     {
         return $this->belongsTo(Area::class, 'area_id');
+    }
+
+    public function turno()
+    {
+        return $this->belongsTo(Turno::class, 'turno_id');
     }
 
     public function responsabilidades()
@@ -58,6 +65,11 @@ class Personal extends Model
     public function servicios()
     {
         return $this->hasMany(ServiceSchedule::class, 'personal_id');
+    }
+
+    public function servicioActivo()
+    {
+        return $this->hasOne(ServiceSchedule::class, 'personal_id')->where('activo', 1)->latestOfMany();
     }
 
     public function asignacionesArmamento()
@@ -78,5 +90,39 @@ class Personal extends Model
             'personal_id',
             'patrol_assignment_id'
         )->withPivot(['rol'])->withTimestamps();
+    }
+
+    public function horariosPersonales()
+    {
+        return $this->hasMany(PersonalHorario::class, 'personal_id');
+    }
+
+    public function horarioPersonalActivo()
+    {
+        return $this->hasOne(PersonalHorario::class, 'personal_id')->where('activo', 1)->latestOfMany();
+    }
+
+    public function detallesHorarioPersonal()
+    {
+        return $this->hasManyThrough(
+            PersonalHorarioDetalle::class,
+            PersonalHorario::class,
+            'personal_id',
+            'personal_horario_id',
+            'id',
+            'id'
+        );
+    }
+
+    public function detallesHorarioPersonalActivo()
+    {
+        return $this->hasManyThrough(
+            PersonalHorarioDetalle::class,
+            PersonalHorario::class,
+            'personal_id',
+            'personal_horario_id',
+            'id',
+            'id'
+        )->where('personal_horarios.activo', 1);
     }
 }

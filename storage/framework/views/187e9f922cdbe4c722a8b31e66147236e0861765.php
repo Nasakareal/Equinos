@@ -60,6 +60,22 @@
                                                     </a>
                                                 <?php endif; ?>
 
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('editar personal')): ?>
+                                                    <?php
+                                                        $turnoClave = strtoupper((string)($personal->turno->clave ?? ''));
+                                                        $turnoNombre = strtoupper((string)($personal->turno->nombre ?? ''));
+                                                        $esMixto = ($turnoClave === 'MIXTO') || ($turnoNombre === 'MIXTO');
+                                                    ?>
+
+                                                    <?php if($esMixto): ?>
+                                                        <a href="<?php echo e(route('personal.horario.edit', $personal->id)); ?>"
+                                                           class="btn btn-warning btn-sm"
+                                                           title="Configurar horario">
+                                                            <i class="fa-solid fa-clock"></i>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+
                                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('eliminar personal')): ?>
                                                     <form action="<?php echo e(url('/personal/' . $personal->id)); ?>" method="POST" style="display:inline-block;">
                                                         <?php echo csrf_field(); ?>

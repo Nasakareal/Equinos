@@ -26,8 +26,7 @@
                                     <select name="user_id" id="user_id" class="form-control @error('user_id') is-invalid @enderror">
                                         <option value="">Sin usuario</option>
                                         @foreach ($users as $u)
-                                            <option value="{{ $u->id }}"
-                                                {{ old('user_id', $personal->user_id) == $u->id ? 'selected' : '' }}>
+                                            <option value="{{ $u->id }}" {{ old('user_id', $personal->user_id) == $u->id ? 'selected' : '' }}>
                                                 {{ $u->name }} ({{ $u->email }})
                                             </option>
                                         @endforeach
@@ -129,6 +128,42 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
+                                    <label for="area_id">Área</label>
+                                    <select name="area_id" id="area_id" class="form-control @error('area_id') is-invalid @enderror">
+                                        <option value="">Sin área</option>
+                                        @foreach ($areas as $a)
+                                            <option value="{{ $a->id }}" {{ old('area_id', $personal->area_id) == $a->id ? 'selected' : '' }}>
+                                                {{ $a->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('area_id')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="turno_id">Turno</label>
+                                    <select name="turno_id" id="turno_id" class="form-control @error('turno_id') is-invalid @enderror">
+                                        <option value="">Sin turno</option>
+                                        @foreach($turnos as $t)
+                                            <option value="{{ $t->id }}" {{ (string)old('turno_id', $personal->turno_id) === (string)$t->id ? 'selected' : '' }}>
+                                                {{ $t->clave }} - {{ $t->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('turno_id')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
                                     <label for="celular">Celular</label>
                                     <input type="text"
                                            name="celular"
@@ -154,10 +189,8 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="area_patrullaje">Área de patrullaje</label>
                                     <input type="text"
@@ -170,7 +203,9 @@
                                     @enderror
                                 </div>
                             </div>
+                        </div>
 
+                        <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="es_responsable">¿Es responsable?</label>
@@ -183,6 +218,9 @@
                                                {{ old('es_responsable', $personal->es_responsable) ? 'checked' : '' }}>
                                         <label class="custom-control-label" for="es_responsable">Sí</label>
                                     </div>
+                                    @error('es_responsable')
+                                        <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -198,6 +236,9 @@
                                                {{ old('siempre_visible', $personal->siempre_visible ?? 0) ? 'checked' : '' }}>
                                         <label class="custom-control-label" for="siempre_visible">Sí</label>
                                     </div>
+                                    @error('siempre_visible')
+                                        <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -213,8 +254,13 @@
                                                {{ old('activo', $personal->activo) ? 'checked' : '' }}>
                                         <label class="custom-control-label" for="activo">Activo</label>
                                     </div>
+                                    @error('activo')
+                                        <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
                                 </div>
                             </div>
+
+                            <div class="col-md-6"></div>
                         </div>
 
                         <div class="row">
@@ -238,7 +284,6 @@
                             $servicioActivo = $servicioActivo ?? null;
 
                             $servicio_activo_val = old('servicio_activo', $servicioActivo ? (int)$servicioActivo->activo : 0);
-                            $turno_id_val = old('turno_id', $servicioActivo->turno_id ?? '');
                             $tipo_val = old('tipo', $servicioActivo->tipo ?? 'CICLICO');
                             $fecha_inicio_ciclo_val = old('fecha_inicio_ciclo', $servicioActivo->fecha_inicio_ciclo ?? now()->toDateString());
                             $horas_trabajo_val = old('horas_trabajo', $servicioActivo->horas_trabajo ?? 24);
@@ -250,7 +295,7 @@
                             <div class="col-md-12">
                                 <div class="alert alert-info mb-2">
                                     <i class="fa-solid fa-circle-info"></i>
-                                    Aquí asignas el turno del personal (se guarda en <b>service_schedules</b>, no en <b>personals</b>).
+                                    Configuración del servicio (se guarda en <b>service_schedules</b>).
                                 </div>
                             </div>
 
@@ -268,23 +313,6 @@
                                     </div>
                                     @error('servicio_activo')
                                         <span class="text-danger"><small>{{ $message }}</small></span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="turno_id">Turno</label>
-                                    <select name="turno_id" id="turno_id" class="form-control @error('turno_id') is-invalid @enderror">
-                                        <option value="">Seleccione...</option>
-                                        @foreach($turnos as $t)
-                                            <option value="{{ $t->id }}" {{ (string)$turno_id_val === (string)$t->id ? 'selected' : '' }}>
-                                                {{ $t->nombre ?? ('TURNO #' . $t->id) }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('turno_id')
-                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                     @enderror
                                 </div>
                             </div>
@@ -317,6 +345,8 @@
                                     @enderror
                                 </div>
                             </div>
+
+                            <div class="col-md-3"></div>
                         </div>
 
                         <div class="row">
@@ -413,7 +443,7 @@
         (function(){
             const chk = document.getElementById('servicio_activo');
             const campos = [
-                'turno_id','fecha_inicio_ciclo','horas_trabajo','horas_descanso','servicio_observaciones'
+                'fecha_inicio_ciclo','horas_trabajo','horas_descanso','servicio_observaciones'
             ].map(id => document.getElementById(id)).filter(Boolean);
 
             function sync(){

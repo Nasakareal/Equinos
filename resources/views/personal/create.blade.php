@@ -1,5 +1,3 @@
-{{-- resources/views/personal/create.blade.php --}}
-
 @extends('adminlte::page')
 
 @section('title', 'Crear Personal')
@@ -153,6 +151,26 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
+                                    <label for="turno_id">Turno</label>
+                                    <select name="turno_id" id="turno_id" class="form-control @error('turno_id') is-invalid @enderror">
+                                        <option value="" selected>Sin turno</option>
+                                        @foreach ($turnos as $t)
+                                            <option value="{{ $t->id }}" {{ old('turno_id') == $t->id ? 'selected' : '' }}>
+                                                {{ $t->clave }} - {{ $t->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('turno_id')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                    <small class="text-muted">Si seleccionas MIXTO, el horario se definirá por persona.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
                                     <label for="celular">Celular</label>
                                     <input type="text"
                                            name="celular"
@@ -163,12 +181,9 @@
                                     @error('celular')
                                         <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                     @enderror
-                                    <small class="text-muted">Si quieres, luego lo validamos con máscara/regex sin romper tu controller.</small>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="cargo">Cargo</label>
@@ -198,8 +213,10 @@
                                     @enderror
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-md-2">
+                        <div class="row">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="es_responsable">¿Es responsable?</label>
                                     <div class="custom-control custom-checkbox mt-2">
@@ -217,7 +234,25 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="siempre_visible">Siempre visible</label>
+                                    <div class="custom-control custom-checkbox mt-2">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="siempre_visible"
+                                               name="siempre_visible"
+                                               value="1"
+                                               {{ old('siempre_visible') ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="siempre_visible">Sí</label>
+                                    </div>
+                                    @error('siempre_visible')
+                                        <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="activo">Estatus</label>
                                     <div class="custom-control custom-checkbox mt-2">
@@ -234,6 +269,8 @@
                                     @enderror
                                 </div>
                             </div>
+
+                            <div class="col-md-3"></div>
                         </div>
 
                         <div class="row">

@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\app",
+    "\\app\\Services"
   ],
+  "SelectedNode": "\\app\\Services\\TurnoResolver.php",
   "PreviewInSolutionExplorer": false
 }
