@@ -2,10 +2,8 @@
   "ExpandedNodes": [
     "",
     "\\resources",
-    "\\resources\\views",
-    "\\resources\\views\\animales",
-    "\\resources\\views\\personal"
+    "\\resources\\views"
   ],
-  "SelectedNode": "\\resources\\views\\animales\\edit.blade.php",
+  "SelectedNode": "\\resources\\views\\verde",
   "PreviewInSolutionExplorer": false
 }
