@@ -198,6 +198,7 @@
                                         <th>Veterinario</th>
                                         <th>Costo</th>
                                         <th>Próxima</th>
+                                        <th>Archivos</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -210,6 +211,19 @@
                                             <td><?php echo e($r->veterinario ?? '-'); ?></td>
                                             <td><?php echo e($r->costo ?? '-'); ?></td>
                                             <td><?php echo e($r->proxima_cita ? \Carbon\Carbon::parse($r->proxima_cita)->format('d/m/Y') : '-'); ?></td>
+                                            <td>
+                                                <?php if(($r->files ?? collect())->count()): ?>
+                                                    <?php $__currentLoopData = $r->files; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $f): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <div class="mb-1">
+                                                            <a href="<?php echo e(Storage::url($f->archivo)); ?>" target="_blank">
+                                                                <i class="fas fa-file"></i> Ver
+                                                            </a>
+                                                        </div>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                <?php else: ?>
+                                                    <span class="text-muted">Sin archivos</span>
+                                                <?php endif; ?>
+                                            </td>
                                             <td>
                                                 <div class="btn-group">
 
@@ -234,7 +248,7 @@
                                         </tr>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                         <tr>
-                                            <td colspan="6" class="text-center">Sin registros médicos</td>
+                                            <td colspan="7" class="text-center">Sin registros médicos</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -373,6 +387,66 @@
     </div>
 </div>
 
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('css'); ?>
+<style>
+
+input.form-control,
+textarea.form-control,
+select.form-control {
+    background-color: #1f2d3d !important;
+    color: #ffffff !important;
+    border: 1px solid #3c4b64 !important;
+}
+
+input.form-control:focus,
+textarea.form-control:focus,
+select.form-control:focus {
+    background-color: #25364a !important;
+    color: #ffffff !important;
+    border-color: #6f42c1 !important;
+    box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25) !important;
+}
+
+select.form-control option {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+::placeholder {
+    color: #b8c7ce !important;
+    opacity: 1;
+}
+
+label {
+    color: #d2d6de;
+    font-weight: 600;
+}
+
+.btn-purple {
+    background: linear-gradient(135deg, #6f42c1, #4e2a8e) !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    padding: 8px 18px;
+    box-shadow: 0 4px 10px rgba(111, 66, 193, 0.35);
+    transition: all 0.25s ease-in-out;
+}
+
+.btn-purple:hover {
+    background: linear-gradient(135deg, #5a32a3, #3d1f73) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(111, 66, 193, 0.45);
+}
+
+.btn-purple:focus,
+.btn-purple:active {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.4) !important;
+}
+
+</style>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('js'); ?>

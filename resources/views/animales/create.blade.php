@@ -281,9 +281,6 @@
 @section('css')
 <style>
 
-/* ============================= */
-/* FORM CONTROLS (solo inputs)   */
-/* ============================= */
 input.form-control,
 textarea.form-control,
 select.form-control {
@@ -301,27 +298,21 @@ select.form-control:focus {
     box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25) !important;
 }
 
-/* Opciones desplegadas */
 select.form-control option {
     background-color: #ffffff !important;
     color: #000000 !important;
 }
 
-/* Placeholder */
 ::placeholder {
     color: #b8c7ce !important;
     opacity: 1;
 }
 
-/* Labels */
 label {
     color: #d2d6de;
     font-weight: 600;
 }
 
-/* ============================= */
-/* BOTÓN GUARDAR VISIBLE         */
-/* ============================= */
 .btn-purple {
     background: linear-gradient(135deg, #6f42c1, #4e2a8e) !important;
     border: none !important;

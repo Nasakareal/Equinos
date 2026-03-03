@@ -37,12 +37,13 @@ class AnimalMedicalRecordController extends Controller
 
         AnimalMedicalRecord::create($validated);
 
-        return redirect()->route('animales.medico.index', $animal)
+        return redirect()->route('animales.show', $animal->id)
             ->with('success', 'Registro médico agregado');
     }
 
     public function edit(Animal $animal, AnimalMedicalRecord $record)
     {
+        $record->load('files');
         return view('animales.medico.edit', compact('animal', 'record'));
     }
 
@@ -59,7 +60,7 @@ class AnimalMedicalRecordController extends Controller
 
         $record->update($validated);
 
-        return redirect()->route('animales.medico.index', $animal)
+        return redirect()->route('animales.show', $animal->id)
             ->with('success', 'Registro médico actualizado');
     }
 
@@ -67,7 +68,7 @@ class AnimalMedicalRecordController extends Controller
     {
         $record->delete();
 
-        return redirect()->route('animales.medico.index', $animal)
+        return redirect()->route('animales.show', $animal->id)
             ->with('success', 'Registro médico eliminado');
     }
 }

@@ -1,10 +1,16 @@
 {
   "ExpandedNodes": [
     "",
+    "\\app",
+    "\\app\\Http",
+    "\\app\\Http\\Controllers",
+    "\\app\\Models",
     "\\resources",
     "\\resources\\views",
-    "\\resources\\views\\verde"
+    "\\resources\\views\\animales",
+    "\\resources\\views\\animales\\medico",
+    "\\routes"
   ],
-  "SelectedNode": "\\resources\\views\\verde\\puta madre",
+  "SelectedNode": "\\app\\Http\\Controllers\\AnimalMedicalFileController.php",
   "PreviewInSolutionExplorer": false
 }

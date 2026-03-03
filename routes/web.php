@@ -84,6 +84,18 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{record}', [AnimalMedicalRecordController::class, 'destroy'])->middleware('can:editar animales')->name('animales.medico.destroy');
         });
 
+        // Archivos de registros médicos
+        Route::prefix('{animal}/historial-medico/{record}/archivos')->group(function () {
+            Route::post('/', [AnimalMedicalFileController::class, 'store'])
+                ->middleware('can:editar animales')
+                ->name('animales.medico.files.store');
+        });
+
+        // Eliminar archivo (no ocupa {animal} en la URL, solo el file por ID)
+        Route::delete('historial-medico/archivos/{file}', [AnimalMedicalFileController::class, 'destroy'])
+            ->middleware('can:editar animales')
+            ->name('animales.medico.files.destroy');
+
         Route::prefix('{animal}/incidencias')->group(function () {
             Route::get('/', [AnimalIncidenceController::class, 'index'])->name('animales.incidencias.index');
             Route::get('/create', [AnimalIncidenceController::class, 'create'])->middleware('can:crear incidencias')->name('animales.incidencias.create');
