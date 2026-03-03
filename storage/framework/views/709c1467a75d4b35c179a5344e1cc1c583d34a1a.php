@@ -11,25 +11,11 @@
     <div class="col-md-12">
         <div class="card card-outline card-primary">
             <div class="card-header">
-                <h3 class="card-title">Historial</h3>
-
-                <div class="card-tools d-flex" style="gap:8px;">
-                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('crear reportes')): ?>
-                        <form action="<?php echo e(route('daily_reports.generar')); ?>" method="POST" style="display:inline;">
-                            <?php echo csrf_field(); ?>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fa-solid fa-file-circle-plus"></i> Generar hoy
-                            </button>
-                        </form>
-                    <?php endif; ?>
-
-                    <a href="<?php echo e(route('daily_reports.index')); ?>" class="btn btn-outline-secondary">
-                        <i class="fa-solid fa-rotate"></i> Refrescar
-                    </a>
-                </div>
+                <h3 class="card-title">Descargas</h3>
             </div>
 
             <div class="card-body">
+
                 <?php if(session('success')): ?>
                     <div class="alert alert-success mb-2"><?php echo e(session('success')); ?></div>
                 <?php endif; ?>
@@ -37,125 +23,98 @@
                     <div class="alert alert-danger mb-2"><?php echo e(session('error')); ?></div>
                 <?php endif; ?>
 
-                <table class="table table-striped table-bordered table-hover table-sm">
-                    <thead>
-                        <tr>
-                            <th><center>#</center></th>
-                            <th><center>Fecha</center></th>
-                            <th><center>Tipo</center></th>
-                            <th><center>Turno</center></th>
-                            <th><center>Generado por</center></th>
-                            <th style="width:280px;"><center>Descarga Armamento</center></th>
-                            <th style="width:190px;"><center>Lista de Personal</center></th>
-                            <th style="width:90px;"><center>Ver</center></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php $__empty_1 = true; $__currentLoopData = $reportes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                            <?php
-                                $deps = $r->rows()
-                                    ->select('dependencia')
-                                    ->whereNotNull('dependencia')
-                                    ->where('dependencia','!=','')
-                                    ->where(function($q){
-                                        $q->whereNotNull('arma_corta')
-                                          ->orWhereNotNull('arma_larga');
-                                    })
-                                    ->distinct()
-                                    ->orderBy('dependencia')
-                                    ->pluck('dependencia');
+                <form method="GET" action="<?php echo e(route('daily_reports.index')); ?>" class="mb-3">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Fecha</label>
+                            <input type="date" name="fecha" value="<?php echo e($fecha); ?>" class="form-control">
+                        </div>
 
-                                $dep_default = $deps->first();
-                                $armamento_url_base = route('daily_reports.descargar', ['daily_report' => $r->id, 'tipo' => 'excel_armamento']);
-                            ?>
+                        <div class="col-md-3">
+                            <label>Turno</label>
+                            <input type="number" name="turno_id" value="<?php echo e($turno_id); ?>" class="form-control" min="1">
+                            
+                        </div>
 
-                            <tr>
-                                <td><center><?php echo e($r->id); ?></center></td>
-                                <td><center><?php echo e(\Carbon\Carbon::parse($r->fecha)->format('d/m/Y')); ?></center></td>
-                                <td><center><?php echo e($r->tipo_reporte); ?></center></td>
-                                <td><center><?php echo e($r->turno?->nombre ?? ('Turno #' . $r->turno_id)); ?></center></td>
-                                <td><center><?php echo e($r->generadoPor?->name ?? ('User #' . $r->generado_por)); ?></center></td>
+                        <div class="col-md-6 d-flex align-items-end" style="gap:8px;">
+                            <button class="btn btn-outline-secondary" type="submit">
+                                <i class="fa-solid fa-filter"></i> Ver
+                            </button>
 
-                                <td>
-                                    <div class="d-flex justify-content-center align-items-center" style="gap:6px;">
-                                        <select class="form-control form-control-sm js-dep" style="max-width: 220px;" <?php echo e($deps->isEmpty() ? 'disabled' : ''); ?>>
-                                            <?php $__empty_2 = true; $__currentLoopData = $deps; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_2 = false; ?>
-                                                <option value="<?php echo e($d); ?>" <?php echo e($d === $dep_default ? 'selected' : ''); ?>>
-                                                    <?php echo e($d); ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('crear reportes')): ?>
+                                <form action="<?php echo e(route('daily_reports.generar')); ?>" method="POST" style="display:inline;">
+                                    <?php echo csrf_field(); ?>
+                                    <input type="hidden" name="fecha" value="<?php echo e($fecha); ?>">
+                                    <input type="hidden" name="turno_id" value="<?php echo e($turno_id); ?>">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fa-solid fa-bolt"></i> Generar todos
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </form>
 
-                                                </option>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_2): ?>
-                                                <option value="">Sin armamento</option>
-                                            <?php endif; ?>
-                                        </select>
+                <div class="row">
+                    <?php $__currentLoopData = $tipos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php
+                            $tipo = $t['tipo'];
+                            $exists = $estado[$tipo]['exists'] ?? false;
+                        ?>
 
-                                        <a
-                                            href="<?php echo e($deps->isEmpty() ? '#' : ($armamento_url_base . '?dependencia=' . urlencode($dep_default))); ?>"
-                                            data-base="<?php echo e($armamento_url_base); ?>"
-                                            class="btn btn-success btn-sm js-btn-excel <?php echo e($deps->isEmpty() ? 'disabled' : ''); ?>"
-                                            title="Descargar Excel Armamento"
-                                        >
-                                            <i class="fa-solid fa-file-excel"></i>
-                                        </a>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="card card-outline <?php echo e($exists ? 'card-success' : 'card-secondary'); ?>">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <?php echo e($t['label']); ?>
+
+                                    </h3>
+                                    <div class="card-tools">
+                                        <?php if($exists): ?>
+                                            <span class="badge badge-success">Listo</span>
+                                        <?php else: ?>
+                                            <span class="badge badge-secondary">Se genera al descargar</span>
+                                        <?php endif; ?>
                                     </div>
-                                </td>
-
-                                <td>
-                                    <center>
-                                        <a
-                                            href="<?php echo e(route('daily_reports.descargar', ['daily_report' => $r->id, 'tipo' => 'excel_lista_personal'])); ?>"
-                                            class="btn btn-success btn-sm"
-                                            title="Descargar Lista de Personal"
-                                        >
-                                            <i class="fa-solid fa-file-excel"></i>
-                                            Lista
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex" style="gap:8px; flex-wrap:wrap;">
+                                        <a class="btn btn-success"
+                                           href="<?php echo e(route('daily_reports.descargar', ['tipo' => $tipo, 'fecha' => $fecha, 'turno_id' => $turno_id])); ?>">
+                                            <i class="fa-solid fa-download"></i> Descargar
                                         </a>
-                                    </center>
-                                </td>
 
-                                <td>
-                                    <center>
-                                        <a href="<?php echo e(route('daily_reports.show', $r->id)); ?>" class="btn btn-info btn-sm" title="Ver reporte">
-                                            <i class="fa-solid fa-eye"></i>
-                                        </a>
-                                    </center>
-                                </td>
-                            </tr>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                            <tr>
-                                <td colspan="8"><center>Sin reportes todavía.</center></td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('crear reportes')): ?>
+                                            <form action="<?php echo e(route('daily_reports.generar')); ?>" method="POST" style="display:inline;">
+                                                <?php echo csrf_field(); ?>
+                                                <input type="hidden" name="fecha" value="<?php echo e($fecha); ?>">
+                                                <input type="hidden" name="turno_id" value="<?php echo e($turno_id); ?>">
+                                                <input type="hidden" name="tipos[]" value="<?php echo e($tipo); ?>">
+                                                <button class="btn btn-outline-primary" type="submit">
+                                                    <i class="fa-solid fa-gear"></i> Generar
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+
+                                        <?php if($exists): ?>
+                                            <button type="button" class="btn btn-outline-dark" disabled>
+                                                <?php echo e($estado[$tipo]['name'] ?? ''); ?>
+
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </div>
 
             </div>
         </div>
     </div>
 </div>
-<?php $__env->stopSection(); ?>
-
-<?php $__env->startSection('js'); ?>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('tr').forEach(function (tr) {
-        const sel = tr.querySelector('.js-dep');
-        const btn = tr.querySelector('.js-btn-excel');
-        if (!sel || !btn) return;
-
-        const base = btn.getAttribute('data-base');
-        if (!base) return;
-
-        const setHref = function () {
-            const dep = sel.value || '';
-            btn.setAttribute('href', base + '?dependencia=' + encodeURIComponent(dep));
-        };
-
-        sel.addEventListener('change', setHref);
-        if (btn.getAttribute('href') !== '#') setHref();
-    });
-});
-</script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('adminlte::page', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\wamp64\www\equinosCaninos\resources\views/daily_reports/index.blade.php ENDPATH**/ ?>

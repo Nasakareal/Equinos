@@ -29,6 +29,7 @@ use App\Http\Controllers\AnimalMedicalRecordController;
 use App\Http\Controllers\AnimalMedicalFileController;
 use App\Http\Controllers\AnimalIncidenceController;
 use App\Http\Controllers\AnimalIncidenceFileController;
+use App\Http\Controllers\DailyReportsController;
 
 
 Route::get('/', function () {
@@ -184,6 +185,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/{daily_report}', [DailyReportController::class, 'show'])->name('daily_reports.show');
         Route::get('/{daily_report}/descargar/{tipo}', [DailyReportController::class, 'descargar'])->middleware('can:ver reportes')->name('daily_reports.descargar');
         Route::get('/{daily_report}/descargar/excel-armamento', [DailyReportController::class, 'descargarExcelArmamento'])->middleware('can:ver reportes')->name('daily_reports.descargar.excel_armamento');
+    });
+
+    Route::prefix('reportes-diarios')->middleware('can:ver reportes')->group(function () {
+        Route::get('/', [DailyReportsController::class, 'index'])->name('daily_reports.index');
+        Route::get('/descargar/{tipo}', [DailyReportsController::class, 'descargar'])->middleware('can:ver reportes')->name('daily_reports.descargar');
+        Route::post('/generar', [DailyReportsController::class, 'generar'])->middleware('can:crear reportes')->name('daily_reports.generar');
     });
 
     Route::prefix('patrullas')->middleware('can:ver turnos')->group(function () {

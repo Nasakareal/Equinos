@@ -1,16 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\app",
-    "\\app\\Http",
-    "\\app\\Http\\Controllers",
-    "\\app\\Models",
-    "\\resources",
-    "\\resources\\views",
-    "\\resources\\views\\animales",
-    "\\resources\\views\\animales\\medico",
-    "\\routes"
+    "\\database",
+    "\\database\\migrations"
   ],
-  "SelectedNode": "\\app\\Http\\Controllers\\AnimalMedicalFileController.php",
+  "SelectedNode": "\\database\\migrations\\2026_03_03_172900_create_actividades_table.php",
   "PreviewInSolutionExplorer": false
 }
