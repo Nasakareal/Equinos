@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\resources",
-    "\\resources\\views"
+    "\\resources\\views",
+    "\\resources\\views\\verde"
   ],
-  "SelectedNode": "\\resources\\views\\verde",
+  "SelectedNode": "\\resources\\views\\verde\\puta madre",
   "PreviewInSolutionExplorer": false
 }
