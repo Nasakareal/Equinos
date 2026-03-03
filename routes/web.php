@@ -23,6 +23,14 @@ use App\Http\Controllers\PersonalHorarioController;
 use App\Http\Controllers\PersonalHorarioDetalleController;
 
 
+use App\Http\Controllers\AnimalController;
+use App\Http\Controllers\AnimalAssignmentController;
+use App\Http\Controllers\AnimalMedicalRecordController;
+use App\Http\Controllers\AnimalMedicalFileController;
+use App\Http\Controllers\AnimalIncidenceController;
+use App\Http\Controllers\AnimalIncidenceFileController;
+
+
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
@@ -48,6 +56,43 @@ Route::middleware('auth')->group(function () {
         Route::post('/{personal}/horario/{personal_horario}/detalles', [PersonalHorarioDetalleController::class, 'store'])->middleware('can:editar personal')->name('personal.horario_detalles.store');
         Route::put('/{personal}/horario/{personal_horario}/detalles/{detalle}', [PersonalHorarioDetalleController::class, 'update'])->middleware('can:editar personal')->name('personal.horario_detalles.update');
         Route::delete('/{personal}/horario/{personal_horario}/detalles/{detalle}', [PersonalHorarioDetalleController::class, 'destroy'])->middleware('can:editar personal')->name('personal.horario_detalles.destroy');
+    });
+
+    Route::prefix('animales')->middleware('can:ver animales')->group(function () {
+
+        Route::get('/', [AnimalController::class, 'index'])->name('animales.index');
+        Route::get('/create', [AnimalController::class, 'create'])->middleware('can:crear animales')->name('animales.create');
+        Route::post('/', [AnimalController::class, 'store'])->middleware('can:crear animales')->name('animales.store');
+        Route::get('/{animal}', [AnimalController::class, 'show'])->name('animales.show');
+        Route::get('/{animal}/edit', [AnimalController::class, 'edit'])->middleware('can:editar animales')->name('animales.edit');
+        Route::put('/{animal}', [AnimalController::class, 'update'])->middleware('can:editar animales')->name('animales.update');
+        Route::delete('/{animal}', [AnimalController::class, 'destroy'])->middleware('can:eliminar animales')->name('animales.destroy');
+
+        Route::prefix('{animal}/asignaciones')->group(function () {
+            Route::get('/', [AnimalAssignmentController::class, 'index'])->name('animales.asignaciones.index');
+            Route::get('/create', [AnimalAssignmentController::class, 'create'])->middleware('can:editar animales')->name('animales.asignaciones.create');
+            Route::post('/', [AnimalAssignmentController::class, 'store'])->middleware('can:editar animales')->name('animales.asignaciones.store');
+            Route::delete('/{assignment}', [AnimalAssignmentController::class, 'destroy'])->middleware('can:editar animales')->name('animales.asignaciones.destroy');
+        });
+
+        Route::prefix('{animal}/historial-medico')->group(function () {
+            Route::get('/', [AnimalMedicalRecordController::class, 'index'])->name('animales.medico.index');
+            Route::get('/create', [AnimalMedicalRecordController::class, 'create'])->middleware('can:editar animales')->name('animales.medico.create');
+            Route::post('/', [AnimalMedicalRecordController::class, 'store'])->middleware('can:editar animales')->name('animales.medico.store');
+            Route::get('/{record}/edit', [AnimalMedicalRecordController::class, 'edit'])->middleware('can:editar animales')->name('animales.medico.edit');
+            Route::put('/{record}', [AnimalMedicalRecordController::class, 'update'])->middleware('can:editar animales')->name('animales.medico.update');
+            Route::delete('/{record}', [AnimalMedicalRecordController::class, 'destroy'])->middleware('can:editar animales')->name('animales.medico.destroy');
+        });
+
+        Route::prefix('{animal}/incidencias')->group(function () {
+            Route::get('/', [AnimalIncidenceController::class, 'index'])->name('animales.incidencias.index');
+            Route::get('/create', [AnimalIncidenceController::class, 'create'])->middleware('can:crear incidencias')->name('animales.incidencias.create');
+            Route::post('/', [AnimalIncidenceController::class, 'store'])->middleware('can:crear incidencias')->name('animales.incidencias.store');
+            Route::get('/{incidence}/edit', [AnimalIncidenceController::class, 'edit'])->middleware('can:editar incidencias')->name('animales.incidencias.edit');
+            Route::put('/{incidence}', [AnimalIncidenceController::class, 'update'])->middleware('can:editar incidencias')->name('animales.incidencias.update');
+            Route::delete('/{incidence}', [AnimalIncidenceController::class, 'destroy'])->middleware('can:eliminar incidencias')->name('animales.incidencias.destroy');
+        });
+
     });
 
 

@@ -15,6 +15,17 @@
         <div class="ef-hero__subtitle">
             Panel operativo para captura, incidencias y generación diaria de reportes
         </div>
+
+        <div class="mt-3">
+            <?php
+                $turnoTxt = ($turno_actual && in_array($turno_actual->clave, ['A','B'], true))
+                    ? ($turno_actual->nombre . ' (' . $turno_actual->clave . ')')
+                    : 'NO DEFINIDO';
+            ?>
+            <span class="badge badge-info" style="font-size:13px;padding:8px 12px;border-radius:999px;">
+                Turno laborando hoy: <strong><?php echo e($turnoTxt); ?></strong>
+            </span>
+        </div>
     </div>
 </div>
 <?php $__env->stopSection(); ?>
@@ -22,7 +33,6 @@
 <?php $__env->startSection('content'); ?>
 <div class="row">
 
-    
     <div class="col-12">
         <div class="row">
 
@@ -137,7 +147,6 @@
         </div>
     </div>
 
-    
     <div class="col-12">
         <div class="ef-section">
             <div class="ef-section__title">
@@ -197,7 +206,6 @@
 
                 <div class="d-flex gap-2" style="gap:8px;">
 
-                    
                     <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('crear reportes')): ?>
                     <form action="<?php echo e(route('daily_reports.generar')); ?>" method="POST" style="display:inline;">
                         <?php echo csrf_field(); ?>
@@ -207,7 +215,6 @@
                     </form>
                     <?php endif; ?>
 
-                    
                     <a href="<?php echo e(route('daily_reports.index')); ?>" class="btn ef-btn ef-btn--ghost">
                         <i class="fa-solid fa-list"></i> Historial
                     </a>
@@ -218,7 +225,6 @@
     </div>
     <?php endif; ?>
 
-    
     <div class="col-12 mt-2">
         <div class="ef-section">
             <div class="ef-section__title">
@@ -277,7 +283,6 @@
     </div>
     <?php endif; ?>
 
-    
     <div class="col-12 mt-2">
         <div class="ef-section">
             <div class="ef-section__title">
@@ -336,7 +341,6 @@
     </div>
     <?php endif; ?>
 
-    
     <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver configuraciones')): ?>
     <div class="col-12 mt-2">
         <div class="ef-section">
@@ -382,7 +386,6 @@
 
 </div>
 <?php $__env->stopSection(); ?>
-
 
 <?php $__env->startSection('css'); ?>
 <style>

@@ -17,6 +17,17 @@
         <div class="ef-hero__subtitle">
             Panel operativo para captura, incidencias y generación diaria de reportes
         </div>
+
+        <div class="mt-3">
+            @php
+                $turnoTxt = ($turno_actual && in_array($turno_actual->clave, ['A','B'], true))
+                    ? ($turno_actual->nombre . ' (' . $turno_actual->clave . ')')
+                    : 'NO DEFINIDO';
+            @endphp
+            <span class="badge badge-info" style="font-size:13px;padding:8px 12px;border-radius:999px;">
+                Turno laborando hoy: <strong>{{ $turnoTxt }}</strong>
+            </span>
+        </div>
     </div>
 </div>
 @stop
@@ -24,7 +35,6 @@
 @section('content')
 <div class="row">
 
-    {{-- RESUMEN / KPIS --}}
     <div class="col-12">
         <div class="row">
 
@@ -138,7 +148,6 @@
         </div>
     </div>
 
-    {{-- BLOQUE 1: OPERACIÓN DIARIA --}}
     <div class="col-12">
         <div class="ef-section">
             <div class="ef-section__title">
@@ -198,7 +207,6 @@
 
                 <div class="d-flex gap-2" style="gap:8px;">
 
-                    {{-- GENERAR HOY (POST) --}}
                     @can('crear reportes')
                     <form action="{{ route('daily_reports.generar') }}" method="POST" style="display:inline;">
                         @csrf
@@ -208,7 +216,6 @@
                     </form>
                     @endcan
 
-                    {{-- HISTORIAL --}}
                     <a href="{{ route('daily_reports.index') }}" class="btn ef-btn ef-btn--ghost">
                         <i class="fa-solid fa-list"></i> Historial
                     </a>
@@ -219,7 +226,6 @@
     </div>
     @endcan
 
-    {{-- BLOQUE 2: ARMAMENTO --}}
     <div class="col-12 mt-2">
         <div class="ef-section">
             <div class="ef-section__title">
@@ -278,7 +284,6 @@
     </div>
     @endcan
 
-    {{-- BLOQUE 3: TURNOS / SERVICIO --}}
     <div class="col-12 mt-2">
         <div class="ef-section">
             <div class="ef-section__title">
@@ -337,7 +342,6 @@
     </div>
     @endcan
 
-    {{-- BLOQUE 4: CONFIGURACIÓN --}}
     @can('ver configuraciones')
     <div class="col-12 mt-2">
         <div class="ef-section">
@@ -383,7 +387,6 @@
 
 </div>
 @stop
-
 
 @section('css')
 <style>

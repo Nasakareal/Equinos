@@ -25,6 +25,10 @@ class HomeController extends Controller
             ->orderBy('dependencia')
             ->get();
 
+        $turno_en_servicio_id = TurnoActual::syncTurnoActualHoy();
+
+        $turno_actual = TurnoActual::turnoActual();
+
         $laborando_ids = TurnoActual::laborandoIds();
 
         $total_laborando = empty($laborando_ids)
@@ -39,9 +43,6 @@ class HomeController extends Controller
                 ->groupBy('dependencia')
                 ->orderBy('dependencia')
                 ->get();
-
-        $turno_en_servicio_id = TurnoActual::getTurnoActualId();
-        $turno_actual = TurnoActual::turnoActual();
 
         return view('home', compact(
             'total_personal',

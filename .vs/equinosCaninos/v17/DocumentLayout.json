@@ -3,12 +3,8 @@
   "WorkspaceRootPath": "C:\\wamp64\\www\\equinosCaninos\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Services\\TurnoActual.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Services\\TurnoActual.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Services\\TurnoResolver.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Services\\TurnoResolver.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\resources\\views\\animales\\create.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:resources\\views\\animales\\create.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,32 +14,19 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "TurnoResolver.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Services\\TurnoResolver.php",
-              "RelativeDocumentMoniker": "app\\Services\\TurnoResolver.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Services\\TurnoResolver.php",
-              "RelativeToolTip": "app\\Services\\TurnoResolver.php",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-03-02T21:44:46.057Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "TurnoActual.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Services\\TurnoActual.php",
-              "RelativeDocumentMoniker": "app\\Services\\TurnoActual.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Services\\TurnoActual.php",
-              "RelativeToolTip": "app\\Services\\TurnoActual.php",
-              "ViewState": "AgIAAB0AAAAAAAAAAAAUwCoAAAAAAAAAAAAAAA==",
+              "Title": "create.blade.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\animales\\create.blade.php",
+              "RelativeDocumentMoniker": "resources\\views\\animales\\create.blade.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\animales\\create.blade.php",
+              "RelativeToolTip": "resources\\views\\animales\\create.blade.php",
+              "ViewState": "AgIAACoBAAAAAAAAAAAUwFsBAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-03-02T21:44:43.989Z",
+              "WhenOpened": "2026-03-02T23:56:11.937Z",
               "EditorCaption": ""
             }
           ]

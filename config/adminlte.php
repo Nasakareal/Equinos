@@ -353,6 +353,43 @@ return [
         ],
 
         [
+            'text' => 'Unidad Canina y Equina',
+            'icon' => 'fa-solid fa-paw',
+            'classes' => 'bg-purple text-white',
+            'can' => 'ver animales',
+            'submenu' => [
+                [
+                    'text' => 'Listado general',
+                    'icon' => 'fa-solid fa-list',
+                    'classes' => 'text-white',
+                    'url' => 'animales',
+                    'can' => 'ver animales',
+                ],
+                [
+                    'text' => 'Agregar animal',
+                    'icon' => 'fa-solid fa-plus',
+                    'classes' => 'text-white',
+                    'url' => 'animales/create',
+                    'can' => 'crear animales',
+                ],
+                [
+                    'text' => 'Solo Equinos',
+                    'icon' => 'fa-solid fa-horse',
+                    'classes' => 'text-white',
+                    'url' => 'animales?tipo=EQUINO',
+                    'can' => 'ver animales',
+                ],
+                [
+                    'text' => 'Solo Caninos',
+                    'icon' => 'fa-solid fa-dog',
+                    'classes' => 'text-white',
+                    'url' => 'animales?tipo=CANINO',
+                    'can' => 'ver animales',
+                ],
+            ],
+        ],
+
+        [
             'text' => 'Turnos y servicio',
             'icon' => 'fa-solid fa-calendar-days',
             'classes' => 'bg-secondary text-white',

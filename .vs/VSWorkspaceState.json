@@ -1,9 +1,11 @@
 {
   "ExpandedNodes": [
     "",
-    "\\app",
-    "\\app\\Services"
+    "\\resources",
+    "\\resources\\views",
+    "\\resources\\views\\animales",
+    "\\resources\\views\\personal"
   ],
-  "SelectedNode": "\\app\\Services\\TurnoResolver.php",
+  "SelectedNode": "\\resources\\views\\animales\\edit.blade.php",
   "PreviewInSolutionExplorer": false
 }
