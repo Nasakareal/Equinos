@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\ServiceScheduleController;
 use App\Http\Controllers\Api\DailyReportController;
 use App\Http\Controllers\Api\ActividadController;
 use App\Http\Controllers\Api\ActividadCatalogController;
+use App\Http\Controllers\Api\FeedController;
 
 
 /*
@@ -35,6 +36,7 @@ Route::post('/login', [AuthController::class, 'login']);
 */
 Route::middleware('auth:sanctum')->group(function () {
 
+    Route::get('/feed', [FeedController::class, 'index']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 

@@ -1,9 +1,12 @@
 {
   "ExpandedNodes": [
     "",
-    "\\database",
-    "\\database\\migrations"
+    "\\app",
+    "\\app\\Http",
+    "\\app\\Http\\Controllers",
+    "\\app\\Http\\Controllers\\Api",
+    "\\routes"
   ],
-  "SelectedNode": "\\database\\migrations\\2026_03_03_172900_create_actividades_table.php",
+  "SelectedNode": "\\app\\Http\\Controllers\\Api\\FeedController.php",
   "PreviewInSolutionExplorer": false
 }
