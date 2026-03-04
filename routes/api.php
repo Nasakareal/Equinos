@@ -16,6 +16,9 @@ use App\Http\Controllers\Api\DailyReportController;
 use App\Http\Controllers\Api\ActividadController;
 use App\Http\Controllers\Api\ActividadCatalogController;
 use App\Http\Controllers\Api\FeedController;
+use App\Http\Controllers\Api\AnimalController;
+use App\Http\Controllers\Api\AnimalMedicalRecordController;
+use App\Http\Controllers\Api\AnimalMedicalFileController;
 
 
 /*
@@ -49,6 +52,57 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('actividad-categorias', [ActividadCatalogController::class, 'categorias']);
         Route::get('actividad-categorias/{categoriaId}/subcategorias', [ActividadCatalogController::class, 'subcategorias']);
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | ANIMALES (Flutter)
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('animales')->group(function () {
+
+        // Listado + filtros (tipo, estatus, buscar, per_page)
+        Route::get('/', [AnimalController::class, 'index']);
+
+        // Crear
+        Route::post('/', [AnimalController::class, 'store']);
+
+        // Detalle (incluye assignments, medicalRecords+files, incidences)
+        Route::get('/{animal}', [AnimalController::class, 'show']);
+
+        // Actualizar
+        Route::put('/{animal}', [AnimalController::class, 'update']);
+
+        // Eliminar
+        Route::delete('/{animal}', [AnimalController::class, 'destroy']);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | HISTORIAL MÉDICO (Flutter)
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/{animal}/historial-medico', [AnimalMedicalRecordController::class, 'index']);
+        Route::post('/{animal}/historial-medico', [AnimalMedicalRecordController::class, 'store']);
+
+        // Si lo ocupas (tu controller lo trae), pero ojo: tu show no valida animal_id,
+        // así que lo dejo como ruta opcional; si no lo usas, elimínalo.
+        Route::get('/{animal}/historial-medico/{record}', [AnimalMedicalRecordController::class, 'show']);
+
+        Route::put('/{animal}/historial-medico/{record}', [AnimalMedicalRecordController::class, 'update']);
+        Route::delete('/{animal}/historial-medico/{record}', [AnimalMedicalRecordController::class, 'destroy']);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ARCHIVOS DE REGISTRO MÉDICO (Flutter)
+        |--------------------------------------------------------------------------
+        */
+        // Subir archivo a un registro médico de un animal (tu store valida record pertenece al animal)
+        Route::post('/{animal}/historial-medico/{record}/archivos', [AnimalMedicalFileController::class, 'store']);
+
+        // Eliminar archivo por ID (tu destroy recibe AnimalMedicalFile $file)
+        Route::delete('/historial-medico/archivos/{file}', [AnimalMedicalFileController::class, 'destroy']);
     });
 
     /*
