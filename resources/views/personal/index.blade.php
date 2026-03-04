@@ -33,6 +33,7 @@
                                     <th><center>Nombre</center></th>
                                     <th><center>Dependencia</center></th>
                                     <th><center>CRP</center></th>
+                                    <th><center>Puestas</center></th>
                                     <th><center>Acciones</center></th>
                                 </tr>
                             </thead>
@@ -45,6 +46,7 @@
                                         <td>{{ $personal->nombres }}</td>
                                         <td>{{ $personal->dependencia ?? '-' }}</td>
                                         <td>{{ $personal->crp ?? '-' }}</td>
+                                        <td style="text-align: center">{{ $personal->puestas_disposicion_count ?? 0 }}</td>
                                         <td style="text-align: center">
                                             <div class="btn-group" role="group">
 
@@ -68,9 +70,7 @@
                                                     @endphp
 
                                                     @if ($esMixto)
-                                                        <a href="{{ route('personal.horario.edit', $personal->id) }}"
-                                                           class="btn btn-warning btn-sm"
-                                                           title="Configurar horario">
+                                                        <a href="{{ route('personal.horario.edit', $personal->id) }}" class="btn btn-warning btn-sm" title="Configurar horario">
                                                             <i class="fa-solid fa-clock"></i>
                                                         </a>
                                                     @endif

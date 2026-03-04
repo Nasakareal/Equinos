@@ -2,10 +2,12 @@
   "ExpandedNodes": [
     "",
     "\\app",
+    "\\app\\Http",
+    "\\app\\Http\\Controllers",
     "\\resources",
     "\\resources\\views",
-    "\\resources\\views\\animales"
+    "\\resources\\views\\puestas_disposicion"
   ],
-  "SelectedNode": "\\resources\\views\\animales\\edit.blade.php",
+  "SelectedNode": "\\database",
   "PreviewInSolutionExplorer": false
 }

@@ -390,6 +390,29 @@ return [
         ],
 
         [
+            'text' => 'Puestas a Disposición',
+            'icon' => 'fa-solid fa-file-pdf',
+            'classes' => 'bg-danger text-white',
+            'can' => 'ver puestas_disposicion',
+            'submenu' => [
+                [
+                    'text' => 'Listado',
+                    'icon' => 'fa-solid fa-list',
+                    'classes' => 'text-white',
+                    'url' => 'puestas-disposicion',
+                    'can' => 'ver puestas_disposicion',
+                ],
+                [
+                    'text' => 'Registrar',
+                    'icon' => 'fa-solid fa-plus',
+                    'classes' => 'text-white',
+                    'url' => 'puestas-disposicion/create',
+                    'can' => 'crear puestas_disposicion',
+                ],
+            ],
+        ],
+
+        [
             'text' => 'Turnos y servicio',
             'icon' => 'fa-solid fa-calendar-days',
             'classes' => 'bg-secondary text-white',

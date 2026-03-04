@@ -30,9 +30,7 @@
 
             <div class="card card-outline card-info">
                 <div class="card-header">
-                    <h3 class="card-title">
-                        Información General
-                    </h3>
+                    <h3 class="card-title">Información General</h3>
                 </div>
 
                 <div class="card-body">
@@ -136,10 +134,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <strong>Observaciones</strong>
-                            <p class="text-muted">
-                                <?php echo e($personal->observaciones ?: 'Sin observaciones'); ?>
-
-                            </p>
+                            <p class="text-muted"><?php echo e($personal->observaciones ?: 'Sin observaciones'); ?></p>
                         </div>
                     </div>
                 </div>
@@ -190,9 +185,7 @@
 
             <div class="card card-outline card-primary">
                 <div class="card-header d-flex align-items-center justify-content-between">
-                    <h3 class="card-title">
-                        <i class="fa-regular fa-clock"></i> Horario
-                    </h3>
+                    <h3 class="card-title"><i class="fa-regular fa-clock"></i> Horario</h3>
 
                     <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('editar personal')): ?>
                         <a href="<?php echo e(route('personal.horario.edit', $personal->id)); ?>" class="btn btn-primary btn-sm">
@@ -212,9 +205,7 @@
                             </thead>
                             <tbody>
                                 <?php $__currentLoopData = $dias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $diaKey => $diaLabel): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <?php
-                                        $tramos = $horariosPorDia[$diaKey] ?? [];
-                                    ?>
+                                    <?php $tramos = $horariosPorDia[$diaKey] ?? []; ?>
                                     <tr>
                                         <td class="text-center font-weight-bold align-middle"><?php echo e($diaLabel); ?></td>
                                         <td class="align-middle">
@@ -258,9 +249,7 @@
 
             <div class="card card-outline card-dark">
                 <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fa-solid fa-gun"></i> Armamento asignado
-                    </h3>
+                    <h3 class="card-title"><i class="fa-solid fa-gun"></i> Armamento asignado</h3>
                 </div>
 
                 <div class="card-body">
@@ -282,7 +271,16 @@
                                             <td><?php echo e($a->weapon->tipo ?? 'N/D'); ?></td>
                                             <td><?php echo e($a->weapon->matricula ?? 'N/D'); ?></td>
                                             <td><?php echo e($a->weapon->estado ?? 'N/D'); ?></td>
-                                            <td><?php echo e(optional($a->fecha_asignacion)->format('d/m/Y H:i') ?? 'N/D'); ?></td>
+                                            <td>
+                                                <?php
+                                                    $fa = $a->fecha_asignacion;
+                                                    $faTxt = 'N/D';
+                                                    if ($fa instanceof \Carbon\Carbon) $faTxt = $fa->format('d/m/Y H:i');
+                                                    elseif (!empty($fa)) $faTxt = \Carbon\Carbon::parse($fa)->format('d/m/Y H:i');
+                                                ?>
+                                                <?php echo e($faTxt); ?>
+
+                                            </td>
                                             <td><?php echo e($a->observaciones ?? ''); ?></td>
                                         </tr>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -314,13 +312,110 @@
                                             <td><?php echo e($a->weapon->tipo ?? 'N/D'); ?></td>
                                             <td><?php echo e($a->weapon->matricula ?? 'N/D'); ?></td>
                                             <td><?php echo e($a->status ?? 'N/D'); ?></td>
-                                            <td><?php echo e(optional($a->fecha_asignacion)->format('d/m/Y H:i') ?? 'N/D'); ?></td>
-                                            <td><?php echo e(optional($a->fecha_devolucion)->format('d/m/Y H:i') ?? '---'); ?></td>
+                                            <td>
+                                                <?php
+                                                    $fa = $a->fecha_asignacion;
+                                                    $faTxt = 'N/D';
+                                                    if ($fa instanceof \Carbon\Carbon) $faTxt = $fa->format('d/m/Y H:i');
+                                                    elseif (!empty($fa)) $faTxt = \Carbon\Carbon::parse($fa)->format('d/m/Y H:i');
+                                                ?>
+                                                <?php echo e($faTxt); ?>
+
+                                            </td>
+                                            <td>
+                                                <?php
+                                                    $fd = $a->fecha_devolucion;
+                                                    $fdTxt = '---';
+                                                    if ($fd instanceof \Carbon\Carbon) $fdTxt = $fd->format('d/m/Y H:i');
+                                                    elseif (!empty($fd)) $fdTxt = \Carbon\Carbon::parse($fd)->format('d/m/Y H:i');
+                                                ?>
+                                                <?php echo e($fdTxt); ?>
+
+                                            </td>
                                         </tr>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </tbody>
                             </table>
                         </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="card card-outline card-purple">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h3 class="card-title"><i class="fa-solid fa-file-pdf"></i> Puestas a disposición</h3>
+
+                    <div class="card-tools">
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('crear puestas a disposicion')): ?>
+                            <a href="<?php echo e(route('puestas_disposicion.create', ['personal_id' => $personal->id])); ?>" class="btn btn-purple btn-sm">
+                                <i class="fa-solid fa-plus"></i> Registrar
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <?php if(isset($puestasDisposicion) && $puestasDisposicion->count()): ?>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover table-sm w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Folio</th>
+                                        <th>Año</th>
+                                        <th>Hecho</th>
+                                        <th>Archivo</th>
+                                        <th>Observaciones</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $__currentLoopData = $puestasDisposicion; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pd): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <tr>
+                                            <td class="text-center"><?php echo e($pd->folio ?? ('—')); ?></td>
+                                            <td class="text-center"><?php echo e($pd->anio ?? '—'); ?></td>
+                                            <td class="text-center"><?php echo e($pd->hecho_id ?? '—'); ?></td>
+                                            <td class="text-center">
+                                                <?php if(!empty($pd->archivo_pdf)): ?>
+                                                    <a href="<?php echo e(asset('storage/'.$pd->archivo_pdf)); ?>" target="_blank" class="btn btn-danger btn-sm">
+                                                        <i class="fa-solid fa-file-pdf"></i> Ver PDF
+                                                    </a>
+                                                <?php else: ?>
+                                                    —
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo e($pd->observaciones ?? ''); ?></td>
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver puestas a disposicion')): ?>
+                                                        <a href="<?php echo e(route('puestas_disposicion.show', $pd->id)); ?>" class="btn btn-info btn-sm" title="Ver">
+                                                            <i class="fa-regular fa-eye"></i>
+                                                        </a>
+                                                    <?php endif; ?>
+
+                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('editar puestas a disposicion')): ?>
+                                                        <a href="<?php echo e(route('puestas_disposicion.edit', $pd->id)); ?>" class="btn btn-success btn-sm" title="Editar">
+                                                            <i class="fa-regular fa-pen-to-square"></i>
+                                                        </a>
+                                                    <?php endif; ?>
+
+                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('eliminar puestas a disposicion')): ?>
+                                                        <form action="<?php echo e(route('puestas_disposicion.destroy', $pd->id)); ?>" method="POST" style="display:inline-block;">
+                                                            <?php echo csrf_field(); ?>
+                                                            <?php echo method_field('DELETE'); ?>
+                                                            <button type="button" class="btn btn-danger btn-sm delete-btn-pd" title="Eliminar">
+                                                                <i class="fa-regular fa-trash-can"></i>
+                                                            </button>
+                                                        </form>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <span class="badge badge-secondary">Sin puestas a disposición registradas</span>
                     <?php endif; ?>
                 </div>
             </div>

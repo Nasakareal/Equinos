@@ -30,9 +30,7 @@
 
             <div class="card card-outline card-info">
                 <div class="card-header">
-                    <h3 class="card-title">
-                        Información General
-                    </h3>
+                    <h3 class="card-title">Información General</h3>
                 </div>
 
                 <div class="card-body">
@@ -136,9 +134,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <strong>Observaciones</strong>
-                            <p class="text-muted">
-                                {{ $personal->observaciones ?: 'Sin observaciones' }}
-                            </p>
+                            <p class="text-muted">{{ $personal->observaciones ?: 'Sin observaciones' }}</p>
                         </div>
                     </div>
                 </div>
@@ -189,9 +185,7 @@
 
             <div class="card card-outline card-primary">
                 <div class="card-header d-flex align-items-center justify-content-between">
-                    <h3 class="card-title">
-                        <i class="fa-regular fa-clock"></i> Horario
-                    </h3>
+                    <h3 class="card-title"><i class="fa-regular fa-clock"></i> Horario</h3>
 
                     @can('editar personal')
                         <a href="{{ route('personal.horario.edit', $personal->id) }}" class="btn btn-primary btn-sm">
@@ -211,9 +205,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($dias as $diaKey => $diaLabel)
-                                    @php
-                                        $tramos = $horariosPorDia[$diaKey] ?? [];
-                                    @endphp
+                                    @php $tramos = $horariosPorDia[$diaKey] ?? []; @endphp
                                     <tr>
                                         <td class="text-center font-weight-bold align-middle">{{ $diaLabel }}</td>
                                         <td class="align-middle">
@@ -256,9 +248,7 @@
 
             <div class="card card-outline card-dark">
                 <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fa-solid fa-gun"></i> Armamento asignado
-                    </h3>
+                    <h3 class="card-title"><i class="fa-solid fa-gun"></i> Armamento asignado</h3>
                 </div>
 
                 <div class="card-body">
@@ -280,7 +270,15 @@
                                             <td>{{ $a->weapon->tipo ?? 'N/D' }}</td>
                                             <td>{{ $a->weapon->matricula ?? 'N/D' }}</td>
                                             <td>{{ $a->weapon->estado ?? 'N/D' }}</td>
-                                            <td>{{ optional($a->fecha_asignacion)->format('d/m/Y H:i') ?? 'N/D' }}</td>
+                                            <td>
+                                                @php
+                                                    $fa = $a->fecha_asignacion;
+                                                    $faTxt = 'N/D';
+                                                    if ($fa instanceof \Carbon\Carbon) $faTxt = $fa->format('d/m/Y H:i');
+                                                    elseif (!empty($fa)) $faTxt = \Carbon\Carbon::parse($fa)->format('d/m/Y H:i');
+                                                @endphp
+                                                {{ $faTxt }}
+                                            </td>
                                             <td>{{ $a->observaciones ?? '' }}</td>
                                         </tr>
                                     @endforeach
@@ -312,13 +310,108 @@
                                             <td>{{ $a->weapon->tipo ?? 'N/D' }}</td>
                                             <td>{{ $a->weapon->matricula ?? 'N/D' }}</td>
                                             <td>{{ $a->status ?? 'N/D' }}</td>
-                                            <td>{{ optional($a->fecha_asignacion)->format('d/m/Y H:i') ?? 'N/D' }}</td>
-                                            <td>{{ optional($a->fecha_devolucion)->format('d/m/Y H:i') ?? '---' }}</td>
+                                            <td>
+                                                @php
+                                                    $fa = $a->fecha_asignacion;
+                                                    $faTxt = 'N/D';
+                                                    if ($fa instanceof \Carbon\Carbon) $faTxt = $fa->format('d/m/Y H:i');
+                                                    elseif (!empty($fa)) $faTxt = \Carbon\Carbon::parse($fa)->format('d/m/Y H:i');
+                                                @endphp
+                                                {{ $faTxt }}
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $fd = $a->fecha_devolucion;
+                                                    $fdTxt = '---';
+                                                    if ($fd instanceof \Carbon\Carbon) $fdTxt = $fd->format('d/m/Y H:i');
+                                                    elseif (!empty($fd)) $fdTxt = \Carbon\Carbon::parse($fd)->format('d/m/Y H:i');
+                                                @endphp
+                                                {{ $fdTxt }}
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="card card-outline card-purple">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h3 class="card-title"><i class="fa-solid fa-file-pdf"></i> Puestas a disposición</h3>
+
+                    <div class="card-tools">
+                        @can('crear puestas a disposicion')
+                            <a href="{{ route('puestas_disposicion.create', ['personal_id' => $personal->id]) }}" class="btn btn-purple btn-sm">
+                                <i class="fa-solid fa-plus"></i> Registrar
+                            </a>
+                        @endcan
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    @if(isset($puestasDisposicion) && $puestasDisposicion->count())
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover table-sm w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Folio</th>
+                                        <th>Año</th>
+                                        <th>Hecho</th>
+                                        <th>Archivo</th>
+                                        <th>Observaciones</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($puestasDisposicion as $pd)
+                                        <tr>
+                                            <td class="text-center">{{ $pd->folio ?? ('—') }}</td>
+                                            <td class="text-center">{{ $pd->anio ?? '—' }}</td>
+                                            <td class="text-center">{{ $pd->hecho_id ?? '—' }}</td>
+                                            <td class="text-center">
+                                                @if(!empty($pd->archivo_pdf))
+                                                    <a href="{{ asset('storage/'.$pd->archivo_pdf) }}" target="_blank" class="btn btn-danger btn-sm">
+                                                        <i class="fa-solid fa-file-pdf"></i> Ver PDF
+                                                    </a>
+                                                @else
+                                                    —
+                                                @endif
+                                            </td>
+                                            <td>{{ $pd->observaciones ?? '' }}</td>
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    @can('ver puestas a disposicion')
+                                                        <a href="{{ route('puestas_disposicion.show', $pd->id) }}" class="btn btn-info btn-sm" title="Ver">
+                                                            <i class="fa-regular fa-eye"></i>
+                                                        </a>
+                                                    @endcan
+
+                                                    @can('editar puestas a disposicion')
+                                                        <a href="{{ route('puestas_disposicion.edit', $pd->id) }}" class="btn btn-success btn-sm" title="Editar">
+                                                            <i class="fa-regular fa-pen-to-square"></i>
+                                                        </a>
+                                                    @endcan
+
+                                                    @can('eliminar puestas a disposicion')
+                                                        <form action="{{ route('puestas_disposicion.destroy', $pd->id) }}" method="POST" style="display:inline-block;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="button" class="btn btn-danger btn-sm delete-btn-pd" title="Eliminar">
+                                                                <i class="fa-regular fa-trash-can"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endcan
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <span class="badge badge-secondary">Sin puestas a disposición registradas</span>
                     @endif
                 </div>
             </div>

@@ -21,7 +21,7 @@ use App\Http\Controllers\AreaController;
 use App\Http\Controllers\ResponsableController;
 use App\Http\Controllers\PersonalHorarioController;
 use App\Http\Controllers\PersonalHorarioDetalleController;
-
+use App\Http\Controllers\PuestaDisposicionController;
 
 use App\Http\Controllers\AnimalController;
 use App\Http\Controllers\AnimalAssignmentController;
@@ -85,17 +85,11 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{record}', [AnimalMedicalRecordController::class, 'destroy'])->middleware('can:editar animales')->name('animales.medico.destroy');
         });
 
-        // Archivos de registros médicos
         Route::prefix('{animal}/historial-medico/{record}/archivos')->group(function () {
-            Route::post('/', [AnimalMedicalFileController::class, 'store'])
-                ->middleware('can:editar animales')
-                ->name('animales.medico.files.store');
+            Route::post('/', [AnimalMedicalFileController::class, 'store'])->middleware('can:editar animales')->name('animales.medico.files.store');
         });
 
-        // Eliminar archivo (no ocupa {animal} en la URL, solo el file por ID)
-        Route::delete('historial-medico/archivos/{file}', [AnimalMedicalFileController::class, 'destroy'])
-            ->middleware('can:editar animales')
-            ->name('animales.medico.files.destroy');
+        Route::delete('historial-medico/archivos/{file}', [AnimalMedicalFileController::class, 'destroy'])->middleware('can:editar animales')->name('animales.medico.files.destroy');
 
         Route::prefix('{animal}/incidencias')->group(function () {
             Route::get('/', [AnimalIncidenceController::class, 'index'])->name('animales.incidencias.index');
@@ -105,7 +99,16 @@ Route::middleware('auth')->group(function () {
             Route::put('/{incidence}', [AnimalIncidenceController::class, 'update'])->middleware('can:editar incidencias')->name('animales.incidencias.update');
             Route::delete('/{incidence}', [AnimalIncidenceController::class, 'destroy'])->middleware('can:eliminar incidencias')->name('animales.incidencias.destroy');
         });
+    });
 
+    Route::prefix('puestas-disposicion')->middleware('can:ver puestas_disposicion')->group(function () {
+        Route::get('/', [PuestaDisposicionController::class, 'index'])->name('puestas_disposicion.index');
+        Route::get('/create', [PuestaDisposicionController::class, 'create'])->middleware('can:crear puestas_disposicion')->name('puestas_disposicion.create');
+        Route::post('/', [PuestaDisposicionController::class, 'store'])->middleware('can:crear puestas_disposicion')->name('puestas_disposicion.store');
+        Route::get('/{puesta_disposicion}', [PuestaDisposicionController::class, 'show'])->name('puestas_disposicion.show');
+        Route::get('/{puesta_disposicion}/edit', [PuestaDisposicionController::class, 'edit'])->middleware('can:editar puestas_disposicion')->name('puestas_disposicion.edit');
+        Route::put('/{puesta_disposicion}', [PuestaDisposicionController::class, 'update'])->middleware('can:editar puestas_disposicion')->name('puestas_disposicion.update');
+        Route::delete('/{puesta_disposicion}', [PuestaDisposicionController::class, 'destroy'])->middleware('can:eliminar puestas_disposicion')->name('puestas_disposicion.destroy');
     });
 
 

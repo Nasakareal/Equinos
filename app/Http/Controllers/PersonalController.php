@@ -30,6 +30,7 @@ class PersonalController extends Controller
             ->with('user')
             ->with('area')
             ->with('turno')
+            ->withCount('puestasDisposicion')
             ->orderBy('nombres')
             ->get();
 
@@ -184,6 +185,11 @@ class PersonalController extends Controller
                     ->orderByDesc('fecha_asignacion')
                     ->orderByDesc('id');
             }])
+            ->with(['puestasDisposicion' => function ($q) {
+                $q->orderByDesc('anio')
+                    ->orderByDesc('folio_num')
+                    ->orderByDesc('id');
+            }])
             ->findOrFail($id);
 
         $horario = \App\Models\PersonalHorario::query()
@@ -216,7 +222,9 @@ class PersonalController extends Controller
 
         $historialArmamento = $personal->asignacionesArmamento;
 
-        return view('personal.show', compact('personal', 'armasActivas', 'historialArmamento', 'horario'));
+        $puestasDisposicion = $personal->puestasDisposicion;
+
+        return view('personal.show', compact('personal', 'armasActivas', 'historialArmamento', 'horario', 'puestasDisposicion'));
     }
 
     public function edit($id)

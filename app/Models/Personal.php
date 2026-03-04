@@ -125,4 +125,9 @@ class Personal extends Model
             'id'
         )->where('personal_horarios.activo', 1);
     }
+
+    public function puestasDisposicion()
+    {
+        return $this->hasMany(\App\Models\PuestaDisposicion::class, 'personal_id');
+    }
 }
