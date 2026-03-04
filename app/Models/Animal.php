@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Animal extends Model
 {
@@ -26,6 +27,7 @@ class Animal extends Model
         'edad_texto',
         'forraje_kg_diario',
         'grano_kg_diario',
+        'foto',
     ];
 
     protected $casts = [
@@ -33,6 +35,19 @@ class Animal extends Model
         'forraje_kg_diario' => 'decimal:2',
         'grano_kg_diario' => 'decimal:2',
     ];
+
+    protected $appends = [
+        'foto_url',
+    ];
+
+    public function getFotoUrlAttribute(): ?string
+    {
+        if (!$this->foto) {
+            return null;
+        }
+
+        return Storage::disk('public')->url($this->foto);
+    }
 
     public function assignments()
     {

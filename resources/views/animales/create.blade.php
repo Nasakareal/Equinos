@@ -21,10 +21,29 @@
                 </div>
             </div>
 
-            <form action="{{ route('animales.store') }}" method="POST">
+            <form action="{{ route('animales.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="card-body">
+
+                    {{-- FOTO --}}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Foto (1 por animal)</label>
+                                <input type="file"
+                                       name="foto"
+                                       accept="image/*"
+                                       class="form-control @error('foto') is-invalid @enderror">
+                                @error('foto')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="text-muted d-block mt-1">
+                                    Formatos: JPG, JPEG, PNG, WEBP · Máx 4MB
+                                </small>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="row">
 

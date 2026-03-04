@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Animal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AnimalController extends Controller
 {
@@ -21,9 +22,11 @@ class AnimalController extends Controller
 
         if ($request->filled('buscar')) {
             $query->where(function ($q) use ($request) {
-                $q->where('nombre', 'like', '%' . $request->buscar . '%')
-                  ->orWhere('raza', 'like', '%' . $request->buscar . '%')
-                  ->orWhere('especialidad', 'like', '%' . $request->buscar . '%');
+                $buscar = (string) $request->buscar;
+
+                $q->where('nombre', 'like', '%' . $buscar . '%')
+                    ->orWhere('raza', 'like', '%' . $buscar . '%')
+                    ->orWhere('especialidad', 'like', '%' . $buscar . '%');
             });
         }
 
@@ -56,9 +59,15 @@ class AnimalController extends Controller
             'edad_texto' => 'nullable|string|max:255',
             'forraje_kg_diario' => 'nullable|numeric',
             'grano_kg_diario' => 'nullable|numeric',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
-        Animal::create($validated);
+        $animal = Animal::create($validated);
+
+        if ($request->hasFile('foto')) {
+            $path = $request->file('foto')->store("animals/{$animal->id}", 'public');
+            $animal->update(['foto' => $path]);
+        }
 
         return redirect()->route('animales.index')
             ->with('success', 'Animal registrado correctamente');
@@ -100,9 +109,21 @@ class AnimalController extends Controller
             'edad_texto' => 'nullable|string|max:255',
             'forraje_kg_diario' => 'nullable|numeric',
             'grano_kg_diario' => 'nullable|numeric',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
+        unset($validated['foto']);
+
         $animal->update($validated);
+
+        if ($request->hasFile('foto')) {
+            if (!empty($animal->foto) && Storage::disk('public')->exists($animal->foto)) {
+                Storage::disk('public')->delete($animal->foto);
+            }
+
+            $path = $request->file('foto')->store("animals/{$animal->id}", 'public');
+            $animal->update(['foto' => $path]);
+        }
 
         return redirect()->route('animales.index')
             ->with('success', 'Animal actualizado correctamente');
@@ -110,6 +131,12 @@ class AnimalController extends Controller
 
     public function destroy(Animal $animal)
     {
+        if (!empty($animal->foto) && Storage::disk('public')->exists($animal->foto)) {
+            Storage::disk('public')->delete($animal->foto);
+        }
+
+        Storage::disk('public')->deleteDirectory("animals/{$animal->id}");
+
         $animal->delete();
 
         return redirect()->route('animales.index')

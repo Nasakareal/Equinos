@@ -66,9 +66,54 @@
 
                 <div class="tab-content pt-3">
 
+                    {{-- =========================
+                        TAB DATOS
+                    ========================== --}}
                     <div class="tab-pane fade show active" id="tab-datos" role="tabpanel">
 
                         <div class="row">
+
+                            {{-- FOTO --}}
+                            <div class="col-md-12 mb-3">
+                                <div class="card card-outline card-purple mb-0">
+                                    <div class="card-header">
+                                        <h3 class="card-title">
+                                            <i class="fa-solid fa-camera"></i> Foto
+                                        </h3>
+
+                                        <div class="card-tools">
+                                            @can('editar animales')
+                                                <a href="{{ url('/animales/'.$animal->id.'/edit') }}" class="btn btn-purple btn-sm">
+                                                    <i class="fa-solid fa-upload"></i> Subir / Cambiar
+                                                </a>
+                                            @endcan
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        @if(!empty($animal->foto_url))
+                                            <div class="text-center">
+                                                <a href="{{ $animal->foto_url }}" target="_blank" rel="noopener">
+                                                    <img
+                                                        src="{{ $animal->foto_url }}"
+                                                        alt="Foto de {{ $animal->nombre }}"
+                                                        class="img-fluid rounded shadow"
+                                                        style="max-height: 360px; object-fit: cover;"
+                                                    >
+                                                </a>
+                                                <div class="mt-2 text-muted small">
+                                                    Click para abrir en grande
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="text-center text-muted py-4">
+                                                <i class="fa-regular fa-image fa-2x mb-2"></i>
+                                                <div>Sin foto</div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="col-md-4">
                                 <div class="info-box bg-gradient-purple">
@@ -176,6 +221,9 @@
 
                     </div>
 
+                    {{-- =========================
+                        TAB MEDICO
+                    ========================== --}}
                     <div class="tab-pane fade" id="tab-medico" role="tabpanel">
 
                         <div class="d-flex justify-content-between mb-2">
@@ -205,8 +253,8 @@
                                 <tbody>
                                     @forelse(($animal->medicalRecords ?? []) as $r)
                                         <tr>
-                                            <td>{{ \Carbon\Carbon::parse($r->fecha)->format('d/m/Y') }}</td>
-                                            <td>{{ $r->tipo }}</td>
+                                            <td>{{ $r->fecha ? \Carbon\Carbon::parse($r->fecha)->format('d/m/Y') : '-' }}</td>
+                                            <td>{{ $r->tipo ?? '-' }}</td>
                                             <td>{{ $r->veterinario ?? '-' }}</td>
                                             <td>{{ $r->costo ?? '-' }}</td>
                                             <td>{{ $r->proxima_cita ? \Carbon\Carbon::parse($r->proxima_cita)->format('d/m/Y') : '-' }}</td>
@@ -214,7 +262,7 @@
                                                 @if(($r->files ?? collect())->count())
                                                     @foreach($r->files as $f)
                                                         <div class="mb-1">
-                                                            <a href="{{ Storage::url($f->archivo) }}" target="_blank">
+                                                            <a href="{{ Storage::url($f->archivo) }}" target="_blank" rel="noopener">
                                                                 <i class="fas fa-file"></i> Ver
                                                             </a>
                                                         </div>
@@ -256,6 +304,9 @@
 
                     </div>
 
+                    {{-- =========================
+                        TAB INCIDENCIAS
+                    ========================== --}}
                     <div class="tab-pane fade" id="tab-incidencias" role="tabpanel">
 
                         <div class="d-flex justify-content-between mb-2">
@@ -283,9 +334,9 @@
                                 <tbody>
                                     @forelse(($animal->incidences ?? []) as $i)
                                         <tr>
-                                            <td>{{ \Carbon\Carbon::parse($i->fecha)->format('d/m/Y H:i') }}</td>
+                                            <td>{{ $i->fecha ? \Carbon\Carbon::parse($i->fecha)->format('d/m/Y H:i') : '-' }}</td>
                                             <td>{{ $i->incidenceType->nombre ?? '-' }}</td>
-                                            <td>{{ $i->gravedad }}</td>
+                                            <td>{{ $i->gravedad ?? '-' }}</td>
                                             <td>{{ $i->descripcion ?? '-' }}</td>
                                             <td>
                                                 <div class="btn-group">
@@ -320,6 +371,9 @@
 
                     </div>
 
+                    {{-- =========================
+                        TAB ASIGNACIONES
+                    ========================== --}}
                     <div class="tab-pane fade" id="tab-asignaciones" role="tabpanel">
 
                         <div class="d-flex justify-content-between mb-2">
@@ -348,7 +402,7 @@
                                 <tbody>
                                     @forelse(($animal->assignments ?? []) as $a)
                                         <tr>
-                                            <td>{{ \Carbon\Carbon::parse($a->inicio)->format('d/m/Y H:i') }}</td>
+                                            <td>{{ $a->inicio ? \Carbon\Carbon::parse($a->inicio)->format('d/m/Y H:i') : '-' }}</td>
                                             <td>{{ $a->fin ? \Carbon\Carbon::parse($a->fin)->format('d/m/Y H:i') : '-' }}</td>
                                             <td>{{ $a->personal->nombres ?? '-' }}</td>
                                             <td>{{ $a->patrol->numero_economico ?? '-' }}</td>
@@ -390,7 +444,6 @@
 
 @section('css')
 <style>
-
 input.form-control,
 textarea.form-control,
 select.form-control {
@@ -444,13 +497,11 @@ label {
     outline: none !important;
     box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.4) !important;
 }
-
 </style>
 @stop
 
 @section('js')
 <script>
-
 @if(session('success'))
 Swal.fire({
     position: 'center',
@@ -480,6 +531,5 @@ $(document).on('click', '.delete-btn', function (e) {
         }
     });
 });
-
 </script>
 @stop
