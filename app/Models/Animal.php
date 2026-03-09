@@ -16,6 +16,7 @@ class Animal extends Model
         'raza',
         'procedencia',
         'sexo',
+        'condicion_reproductiva',
         'color',
         'caracteristicas',
         'marcaje',

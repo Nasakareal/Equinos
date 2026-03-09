@@ -52,8 +52,8 @@
                                 <label>Tipo</label>
                                 <select name="tipo" class="form-control @error('tipo') is-invalid @enderror">
                                     <option value="">-- Selecciona --</option>
-                                    <option value="EQUINO" {{ old('tipo')=='EQUINO'?'selected':'' }}>EQUINO</option>
-                                    <option value="CANINO" {{ old('tipo')=='CANINO'?'selected':'' }}>CANINO</option>
+                                    <option value="EQUINO" {{ old('tipo') == 'EQUINO' ? 'selected' : '' }}>EQUINO</option>
+                                    <option value="CANINO" {{ old('tipo') == 'CANINO' ? 'selected' : '' }}>CANINO</option>
                                 </select>
                                 @error('tipo')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -102,7 +102,6 @@
 
                     </div>
 
-
                     <div class="row">
 
                         <div class="col-md-3">
@@ -110,9 +109,9 @@
                                 <label>Estatus</label>
                                 <select name="estatus" class="form-control @error('estatus') is-invalid @enderror">
                                     <option value="">-- Selecciona --</option>
-                                    <option value="ACTIVO" {{ old('estatus')=='ACTIVO'?'selected':'' }}>ACTIVO</option>
-                                    <option value="BAJA" {{ old('estatus')=='BAJA'?'selected':'' }}>BAJA</option>
-                                    <option value="RESGUARDO" {{ old('estatus')=='RESGUARDO'?'selected':'' }}>RESGUARDO</option>
+                                    <option value="ACTIVO" {{ old('estatus') == 'ACTIVO' ? 'selected' : '' }}>ACTIVO</option>
+                                    <option value="BAJA" {{ old('estatus') == 'BAJA' ? 'selected' : '' }}>BAJA</option>
+                                    <option value="RESGUARDO" {{ old('estatus') == 'RESGUARDO' ? 'selected' : '' }}>RESGUARDO</option>
                                 </select>
                                 @error('estatus')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -125,10 +124,26 @@
                                 <label>Sexo</label>
                                 <select name="sexo" class="form-control @error('sexo') is-invalid @enderror">
                                     <option value="">-- Selecciona --</option>
-                                    <option value="MACHO" {{ old('sexo')=='MACHO'?'selected':'' }}>MACHO</option>
-                                    <option value="HEMBRA" {{ old('sexo')=='HEMBRA'?'selected':'' }}>HEMBRA</option>
+                                    <option value="MACHO" {{ old('sexo') == 'MACHO' ? 'selected' : '' }}>MACHO</option>
+                                    <option value="HEMBRA" {{ old('sexo') == 'HEMBRA' ? 'selected' : '' }}>HEMBRA</option>
                                 </select>
                                 @error('sexo')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Condición reproductiva</label>
+                                <select name="condicion_reproductiva" class="form-control @error('condicion_reproductiva') is-invalid @enderror">
+                                    <option value="">-- Selecciona --</option>
+                                    <option value="ENTERO" {{ old('condicion_reproductiva') == 'ENTERO' ? 'selected' : '' }}>ENTERO</option>
+                                    <option value="CASTRADO" {{ old('condicion_reproductiva') == 'CASTRADO' ? 'selected' : '' }}>CASTRADO</option>
+                                    <option value="GESTANTE" {{ old('condicion_reproductiva') == 'GESTANTE' ? 'selected' : '' }}>GESTANTE</option>
+                                    <option value="ESTERILIZADA" {{ old('condicion_reproductiva') == 'ESTERILIZADA' ? 'selected' : '' }}>ESTERILIZADA</option>
+                                </select>
+                                @error('condicion_reproductiva')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -147,6 +162,10 @@
                             </div>
                         </div>
 
+                    </div>
+
+                    <div class="row">
+
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Especialidad</label>
@@ -159,11 +178,6 @@
                                 @enderror
                             </div>
                         </div>
-
-                    </div>
-
-
-                    <div class="row">
 
                         <div class="col-md-3">
                             <div class="form-group">
@@ -204,6 +218,10 @@
                             </div>
                         </div>
 
+                    </div>
+
+                    <div class="row">
+
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Edad (texto)</label>
@@ -217,11 +235,6 @@
                                 @enderror
                             </div>
                         </div>
-
-                    </div>
-
-
-                    <div class="row">
 
                         <div class="col-md-3">
                             <div class="form-group">
@@ -251,7 +264,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label>Características</label>
                                 <input type="text"
@@ -265,7 +278,6 @@
                         </div>
 
                     </div>
-
 
                     <div class="row">
                         <div class="col-md-12">

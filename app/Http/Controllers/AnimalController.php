@@ -26,7 +26,9 @@ class AnimalController extends Controller
 
                 $q->where('nombre', 'like', '%' . $buscar . '%')
                     ->orWhere('raza', 'like', '%' . $buscar . '%')
-                    ->orWhere('especialidad', 'like', '%' . $buscar . '%');
+                    ->orWhere('especialidad', 'like', '%' . $buscar . '%')
+                    ->orWhere('color', 'like', '%' . $buscar . '%')
+                    ->orWhere('condicion_reproductiva', 'like', '%' . $buscar . '%');
             });
         }
 
@@ -48,6 +50,7 @@ class AnimalController extends Controller
             'raza' => 'nullable|string|max:255',
             'procedencia' => 'nullable|string|max:255',
             'sexo' => 'nullable|in:MACHO,HEMBRA',
+            'condicion_reproductiva' => 'nullable|string|max:255',
             'color' => 'nullable|string|max:255',
             'caracteristicas' => 'nullable|string',
             'marcaje' => 'nullable|string|max:255',
@@ -61,6 +64,8 @@ class AnimalController extends Controller
             'grano_kg_diario' => 'nullable|numeric',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
+
+        unset($validated['foto']);
 
         $animal = Animal::create($validated);
 
@@ -98,6 +103,7 @@ class AnimalController extends Controller
             'raza' => 'nullable|string|max:255',
             'procedencia' => 'nullable|string|max:255',
             'sexo' => 'nullable|in:MACHO,HEMBRA',
+            'condicion_reproductiva' => 'nullable|string|max:255',
             'color' => 'nullable|string|max:255',
             'caracteristicas' => 'nullable|string',
             'marcaje' => 'nullable|string|max:255',
