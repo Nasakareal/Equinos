@@ -33,7 +33,7 @@ class AnimalController extends Controller
             });
         }
 
-        $animals = $query->orderBy('nombre')->paginate(20);
+        $animals = $query->orderBy('nombre')->get();
 
         return view('animales.index', compact('animals'));
     }
