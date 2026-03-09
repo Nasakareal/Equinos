@@ -6,8 +6,10 @@
     "\\app\\Http\\Controllers",
     "\\resources",
     "\\resources\\views",
-    "\\resources\\views\\puestas_disposicion"
+    "\\resources\\views\\personal",
+    "\\resources\\views\\personal\\documentos",
+    "\\routes"
   ],
-  "SelectedNode": "\\database",
+  "SelectedNode": "\\resources\\views\\personal\\documentos\\edit.blade.php",
   "PreviewInSolutionExplorer": false
 }

@@ -11,7 +11,6 @@ use App\Http\Controllers\Api\WeaponAssignmentController;
 use App\Http\Controllers\Api\PatrolController;
 use App\Http\Controllers\Api\PatrolAssignmentController;
 use App\Http\Controllers\Api\TurnoController;
-use App\Http\Controllers\Api\ServiceScheduleController;
 use App\Http\Controllers\Api\DailyReportController;
 use App\Http\Controllers\Api\ActividadController;
 use App\Http\Controllers\Api\ActividadCatalogController;
@@ -169,14 +168,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{turno}', [TurnoController::class, 'show']);
     });
 
-    Route::prefix('servicio')->middleware('can:ver turnos')->group(function () {
-        Route::get('/', [ServiceScheduleController::class, 'index']);
-        Route::get('/{service_schedule}', [ServiceScheduleController::class, 'show']);
-        Route::post('/', [ServiceScheduleController::class, 'store'])->middleware('can:editar turnos');
-        Route::put('/{service_schedule}', [ServiceScheduleController::class, 'update'])->middleware('can:editar turnos');
-        Route::delete('/{service_schedule}', [ServiceScheduleController::class, 'destroy'])->middleware('can:editar turnos');
-    });
-
     /*
     |--------------------------------------------------------------------------
     | REPORTES DIARIOS (lo vas a usar para armamento Excel)
@@ -188,3 +179,4 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/descargar/{tipo}', [DailyReportController::class, 'descargar']);
     });
 });
+

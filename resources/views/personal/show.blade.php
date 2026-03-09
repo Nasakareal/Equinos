@@ -20,6 +20,13 @@
                     <i class="fa-solid fa-triangle-exclamation"></i> Registrar incidencia
                 </a>
             @endcan
+
+            @can('editar personal')
+                <a href="{{ route('personal.documentos.index', $personal->id) }}"
+                   class="btn btn-info">
+                    <i class="fa-solid fa-folder-open"></i> Documentos
+                </a>
+            @endcan
         </div>
     </div>
 @stop
@@ -151,6 +158,92 @@
                             </a>
                         @endcan
                     </div>
+                </div>
+            </div>
+
+            <div class="card card-outline card-info">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h3 class="card-title">
+                        <i class="fa-solid fa-folder-open"></i> Documentos
+                    </h3>
+
+                    <div class="card-tools">
+                        @can('editar personal')
+                            <a href="{{ route('personal.documentos.index', $personal->id) }}" class="btn btn-info btn-sm">
+                                <i class="fa-solid fa-magnifying-glass"></i> Ver todos
+                            </a>
+
+                            <a href="{{ route('personal.documentos.create', $personal->id) }}" class="btn btn-primary btn-sm">
+                                <i class="fa-solid fa-upload"></i> Subir documento
+                            </a>
+                        @endcan
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    @if(isset($personal->documentos) && $personal->documentos->count())
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-sm w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Título</th>
+                                        <th>Tipo</th>
+                                        <th>Archivo</th>
+                                        <th>Fecha</th>
+                                        <th style="width: 180px;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($personal->documentos as $documento)
+                                        <tr>
+                                            <td>{{ $documento->titulo }}</td>
+                                            <td>{{ $documento->tipo_documento ?? '—' }}</td>
+                                            <td>{{ $documento->nombre_original ?? '—' }}</td>
+                                            <td>
+                                                @if($documento->fecha_documento)
+                                                    {{ \Carbon\Carbon::parse($documento->fecha_documento)->format('d/m/Y') }}
+                                                @else
+                                                    —
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    <a href="{{ route('personal.documentos.download', [$personal->id, $documento->id]) }}"
+                                                       class="btn btn-info btn-sm"
+                                                       title="Descargar">
+                                                        <i class="fa-solid fa-download"></i>
+                                                    </a>
+
+                                                    @can('editar personal')
+                                                        <a href="{{ route('personal.documentos.edit', [$personal->id, $documento->id]) }}"
+                                                           class="btn btn-success btn-sm"
+                                                           title="Editar">
+                                                            <i class="fa-regular fa-pen-to-square"></i>
+                                                        </a>
+
+                                                        <form action="{{ route('personal.documentos.destroy', [$personal->id, $documento->id]) }}"
+                                                              method="POST"
+                                                              style="display:inline-block;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit"
+                                                                    class="btn btn-danger btn-sm"
+                                                                    title="Eliminar"
+                                                                    onclick="return confirm('¿Deseas eliminar este documento?')">
+                                                                <i class="fa-regular fa-trash-can"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endcan
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <span class="badge badge-secondary">Sin documentos registrados</span>
+                    @endif
                 </div>
             </div>
 

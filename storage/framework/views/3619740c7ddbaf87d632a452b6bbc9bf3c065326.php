@@ -67,9 +67,52 @@
 
                 <div class="tab-content pt-3">
 
+                    
                     <div class="tab-pane fade show active" id="tab-datos" role="tabpanel">
 
                         <div class="row">
+
+                            
+                            <div class="col-md-12 mb-3">
+                                <div class="card card-outline card-purple mb-0">
+                                    <div class="card-header">
+                                        <h3 class="card-title">
+                                            <i class="fa-solid fa-camera"></i> Foto
+                                        </h3>
+
+                                        <div class="card-tools">
+                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('editar animales')): ?>
+                                                <a href="<?php echo e(url('/animales/'.$animal->id.'/edit')); ?>" class="btn btn-purple btn-sm">
+                                                    <i class="fa-solid fa-upload"></i> Subir / Cambiar
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <?php if(!empty($animal->foto_url)): ?>
+                                            <div class="text-center">
+                                                <a href="<?php echo e($animal->foto_url); ?>" target="_blank" rel="noopener">
+                                                    <img
+                                                        src="<?php echo e($animal->foto_url); ?>"
+                                                        alt="Foto de <?php echo e($animal->nombre); ?>"
+                                                        class="img-fluid rounded shadow"
+                                                        style="max-height: 360px; object-fit: cover;"
+                                                    >
+                                                </a>
+                                                <div class="mt-2 text-muted small">
+                                                    Click para abrir en grande
+                                                </div>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="text-center text-muted py-4">
+                                                <i class="fa-regular fa-image fa-2x mb-2"></i>
+                                                <div>Sin foto</div>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="col-md-4">
                                 <div class="info-box bg-gradient-purple">
@@ -177,6 +220,7 @@
 
                     </div>
 
+                    
                     <div class="tab-pane fade" id="tab-medico" role="tabpanel">
 
                         <div class="d-flex justify-content-between mb-2">
@@ -206,8 +250,8 @@
                                 <tbody>
                                     <?php $__empty_1 = true; $__currentLoopData = ($animal->medicalRecords ?? []); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $r): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                         <tr>
-                                            <td><?php echo e(\Carbon\Carbon::parse($r->fecha)->format('d/m/Y')); ?></td>
-                                            <td><?php echo e($r->tipo); ?></td>
+                                            <td><?php echo e($r->fecha ? \Carbon\Carbon::parse($r->fecha)->format('d/m/Y') : '-'); ?></td>
+                                            <td><?php echo e($r->tipo ?? '-'); ?></td>
                                             <td><?php echo e($r->veterinario ?? '-'); ?></td>
                                             <td><?php echo e($r->costo ?? '-'); ?></td>
                                             <td><?php echo e($r->proxima_cita ? \Carbon\Carbon::parse($r->proxima_cita)->format('d/m/Y') : '-'); ?></td>
@@ -215,7 +259,7 @@
                                                 <?php if(($r->files ?? collect())->count()): ?>
                                                     <?php $__currentLoopData = $r->files; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $f): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <div class="mb-1">
-                                                            <a href="<?php echo e(Storage::url($f->archivo)); ?>" target="_blank">
+                                                            <a href="<?php echo e(Storage::url($f->archivo)); ?>" target="_blank" rel="noopener">
                                                                 <i class="fas fa-file"></i> Ver
                                                             </a>
                                                         </div>
@@ -257,6 +301,7 @@
 
                     </div>
 
+                    
                     <div class="tab-pane fade" id="tab-incidencias" role="tabpanel">
 
                         <div class="d-flex justify-content-between mb-2">
@@ -284,9 +329,9 @@
                                 <tbody>
                                     <?php $__empty_1 = true; $__currentLoopData = ($animal->incidences ?? []); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                         <tr>
-                                            <td><?php echo e(\Carbon\Carbon::parse($i->fecha)->format('d/m/Y H:i')); ?></td>
+                                            <td><?php echo e($i->fecha ? \Carbon\Carbon::parse($i->fecha)->format('d/m/Y H:i') : '-'); ?></td>
                                             <td><?php echo e($i->incidenceType->nombre ?? '-'); ?></td>
-                                            <td><?php echo e($i->gravedad); ?></td>
+                                            <td><?php echo e($i->gravedad ?? '-'); ?></td>
                                             <td><?php echo e($i->descripcion ?? '-'); ?></td>
                                             <td>
                                                 <div class="btn-group">
@@ -321,6 +366,7 @@
 
                     </div>
 
+                    
                     <div class="tab-pane fade" id="tab-asignaciones" role="tabpanel">
 
                         <div class="d-flex justify-content-between mb-2">
@@ -349,7 +395,7 @@
                                 <tbody>
                                     <?php $__empty_1 = true; $__currentLoopData = ($animal->assignments ?? []); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $a): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                         <tr>
-                                            <td><?php echo e(\Carbon\Carbon::parse($a->inicio)->format('d/m/Y H:i')); ?></td>
+                                            <td><?php echo e($a->inicio ? \Carbon\Carbon::parse($a->inicio)->format('d/m/Y H:i') : '-'); ?></td>
                                             <td><?php echo e($a->fin ? \Carbon\Carbon::parse($a->fin)->format('d/m/Y H:i') : '-'); ?></td>
                                             <td><?php echo e($a->personal->nombres ?? '-'); ?></td>
                                             <td><?php echo e($a->patrol->numero_economico ?? '-'); ?></td>
@@ -391,7 +437,6 @@
 
 <?php $__env->startSection('css'); ?>
 <style>
-
 input.form-control,
 textarea.form-control,
 select.form-control {
@@ -445,13 +490,11 @@ label {
     outline: none !important;
     box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.4) !important;
 }
-
 </style>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('js'); ?>
 <script>
-
 <?php if(session('success')): ?>
 Swal.fire({
     position: 'center',
@@ -481,7 +524,6 @@ $(document).on('click', '.delete-btn', function (e) {
         }
     });
 });
-
 </script>
 <?php $__env->stopSection(); ?>
 

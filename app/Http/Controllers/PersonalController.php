@@ -56,10 +56,15 @@ class PersonalController extends Controller
 
     private function normalizeText(?string $value): ?string
     {
-        if ($value === null) return null;
+        if ($value === null) {
+            return null;
+        }
 
         $value = trim($value);
-        if ($value === '') return null;
+
+        if ($value === '') {
+            return null;
+        }
 
         $value = preg_replace('/\s+/u', ' ', $value);
         $value = mb_strtoupper($value, 'UTF-8');
@@ -79,10 +84,12 @@ class PersonalController extends Controller
                 'max:40',
                 Rule::unique('personals', 'cuip')->where(function ($q) use ($request) {
                     $cuip = $this->normalizeText($request->input('cuip'));
+
                     if ($cuip === null) {
                         $q->whereRaw('1=0');
                         return $q;
                     }
+
                     return $q;
                 }),
             ],
@@ -119,10 +126,12 @@ class PersonalController extends Controller
                 'max:10',
                 Rule::unique('personals', 'celular')->where(function ($q) use ($request) {
                     $cel = $this->normalizeText($request->input('celular'));
+
                     if ($cel === null) {
                         $q->whereRaw('1=0');
                         return $q;
                     }
+
                     return $q;
                 }),
             ],
@@ -167,7 +176,10 @@ class PersonalController extends Controller
             return redirect()->route('personal.index')->with('success', 'Personal creado correctamente.');
         } catch (\Exception $e) {
             Log::error("Error al crear personal: " . $e->getMessage());
-            return redirect()->back()->withErrors('Hubo un error al crear el personal.')->withInput();
+
+            return redirect()->back()
+                ->withErrors('Hubo un error al crear el personal.')
+                ->withInput();
         }
     }
 
@@ -177,6 +189,11 @@ class PersonalController extends Controller
             ->with('user')
             ->with('area')
             ->with('turno')
+            ->with(['documentos' => function ($q) {
+                $q->where('activo', 1)
+                    ->latest('id')
+                    ->take(5);
+            }])
             ->with(['servicios' => function ($q) {
                 $q->where('activo', 1)->latest('id');
             }])
@@ -187,7 +204,6 @@ class PersonalController extends Controller
             }])
             ->with(['puestasDisposicion' => function ($q) {
                 $q->orderByDesc('anio')
-                    ->orderByDesc('folio_num')
                     ->orderByDesc('id');
             }])
             ->findOrFail($id);
@@ -221,10 +237,15 @@ class PersonalController extends Controller
             ->values();
 
         $historialArmamento = $personal->asignacionesArmamento;
-
         $puestasDisposicion = $personal->puestasDisposicion;
 
-        return view('personal.show', compact('personal', 'armasActivas', 'historialArmamento', 'horario', 'puestasDisposicion'));
+        return view('personal.show', compact(
+            'personal',
+            'armasActivas',
+            'historialArmamento',
+            'horario',
+            'puestasDisposicion'
+        ));
     }
 
     public function edit($id)
@@ -414,7 +435,10 @@ class PersonalController extends Controller
             return redirect()->route('personal.index')->with('success', 'Personal actualizado correctamente.');
         } catch (\Exception $e) {
             Log::error("Error al actualizar personal: " . $e->getMessage());
-            return redirect()->back()->withErrors('Hubo un error al actualizar el personal.')->withInput();
+
+            return redirect()->back()
+                ->withErrors('Hubo un error al actualizar el personal.')
+                ->withInput();
         }
     }
 
@@ -433,6 +457,7 @@ class PersonalController extends Controller
             return redirect()->route('personal.index')->with('success', 'Personal eliminado correctamente.');
         } catch (\Exception $e) {
             Log::error("Error al eliminar personal: " . $e->getMessage());
+
             return redirect()->back()->withErrors('Hubo un error al eliminar personal.');
         }
     }

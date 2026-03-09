@@ -130,4 +130,9 @@ class Personal extends Model
     {
         return $this->hasMany(\App\Models\PuestaDisposicion::class, 'personal_id');
     }
+
+    public function documentos()
+    {
+        return $this->hasMany(PersonalDocument::class, 'personal_id');
+    }
 }

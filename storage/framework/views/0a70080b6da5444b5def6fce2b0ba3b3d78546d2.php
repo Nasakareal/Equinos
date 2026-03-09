@@ -20,6 +20,13 @@
                     <i class="fa-solid fa-triangle-exclamation"></i> Registrar incidencia
                 </a>
             <?php endif; ?>
+
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('editar personal')): ?>
+                <a href="<?php echo e(route('personal.documentos.index', $personal->id)); ?>"
+                   class="btn btn-info">
+                    <i class="fa-solid fa-folder-open"></i> Documentos
+                </a>
+            <?php endif; ?>
         </div>
     </div>
 <?php $__env->stopSection(); ?>
@@ -151,6 +158,93 @@
                             </a>
                         <?php endif; ?>
                     </div>
+                </div>
+            </div>
+
+            <div class="card card-outline card-info">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h3 class="card-title">
+                        <i class="fa-solid fa-folder-open"></i> Documentos
+                    </h3>
+
+                    <div class="card-tools">
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('editar personal')): ?>
+                            <a href="<?php echo e(route('personal.documentos.index', $personal->id)); ?>" class="btn btn-info btn-sm">
+                                <i class="fa-solid fa-magnifying-glass"></i> Ver todos
+                            </a>
+
+                            <a href="<?php echo e(route('personal.documentos.create', $personal->id)); ?>" class="btn btn-primary btn-sm">
+                                <i class="fa-solid fa-upload"></i> Subir documento
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <?php if(isset($personal->documentos) && $personal->documentos->count()): ?>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-sm w-100">
+                                <thead>
+                                    <tr>
+                                        <th>Título</th>
+                                        <th>Tipo</th>
+                                        <th>Archivo</th>
+                                        <th>Fecha</th>
+                                        <th style="width: 180px;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $__currentLoopData = $personal->documentos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $documento): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <tr>
+                                            <td><?php echo e($documento->titulo); ?></td>
+                                            <td><?php echo e($documento->tipo_documento ?? '—'); ?></td>
+                                            <td><?php echo e($documento->nombre_original ?? '—'); ?></td>
+                                            <td>
+                                                <?php if($documento->fecha_documento): ?>
+                                                    <?php echo e(\Carbon\Carbon::parse($documento->fecha_documento)->format('d/m/Y')); ?>
+
+                                                <?php else: ?>
+                                                    —
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    <a href="<?php echo e(route('personal.documentos.download', [$personal->id, $documento->id])); ?>"
+                                                       class="btn btn-info btn-sm"
+                                                       title="Descargar">
+                                                        <i class="fa-solid fa-download"></i>
+                                                    </a>
+
+                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('editar personal')): ?>
+                                                        <a href="<?php echo e(route('personal.documentos.edit', [$personal->id, $documento->id])); ?>"
+                                                           class="btn btn-success btn-sm"
+                                                           title="Editar">
+                                                            <i class="fa-regular fa-pen-to-square"></i>
+                                                        </a>
+
+                                                        <form action="<?php echo e(route('personal.documentos.destroy', [$personal->id, $documento->id])); ?>"
+                                                              method="POST"
+                                                              style="display:inline-block;">
+                                                            <?php echo csrf_field(); ?>
+                                                            <?php echo method_field('DELETE'); ?>
+                                                            <button type="submit"
+                                                                    class="btn btn-danger btn-sm"
+                                                                    title="Eliminar"
+                                                                    onclick="return confirm('¿Deseas eliminar este documento?')">
+                                                                <i class="fa-regular fa-trash-can"></i>
+                                                            </button>
+                                                        </form>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php else: ?>
+                        <span class="badge badge-secondary">Sin documentos registrados</span>
+                    <?php endif; ?>
                 </div>
             </div>
 

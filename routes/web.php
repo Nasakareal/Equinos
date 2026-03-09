@@ -30,6 +30,7 @@ use App\Http\Controllers\AnimalMedicalFileController;
 use App\Http\Controllers\AnimalIncidenceController;
 use App\Http\Controllers\AnimalIncidenceFileController;
 use App\Http\Controllers\DailyReportsController;
+use App\Http\Controllers\PersonalDocumentController;
 
 
 Route::get('/', function () {
@@ -57,6 +58,18 @@ Route::middleware('auth')->group(function () {
         Route::post('/{personal}/horario/{personal_horario}/detalles', [PersonalHorarioDetalleController::class, 'store'])->middleware('can:editar personal')->name('personal.horario_detalles.store');
         Route::put('/{personal}/horario/{personal_horario}/detalles/{detalle}', [PersonalHorarioDetalleController::class, 'update'])->middleware('can:editar personal')->name('personal.horario_detalles.update');
         Route::delete('/{personal}/horario/{personal_horario}/detalles/{detalle}', [PersonalHorarioDetalleController::class, 'destroy'])->middleware('can:editar personal')->name('personal.horario_detalles.destroy');
+
+        // DOCUMENTOS
+        Route::prefix('{personal}/documentos')->group(function () {
+            Route::get('/', [PersonalDocumentController::class, 'index'])->name('personal.documentos.index');
+            Route::get('/create', [PersonalDocumentController::class, 'create'])->middleware('can:editar personal')->name('personal.documentos.create');
+            Route::post('/', [PersonalDocumentController::class, 'store'])->middleware('can:editar personal')->name('personal.documentos.store');
+            Route::get('/{documento}', [PersonalDocumentController::class, 'show'])->name('personal.documentos.show');
+            Route::get('/{documento}/edit', [PersonalDocumentController::class, 'edit'])->middleware('can:editar personal')->name('personal.documentos.edit');
+            Route::put('/{documento}', [PersonalDocumentController::class, 'update'])->middleware('can:editar personal')->name('personal.documentos.update');
+            Route::delete('/{documento}', [PersonalDocumentController::class, 'destroy'])->middleware('can:editar personal')->name('personal.documentos.destroy');
+            Route::get('/{documento}/descargar', [PersonalDocumentController::class, 'download'])->name('personal.documentos.download');
+        });
     });
 
     Route::prefix('animales')->middleware('can:ver animales')->group(function () {
