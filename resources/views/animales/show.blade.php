@@ -195,7 +195,7 @@
                                         </tr>
                                         <tr>
                                             <th>Edad</th>
-                                            <td>{{ $animal->edad_texto ?? '-' }}</td>
+                                            <td>{{ $animal->edad_calculada ?? '-' }}</td>
                                         </tr>
                                         <tr>
                                             <th>Forraje (kg/día)</th>

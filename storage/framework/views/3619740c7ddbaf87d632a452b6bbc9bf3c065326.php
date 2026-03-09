@@ -194,7 +194,7 @@
                                         </tr>
                                         <tr>
                                             <th>Edad</th>
-                                            <td><?php echo e($animal->edad_texto ?? '-'); ?></td>
+                                            <td><?php echo e($animal->edad_calculada ?? '-'); ?></td>
                                         </tr>
                                         <tr>
                                             <th>Forraje (kg/día)</th>

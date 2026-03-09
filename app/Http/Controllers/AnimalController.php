@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Animal;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -59,13 +60,14 @@ class AnimalController extends Controller
             'estatus' => 'required|in:ACTIVO,BAJA,RESGUARDO',
             'observaciones' => 'nullable|string',
             'fecha_nacimiento' => 'nullable|date',
-            'edad_texto' => 'nullable|string|max:255',
             'forraje_kg_diario' => 'nullable|numeric',
             'grano_kg_diario' => 'nullable|numeric',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
         unset($validated['foto']);
+
+        $validated['edad_texto'] = $this->calcularEdadTexto($validated['fecha_nacimiento'] ?? null);
 
         $animal = Animal::create($validated);
 
@@ -112,13 +114,14 @@ class AnimalController extends Controller
             'estatus' => 'required|in:ACTIVO,BAJA,RESGUARDO',
             'observaciones' => 'nullable|string',
             'fecha_nacimiento' => 'nullable|date',
-            'edad_texto' => 'nullable|string|max:255',
             'forraje_kg_diario' => 'nullable|numeric',
             'grano_kg_diario' => 'nullable|numeric',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
         unset($validated['foto']);
+
+        $validated['edad_texto'] = $this->calcularEdadTexto($validated['fecha_nacimiento'] ?? null);
 
         $animal->update($validated);
 
@@ -147,5 +150,35 @@ class AnimalController extends Controller
 
         return redirect()->route('animales.index')
             ->with('success', 'Animal eliminado correctamente');
+    }
+
+    private function calcularEdadTexto($fechaNacimiento): ?string
+    {
+        if (empty($fechaNacimiento)) {
+            return null;
+        }
+
+        $fecha = Carbon::parse($fechaNacimiento);
+        $hoy = Carbon::today();
+
+        if ($fecha->greaterThan($hoy)) {
+            return null;
+        }
+
+        $diff = $fecha->diff($hoy);
+
+        $anios = $diff->y;
+        $meses = $diff->m;
+
+        if ($anios > 0 && $meses > 0) {
+            return str_pad((string) $anios, 2, '0', STR_PAD_LEFT) . ' AÑOS ' .
+                   str_pad((string) $meses, 2, '0', STR_PAD_LEFT) . ' MESES';
+        }
+
+        if ($anios > 0) {
+            return str_pad((string) $anios, 2, '0', STR_PAD_LEFT) . ' AÑOS';
+        }
+
+        return str_pad((string) $meses, 2, '0', STR_PAD_LEFT) . ' MESES';
     }
 }

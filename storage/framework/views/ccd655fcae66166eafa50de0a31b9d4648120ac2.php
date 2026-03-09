@@ -16,12 +16,11 @@
                 <h3 class="card-title">Listado de Animales</h3>
 
                 <div class="card-tools">
-
                     <form method="GET" class="d-inline-block mr-2">
                         <select name="tipo" class="form-control form-control-sm d-inline-block" style="width:140px">
                             <option value="">Todos</option>
-                            <option value="EQUINO" <?php echo e(request('tipo')=='EQUINO'?'selected':''); ?>>Equinos</option>
-                            <option value="CANINO" <?php echo e(request('tipo')=='CANINO'?'selected':''); ?>>Caninos</option>
+                            <option value="EQUINO" <?php echo e(request('tipo') == 'EQUINO' ? 'selected' : ''); ?>>Equinos</option>
+                            <option value="CANINO" <?php echo e(request('tipo') == 'CANINO' ? 'selected' : ''); ?>>Caninos</option>
                         </select>
                     </form>
 
@@ -30,12 +29,10 @@
                             <i class="fa-solid fa-plus"></i> Agregar
                         </a>
                     <?php endif; ?>
-
                 </div>
             </div>
 
             <div class="card-body">
-
                 <div class="table-responsive">
                     <table id="animals" class="table table-striped table-bordered table-hover table-sm w-100">
                         <thead>
@@ -44,12 +41,12 @@
                                 <th>Tipo</th>
                                 <th>Nombre</th>
                                 <th>Raza</th>
+                                <th>Edad</th>
                                 <th>Especialidad</th>
                                 <th>Estatus</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-
                         <tbody>
                             <?php $__currentLoopData = $animals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $animal): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <tr>
@@ -63,6 +60,7 @@
                                     </td>
                                     <td><?php echo e($animal->nombre); ?></td>
                                     <td><?php echo e($animal->raza ?? '-'); ?></td>
+                                    <td><?php echo e($animal->edad_calculada ?? '-'); ?></td>
                                     <td><?php echo e($animal->especialidad ?? '-'); ?></td>
                                     <td>
                                         <?php if($animal->estatus == 'ACTIVO'): ?>
@@ -73,47 +71,36 @@
                                             <span class="badge badge-warning">Resguardo</span>
                                         <?php endif; ?>
                                     </td>
-
                                     <td>
                                         <div class="btn-group">
-
                                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver animales')): ?>
-                                                <a href="<?php echo e(url('/animales/'.$animal->id)); ?>"
-                                                   class="btn btn-info btn-sm">
+                                                <a href="<?php echo e(url('/animales/'.$animal->id)); ?>" class="btn btn-info btn-sm">
                                                     <i class="fa-regular fa-eye"></i>
                                                 </a>
                                             <?php endif; ?>
 
                                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('editar animales')): ?>
-                                                <a href="<?php echo e(url('/animales/'.$animal->id.'/edit')); ?>"
-                                                   class="btn btn-success btn-sm">
+                                                <a href="<?php echo e(url('/animales/'.$animal->id.'/edit')); ?>" class="btn btn-success btn-sm">
                                                     <i class="fa-regular fa-pen-to-square"></i>
                                                 </a>
                                             <?php endif; ?>
 
                                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('eliminar animales')): ?>
-                                                <form action="<?php echo e(url('/animales/'.$animal->id)); ?>"
-                                                      method="POST"
-                                                      style="display:inline-block;">
+                                                <form action="<?php echo e(url('/animales/'.$animal->id)); ?>" method="POST" style="display:inline-block;">
                                                     <?php echo csrf_field(); ?>
                                                     <?php echo method_field('DELETE'); ?>
-                                                    <button type="button"
-                                                            class="btn btn-danger btn-sm delete-btn">
+                                                    <button type="button" class="btn btn-danger btn-sm delete-btn">
                                                         <i class="fa-regular fa-trash-can"></i>
                                                     </button>
                                                 </form>
                                             <?php endif; ?>
-
                                         </div>
                                     </td>
-
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
-
                     </table>
                 </div>
-
             </div>
 
         </div>
@@ -122,17 +109,13 @@
 
 <?php $__env->stopSection(); ?>
 
-
 <?php $__env->startSection('css'); ?>
 <style>
-
-/* Centrar contenido de tabla */
 .table th, .table td{
     text-align:center;
     vertical-align:middle;
 }
 
-/* Botón Agregar más visible */
 .btn-purple{
     background: linear-gradient(135deg, #6f42c1, #4e2a8e);
     border: none;
@@ -153,42 +136,38 @@
     outline: none;
     box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.4);
 }
-
 </style>
 <?php $__env->stopSection(); ?>
 
-
 <?php $__env->startSection('js'); ?>
-
 <script>
 $(function () {
-
-    $('#animals').DataTable({
-        "pageLength": 10,
-        "language": {
-            "emptyTable": "No hay información",
-            "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-            "infoEmpty": "Mostrando 0 a 0 de 0 registros",
-            "infoFiltered": "(Filtrado de _MAX_ total registros)",
-            "lengthMenu": "Mostrar _MENU_ registros",
-            "loadingRecords": "Cargando...",
-            "processing": "Procesando...",
-            "search": "Buscar:",
-            "zeroRecords": "Sin resultados encontrados",
-            "paginate": {
-                "first": "Primero",
-                "last": "Último",
-                "next": "Siguiente",
-                "previous": "Anterior"
-            }
-        },
-        "responsive": true,
-        "autoWidth": false,
-        "scrollX": true
-    });
-
+    if (!$.fn.DataTable.isDataTable('#animals')) {
+        $('#animals').DataTable({
+            pageLength: 10,
+            language: {
+                emptyTable: "No hay información",
+                info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                infoEmpty: "Mostrando 0 a 0 de 0 registros",
+                infoFiltered: "(Filtrado de _MAX_ total registros)",
+                lengthMenu: "Mostrar _MENU_ registros",
+                loadingRecords: "Cargando...",
+                processing: "Procesando...",
+                search: "Buscar:",
+                zeroRecords: "Sin resultados encontrados",
+                paginate: {
+                    first: "Primero",
+                    last: "Último",
+                    next: "Siguiente",
+                    previous: "Anterior"
+                }
+            },
+            responsive: true,
+            autoWidth: false,
+            scrollX: true
+        });
+    }
 });
-
 
 <?php if(session('success')): ?>
 Swal.fire({
@@ -200,15 +179,13 @@ Swal.fire({
 });
 <?php endif; ?>
 
-
 $(document).on('click', '.delete-btn', function (e) {
-
     e.preventDefault();
     let form = $(this).closest('form');
 
     Swal.fire({
         title: '¿Eliminar registro?',
-        text: "Esta acción no se puede revertir",
+        text: 'Esta acción no se puede revertir',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -220,11 +197,8 @@ $(document).on('click', '.delete-btn', function (e) {
             form.submit();
         }
     });
-
 });
-
 </script>
-
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('adminlte::page', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\wamp64\www\equinosCaninos\resources\views/animales/index.blade.php ENDPATH**/ ?>

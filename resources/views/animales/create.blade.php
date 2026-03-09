@@ -26,7 +26,6 @@
 
                 <div class="card-body">
 
-                    {{-- FOTO --}}
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -224,20 +223,6 @@
 
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label>Edad (texto)</label>
-                                <input type="text"
-                                       name="edad_texto"
-                                       value="{{ old('edad_texto') }}"
-                                       class="form-control @error('edad_texto') is-invalid @enderror"
-                                       placeholder="Ej: 05 AÑOS 11 MESES">
-                                @error('edad_texto')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="form-group">
                                 <label>Forraje (kg/día)</label>
                                 <input type="number"
                                        step="0.01"
@@ -264,7 +249,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label>Características</label>
                                 <input type="text"

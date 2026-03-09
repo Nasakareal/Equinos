@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -39,6 +40,7 @@ class Animal extends Model
 
     protected $appends = [
         'foto_url',
+        'edad_calculada',
     ];
 
     public function getFotoUrlAttribute(): ?string
@@ -48,6 +50,36 @@ class Animal extends Model
         }
 
         return Storage::disk('public')->url($this->foto);
+    }
+
+    public function getEdadCalculadaAttribute(): ?string
+    {
+        if (empty($this->fecha_nacimiento)) {
+            return $this->edad_texto ?: null;
+        }
+
+        $fecha = Carbon::parse($this->fecha_nacimiento)->startOfDay();
+        $hoy = Carbon::today();
+
+        if ($fecha->greaterThan($hoy)) {
+            return null;
+        }
+
+        $diff = $fecha->diff($hoy);
+
+        $anios = $diff->y;
+        $meses = $diff->m;
+
+        if ($anios > 0 && $meses > 0) {
+            return str_pad((string) $anios, 2, '0', STR_PAD_LEFT) . ' AÑOS ' .
+                   str_pad((string) $meses, 2, '0', STR_PAD_LEFT) . ' MESES';
+        }
+
+        if ($anios > 0) {
+            return str_pad((string) $anios, 2, '0', STR_PAD_LEFT) . ' AÑOS';
+        }
+
+        return str_pad((string) $meses, 2, '0', STR_PAD_LEFT) . ' MESES';
     }
 
     public function assignments()
