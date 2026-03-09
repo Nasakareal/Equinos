@@ -90,23 +90,6 @@
             </div>
         <?php endif; ?>
 
-        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver configuraciones')): ?>
-            <div class="col-md-3 col-sm-6 col-12">
-                <div class="sv-card">
-                    <div class="sv-card__icon bg-info">
-                        <i class="fa-solid fa-clock"></i>
-                    </div>
-                    <div class="sv-card__body">
-                        <div class="sv-card__title">Turno en servicio</div>
-                        <div class="sv-card__desc">Selecciona el turno que está laborando.</div>
-                        <a href="<?php echo e(route('settings.turno_actual')); ?>" class="btn sv-btn">
-                            <i class="fas fa-arrow-right"></i> Acceder
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <?php endif; ?>
-
         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver estadisticas')): ?>
             <div class="col-md-3 col-sm-6 col-12">
                 <div class="sv-card">
@@ -117,6 +100,23 @@
                         <div class="sv-card__title">Estadísticas</div>
                         <div class="sv-card__desc">Reportes, exportaciones y análisis.</div>
                         <a href="<?php echo e(url('/admin/settings/estadisticas')); ?>" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver configuraciones')): ?>
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-primary">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Respaldos SQL</div>
+                        <div class="sv-card__desc">Consulta y descarga copias de seguridad de la base de datos.</div>
+                        <a href="<?php echo e(route('backups_sql.index')); ?>" class="btn sv-btn">
                             <i class="fas fa-arrow-right"></i> Acceder
                         </a>
                     </div>

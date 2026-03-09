@@ -52,7 +52,6 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
         $dep_archivo = trim(str_ireplace('AGRUPAMIENTO DE ', '', $dependencia));
         $filename = $fecha_titulo . ' ARMAMENTO ' . mb_strtoupper($dep_archivo) . ' TURNO ' . mb_strtoupper($turno_clave) . '.xlsx';
 
-        // === Traer personal con armamento asignado ===
         $personals = Personal::query()
             ->where('activo', 1)
             ->where('dependencia', $dependencia)
@@ -71,7 +70,6 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
             abort(404, 'No hay personal activo con armamento asignado para esa dependencia.');
         }
 
-        // === Resolver turno por personal (tu lógica actual) ===
         $turnoPorPersonal = ServiceSchedule::query()
             ->where('activo', 1)
             ->where('tipo', 'CICLICO')
@@ -86,7 +84,6 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
             ->get()
             ->keyBy('id');
 
-        // === Reglas de encabezados ===
         $esJefeAgrupamiento = function (Personal $p): bool {
             $cargo = mb_strtoupper((string)($p->cargo ?? ''));
             return str_contains($cargo, 'ENCARGADO DE AGRUPAMIENTO');
@@ -97,11 +94,8 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
             return str_contains($cargo, 'ENCARGADO TURNO');
         };
 
-        // ✅ Para tu “Fredy/subdirector siempre hasta adelante”:
-        // (sin crear turno nuevo todavía)
         $esSiemprePrimero = function (Personal $p): bool {
             $cargo = mb_strtoupper((string)($p->cargo ?? ''));
-            // Ajusta este contains a tu texto real (“SUBDIRECTOR”, “CMTE”, etc.)
             return str_contains($cargo, 'SUBDIRECTOR')
                 || str_contains($cargo, 'CMTE. FREDY ERASTO')
                 || str_contains($cargo, 'FREDY ERASTO GONZALEZ OROZCO');
@@ -109,7 +103,6 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
 
         $siemprePrimero = $personals->filter(fn($p) => $esSiemprePrimero($p))->values();
 
-        // si ya lo capturas como “encargado agrupamiento”, no lo dupliques
         $personalsSinSiemprePrimero = $personals->reject(fn($p) => $esSiemprePrimero($p))->values();
 
         $encargadosAgrupamiento = $personalsSinSiemprePrimero->filter(fn($p) => $esJefeAgrupamiento($p))->values();

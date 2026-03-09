@@ -31,7 +31,7 @@ use App\Http\Controllers\AnimalIncidenceController;
 use App\Http\Controllers\AnimalIncidenceFileController;
 use App\Http\Controllers\DailyReportsController;
 use App\Http\Controllers\PersonalDocumentController;
-
+use App\Http\Controllers\BackupsSqlController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -237,9 +237,6 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/', [SettingsController::class, 'index'])->name('settings.index');
 
-        Route::get('/turno-actual', [SettingsController::class, 'turnoActual'])->name('settings.turno_actual');
-        Route::post('/turno-actual', [SettingsController::class, 'updateTurnoActual'])->name('settings.turno_actual.update');
-
         Route::prefix('users')->middleware('can:ver usuarios')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('users.index');
             Route::get('/create', [UserController::class, 'create'])->middleware('can:crear usuarios')->name('users.create');
@@ -278,6 +275,11 @@ Route::middleware('auth')->group(function () {
             Route::get('/{responsable}/edit', [ResponsableController::class, 'edit'])->middleware('can:editar responsables')->name('responsables.edit');
             Route::put('/{responsable}', [ResponsableController::class, 'update'])->middleware('can:editar responsables')->name('responsables.update');
             Route::delete('/{responsable}', [ResponsableController::class, 'destroy'])->middleware('can:eliminar responsables')->name('responsables.destroy');
+        });
+
+        Route::prefix('backups-sql')->group(function () {
+            Route::get('/', [BackupsSqlController::class, 'index'])->name('backups_sql.index');
+            Route::get('/descargar/{file}', [BackupsSqlController::class, 'download'])->name('backups_sql.download');
         });
     });
 });

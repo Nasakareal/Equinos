@@ -14,6 +14,7 @@ class DailyReportsService
     public function __construct()
     {
         $this->registrar(new \App\Services\DailyReports\Generators\ArmamentoEquinosCaninosGenerator());
+        $this->registrar(new \App\Services\DailyReports\Generators\ListaPersonalGenerator());
     }
 
     public function registrar(DailyReportGenerator $gen): void
@@ -38,8 +39,6 @@ class DailyReportsService
         $estado = [];
 
         foreach ($this->generadores as $tipo => $gen) {
-            // OJO: Para ARMAMENTO se requiere dependencia.
-            // Aquí no la tenemos, así que saldrá "no existe" (normal).
             $path = $this->pathEsperado($tipo, $fecha, $turno_id, []);
 
             $estado[$tipo] = [

@@ -163,7 +163,7 @@
                                     @error('turno_id')
                                         <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                     @enderror
-                                    <small class="text-muted">Si seleccionas MIXTO, el horario se definirá por persona.</small>
+                                    <small class="text-muted">Si seleccionas MIXTO, el horario se definirá después en su horario personal.</small>
                                 </div>
                             </div>
                         </div>
