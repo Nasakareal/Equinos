@@ -1,4 +1,4 @@
-<aside class="main-sidebar" style="background-color: #4682B4;">
+<aside class="main-sidebar {{ config('adminlte.classes_sidebar', '') }}">
 
 
 
@@ -27,3 +27,5 @@
     </div>
 
 </aside>
+
+

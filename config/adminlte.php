@@ -390,6 +390,29 @@ return [
         ],
 
         [
+            'text' => 'Equinoterapias',
+            'icon' => 'fa-solid fa-child-reaching',
+            'classes' => 'bg-pink text-white',
+            'can' => 'ver animales',
+            'submenu' => [
+                [
+                    'text' => 'Listado',
+                    'icon' => 'fa-solid fa-list',
+                    'classes' => 'text-white',
+                    'url' => 'equinoterapias',
+                    'can' => 'ver animales',
+                ],
+                [
+                    'text' => 'Registrar',
+                    'icon' => 'fa-solid fa-plus',
+                    'classes' => 'text-white',
+                    'url' => 'equinoterapias/create',
+                    'can' => 'editar animales',
+                ],
+            ],
+        ],
+
+        [
             'text' => 'Puestas a Disposición',
             'icon' => 'fa-solid fa-file-pdf',
             'classes' => 'bg-danger text-white',

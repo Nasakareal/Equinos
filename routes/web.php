@@ -22,7 +22,7 @@ use App\Http\Controllers\ResponsableController;
 use App\Http\Controllers\PersonalHorarioController;
 use App\Http\Controllers\PersonalHorarioDetalleController;
 use App\Http\Controllers\PuestaDisposicionController;
-
+use App\Http\Controllers\EquinoterapiaReporteController;
 use App\Http\Controllers\AnimalController;
 use App\Http\Controllers\AnimalAssignmentController;
 use App\Http\Controllers\AnimalMedicalRecordController;
@@ -42,6 +42,17 @@ Auth::routes();
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::middleware('auth')->group(function () {
+
+    Route::prefix('equinoterapias')->middleware('can:ver animales')->group(function () {
+        Route::get('/', [EquinoterapiaReporteController::class, 'index'])->name('equinoterapias.index');
+        Route::get('/create', [EquinoterapiaReporteController::class, 'create'])->middleware('can:editar animales')->name('equinoterapias.create');
+        Route::post('/', [EquinoterapiaReporteController::class, 'store'])->middleware('can:editar animales')->name('equinoterapias.store');
+        Route::get('/{equinoterapia}', [EquinoterapiaReporteController::class, 'show'])->name('equinoterapias.show');
+        Route::get('/{equinoterapia}/edit', [EquinoterapiaReporteController::class, 'edit'])->middleware('can:editar animales')->name('equinoterapias.edit');
+        Route::put('/{equinoterapia}', [EquinoterapiaReporteController::class, 'update'])->middleware('can:editar animales')->name('equinoterapias.update');
+        Route::delete('/{equinoterapia}', [EquinoterapiaReporteController::class, 'destroy'])->middleware('can:editar animales')->name('equinoterapias.destroy');
+        Route::get('/{equinoterapia}/whatsapp', [EquinoterapiaReporteController::class, 'whatsapp'])->name('equinoterapias.whatsapp');
+    });
 
     Route::prefix('personal')->middleware('can:ver personal')->group(function () {
         Route::get('/', [PersonalController::class, 'index'])->name('personal.index');

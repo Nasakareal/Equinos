@@ -1,4 +1,4 @@
-<aside class="main-sidebar" style="background-color: #4682B4;">
+<aside class="main-sidebar <?php echo e(config('adminlte.classes_sidebar', '')); ?>">
 
 
 
@@ -27,4 +27,6 @@
     </div>
 
 </aside>
+
+
 <?php /**PATH C:\wamp64\www\equinosCaninos\resources\views/vendor/adminlte/partials/sidebar/left-sidebar.blade.php ENDPATH**/ ?>

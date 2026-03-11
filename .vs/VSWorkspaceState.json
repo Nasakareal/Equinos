@@ -4,11 +4,11 @@
     "\\app",
     "\\app\\Http",
     "\\app\\Http\\Controllers",
-    "\\app\\Services",
     "\\resources",
     "\\resources\\views",
-    "\\resources\\views\\personal"
+    "\\resources\\views\\animales",
+    "\\resources\\views\\equinoterapias"
   ],
-  "SelectedNode": "\\resources\\views\\personal\\create.blade.php",
+  "SelectedNode": "\\resources\\views\\equinoterapias\\show.blade.php",
   "PreviewInSolutionExplorer": false
 }

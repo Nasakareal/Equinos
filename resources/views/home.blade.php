@@ -391,23 +391,23 @@
 @section('css')
 <style>
     :root{
-        --ef-text: rgba(234,240,255,.92);
-        --ef-muted: rgba(234,240,255,.65);
-        --ef-stroke: rgba(255,255,255,.12);
-        --ef-card: rgba(255,255,255,.08);
-        --ef-card2: rgba(255,255,255,.05);
-        --ef-shadow: 0 18px 55px rgba(0,0,0,.35);
+        --ef-text: #2f3d2f;
+        --ef-muted: #68715f;
+        --ef-stroke: rgba(168, 150, 121, .28);
+        --ef-card: rgba(252, 248, 239, .94);
+        --ef-card2: rgba(241, 234, 219, .92);
+        --ef-shadow: 0 18px 40px rgba(79, 74, 58, .12);
         --ef-radius: 22px;
     }
 
     .ef-hero{
         margin: 10px 0 12px;
         border-radius: 26px;
-        border: 1px solid rgba(255,255,255,.12);
+        border: 1px solid rgba(168, 150, 121, .28);
         background:
-            radial-gradient(700px 280px at 20% 30%, rgba(45,168,255,.20), transparent 60%),
-            radial-gradient(700px 280px at 80% 30%, rgba(124,92,255,.18), transparent 60%),
-            linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+            radial-gradient(700px 280px at 20% 30%, rgba(117, 150, 103, .22), transparent 60%),
+            radial-gradient(700px 280px at 80% 30%, rgba(168, 122, 86, .20), transparent 60%),
+            linear-gradient(180deg, rgba(250, 246, 236, .96), rgba(237, 231, 217, .94));
         box-shadow: var(--ef-shadow);
         overflow: hidden;
     }
@@ -416,17 +416,17 @@
         display:inline-flex; align-items:center; gap:10px;
         padding: 8px 12px;
         border-radius: 999px;
-        background: rgba(0,0,0,.18);
-        border: 1px solid rgba(255,255,255,.10);
-        color: rgba(234,240,255,.85);
+        background: rgba(53, 82, 60, .10);
+        border: 1px solid rgba(116, 143, 105, .24);
+        color: #51604e;
         font-weight: 800;
         font-size: 12px;
         letter-spacing: .35px;
     }
     .ef-dot{
         width: 8px; height: 8px; border-radius: 999px;
-        background: #19D38C;
-        box-shadow: 0 0 0 5px rgba(25,211,140,.14);
+        background: #5e8666;
+        box-shadow: 0 0 0 5px rgba(94,134,102,.14);
         display:inline-block;
     }
     .ef-hero__title{
@@ -447,13 +447,13 @@
         margin: 8px 0 12px;
         padding: 12px 14px;
         border-radius: 18px;
-        border: 1px solid rgba(255,255,255,.10);
-        background: rgba(0,0,0,.12);
+        border: 1px solid rgba(116, 143, 105, .24);
+        background: rgba(251, 247, 236, .82);
     }
     .ef-section__title{
         font-weight: 950;
         letter-spacing: -.35px;
-        color: rgba(234,240,255,.92);
+        color: #2f3d2f;
         display:flex;
         align-items:center;
         gap: 10px;
@@ -463,7 +463,7 @@
         margin-top: 4px;
         font-weight: 650;
         font-size: 12.5px;
-        color: rgba(234,240,255,.65);
+        color: #68715f;
     }
 
     .ef-card{
@@ -474,27 +474,27 @@
         border-radius: var(--ef-radius);
         border: 1px solid var(--ef-stroke);
         background: linear-gradient(180deg, var(--ef-card), var(--ef-card2));
-        box-shadow: 0 10px 35px rgba(0,0,0,.22);
+        box-shadow: 0 12px 30px rgba(79, 74, 58, .12);
         transition: .18s ease;
         min-height: 112px;
     }
     .ef-card:hover{
         transform: translateY(-2px);
-        border-color: rgba(45,168,255,.28);
-        box-shadow: 0 18px 55px rgba(0,0,0,.30);
+        border-color: rgba(117, 150, 103, .34);
+        box-shadow: 0 18px 36px rgba(79, 74, 58, .16);
     }
 
     .ef-card__icon{
         width: 52px; height: 52px;
         border-radius: 18px;
         display:grid; place-items:center;
-        border: 1px solid rgba(255,255,255,.14);
-        box-shadow: 0 12px 25px rgba(0,0,0,.22);
+        border: 1px solid rgba(255,255,255,.28);
+        box-shadow: 0 12px 25px rgba(85, 72, 52, .14);
         flex: 0 0 auto;
     }
     .ef-card__icon i{
         font-size: 20px;
-        color: rgba(255,255,255,.95);
+        color: rgba(255,255,255,.96);
     }
 
     .ef-card__body{ flex: 1; min-width: 0; }
@@ -518,29 +518,31 @@
         gap: 8px;
         border-radius: 14px;
         font-weight: 900;
-        border: 1px solid rgba(45,168,255,.35) !important;
-        background: linear-gradient(135deg, rgba(45,168,255,.25), rgba(124,92,255,.22)) !important;
-        color: rgba(234,240,255,.95) !important;
+        border: 1px solid rgba(146, 116, 87, .34) !important;
+        background: linear-gradient(135deg, #cfa67e, #a37253) !important;
+        color: #fff8ef !important;
         padding: 8px 12px;
     }
     .ef-btn:hover{
         transform: translateY(-1px);
-        border-color: rgba(45,168,255,.55) !important;
-        background: linear-gradient(135deg, rgba(45,168,255,.34), rgba(124,92,255,.30)) !important;
-        color: rgba(234,240,255,.98) !important;
+        border-color: rgba(120, 88, 61, .46) !important;
+        background: linear-gradient(135deg, #d8b28d, #b07c59) !important;
+        color: #fffaf3 !important;
     }
 
     .ef-btn--ghost{
-        background: rgba(0,0,0,.18) !important;
-        border: 1px solid rgba(255,255,255,.12) !important;
-        color: rgba(234,240,255,.88) !important;
+        background: rgba(53, 82, 60, .10) !important;
+        border: 1px solid rgba(168, 150, 121, .28) !important;
+        color: #4d5d4a !important;
     }
     .ef-btn--ghost:hover{
-        background: rgba(0,0,0,.22) !important;
-        border-color: rgba(255,255,255,.16) !important;
+        background: rgba(92, 122, 83, .14) !important;
+        border-color: rgba(117, 150, 103, .30) !important;
         transform: none;
     }
 
     .ef-card--soft{ opacity: .92; }
 </style>
 @stop
+
+
