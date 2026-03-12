@@ -27,161 +27,135 @@
 @section('adminlte_css')
 <style>
     :root{
-        --bg0:#070B14;
-        --bg1:#0B1224;
-        --text:#EAF0FF;
-        --muted: rgba(234,240,255,.75);
-        --stroke: rgba(255,255,255,.14);
-        --card: rgba(255,255,255,.08);
-        --card2: rgba(255,255,255,.06);
-        --brand:#2DA8FF;
-        --brand2:#7C5CFF;
-        --shadow: 0 18px 55px rgba(0,0,0,.45);
+        --sv-text:#2f3d2f;
+        --sv-muted:#5e6655;
+        --sv-muted-2:#7f8478;
+        --sv-stroke:rgba(191,175,145,.32);
+        --sv-card:rgba(252,248,239,.97);
+        --sv-card-2:rgba(241,234,219,.94);
+        --sv-shadow:0 24px 60px rgba(54,62,42,.16);
+        --sv-accent:#8d6a50;
+        --sv-accent-deep:#6f4e38;
+        --sv-focus:rgba(111,144,105,.18);
     }
 
-    /* Fondo general (auth) */
     body.login-page{
         font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
-        color: var(--text) !important;
+        color: var(--sv-text) !important;
         background:
-            radial-gradient(1200px 900px at 20% 10%, rgba(45,168,255,.25), transparent 60%),
-            radial-gradient(1000px 800px at 80% 20%, rgba(124,92,255,.22), transparent 55%),
-            radial-gradient(900px 650px at 60% 85%, rgba(25,211,140,.12), transparent 60%),
-            linear-gradient(180deg, var(--bg0), var(--bg1) 60%, #050813) !important;
+            radial-gradient(900px 540px at 12% 10%, rgba(120,149,103,.16), transparent 62%),
+            radial-gradient(760px 420px at 88% 18%, rgba(160,114,79,.16), transparent 58%),
+            linear-gradient(180deg, #d6d2c4 0%, #cec8b7 100%) !important;
         min-height: 100vh;
     }
 
-    /* Contenedor principal */
     .login-box{
-        width: min(420px, calc(100% - 44px));
+        width: min(430px, calc(100% - 40px));
     }
 
-    /* Card glass */
+    .login-box > center img{
+        filter: drop-shadow(0 14px 20px rgba(79, 63, 40, .18));
+        margin-bottom: 8px;
+    }
+
     .login-box .card{
-        background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05)) !important;
-        border: 1px solid rgba(255,255,255,.12) !important;
-        border-radius: 22px !important;
-        box-shadow: var(--shadow) !important;
+        background: linear-gradient(180deg, var(--sv-card), var(--sv-card-2)) !important;
+        border: 1px solid rgba(191,175,145,.42) !important;
+        border-radius: 26px !important;
+        box-shadow: var(--sv-shadow) !important;
         overflow: hidden;
     }
 
-    /* Header */
-    .login-logo, .login-box-msg{
-        color: rgba(234,240,255,.92) !important;
-    }
-
-    .login-box .card-header,
-    .login-box .card-header .login-box-msg{
-        background: rgba(0,0,0,.14) !important;
-        border-bottom: 1px solid rgba(255,255,255,.10) !important;
-    }
-
-    /* Texto del header que ponemos abajo */
-    .sv-kicker{
-        display:flex;
-        align-items:center;
-        gap: 10px;
-        justify-content: center;
-        margin: 6px 0 10px;
-        color: rgba(234,240,255,.88);
-        font-weight: 800;
-        font-size: 12.5px;
-        letter-spacing: .35px;
-    }
-    .sv-dot{
-        width: 8px; height: 8px; border-radius: 999px;
-        background: #19D38C;
-        box-shadow: 0 0 0 5px rgba(25,211,140,.14);
-    }
-
-    /* Body */
     .login-box .card-body{
         background: transparent !important;
-        padding: 18px 18px 16px !important;
+        padding: 22px 22px 18px !important;
     }
 
-    /* Inputs premium */
+    .login-logo,
+    .login-box-msg{
+        color: var(--sv-text) !important;
+    }
+
     .login-box .form-control{
-        background: rgba(0,0,0,.18) !important;
-        border: 1px solid rgba(255,255,255,.12) !important;
-        color: rgba(234,240,255,.92) !important;
-        border-radius: 14px !important;
-        height: 44px;
+        background: rgba(255,252,245,.92) !important;
+        border: 1px solid rgba(191,175,145,.44) !important;
+        color: var(--sv-text) !important;
+        border-radius: 15px !important;
+        height: 46px;
         padding-left: 14px;
+        box-shadow: inset 0 1px 2px rgba(98,90,70,.05);
         transition: .18s ease;
     }
+
     .login-box .form-control::placeholder{
-        color: rgba(234,240,255,.55) !important;
-    }
-    .login-box .form-control:focus{
-        box-shadow: none !important;
-        border-color: rgba(45,168,255,.45) !important;
-        background: rgba(0,0,0,.22) !important;
+        color: var(--sv-muted-2) !important;
     }
 
-    /* Iconos a la derecha */
+    .login-box .form-control:focus{
+        background: #fffdf8 !important;
+        border-color: rgba(111,144,105,.55) !important;
+        box-shadow: 0 0 0 .15rem var(--sv-focus) !important;
+        color: var(--sv-text) !important;
+    }
+
     .login-box .input-group-text{
-        background: rgba(0,0,0,.18) !important;
-        border: 1px solid rgba(255,255,255,.12) !important;
+        background: rgba(255,252,245,.92) !important;
+        border: 1px solid rgba(191,175,145,.44) !important;
         border-left: none !important;
-        color: rgba(234,240,255,.78) !important;
-        border-radius: 0 14px 14px 0 !important;
-        width: 44px;
+        color: var(--sv-muted) !important;
+        border-radius: 0 15px 15px 0 !important;
+        width: 46px;
         justify-content: center;
     }
+
     .login-box .input-group .form-control{
         border-right: none !important;
-        border-radius: 14px 0 0 14px !important;
+        border-radius: 15px 0 0 15px !important;
     }
 
-    /* iCheck */
     .icheck-primary label{
-        color: rgba(234,240,255,.78) !important;
-        font-weight: 600;
+        color: var(--sv-muted) !important;
+        font-weight: 700;
         font-size: 13px;
     }
 
-    /* Botón principal */
-    .login-box .btn-primary{
-        border: 1px solid rgba(45,168,255,.35) !important;
-        background: linear-gradient(135deg, rgba(45,168,255,.25), rgba(124,92,255,.22)) !important;
-        border-radius: 14px !important;
-        font-weight: 800 !important;
-        height: 44px;
-        box-shadow: 0 18px 55px rgba(0,0,0,.30);
-        transition: .18s ease;
-    }
-    .login-box .btn-primary:hover{
-        transform: translateY(-1px);
-        border-color: rgba(45,168,255,.55) !important;
-        background: linear-gradient(135deg, rgba(45,168,255,.34), rgba(124,92,255,.30)) !important;
+    .icheck-primary input:first-child:checked + label::before{
+        background-color: #6e8d62 !important;
+        border-color: #56704e !important;
     }
 
-    /* Links */
+    .login-box .btn-primary{
+        border: 1px solid #6f4e38 !important;
+        background: linear-gradient(135deg, #8d6a50, #6f4e38) !important;
+        color: #fff7ef !important;
+        border-radius: 15px !important;
+        font-weight: 800 !important;
+        height: 46px;
+        box-shadow: 0 14px 28px rgba(90,81,60,.18);
+        transition: .18s ease;
+    }
+
+    .login-box .btn-primary:hover{
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+    }
+
     .login-box a{
-        color: rgba(234,240,255,.78) !important;
+        color: #6f4e38 !important;
         font-weight: 700;
     }
+
     .login-box a:hover{
-        color: rgba(234,240,255,.92) !important;
+        color: #5c3f2d !important;
         text-decoration: none;
     }
 
-    /* Separadores y footer */
-    .login-box .card-footer{
-        background: transparent !important;
-        border-top: 1px solid rgba(255,255,255,.10) !important;
-        padding: 14px 18px 18px !important;
-    }
-
-    /* Mensajes de error */
     .invalid-feedback{
-        color: #FFCC66 !important;
+        color: #9d6d47 !important;
         font-weight: 700;
     }
 </style>
 @stop
-
 
 @section('auth_body')
     <form action="{{ $login_url }}" method="POST">

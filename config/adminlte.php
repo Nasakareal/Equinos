@@ -33,7 +33,7 @@ return [
     | Admin Panel Logo
     |--------------------------------------------------------------------------
     */
-    'logo' => '<b style="color:white;">Equinos y Caninos</b>',
+    'logo' => '<b style="color:#2f6289;">Equinos y Caninos</b>',
     'logo_img' => 'guardiacivil.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
@@ -644,3 +644,4 @@ return [
     */
     'livewire' => false,
 ];
+

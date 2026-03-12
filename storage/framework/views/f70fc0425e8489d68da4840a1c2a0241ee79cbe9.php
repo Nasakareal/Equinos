@@ -113,16 +113,10 @@
         vertical-align:middle;
     }
 
-    /* ==============================
-       FIX PAGINACIÓN (BOOTSTRAP)
-       ============================== */
-
-    /* contenedor */
     .dataTables_wrapper .dataTables_paginate{
         padding-top: 10px;
     }
 
-    /* botones (a) */
     .dataTables_wrapper .dataTables_paginate .pagination .page-item .page-link{
         background: rgba(0,0,0,.22) !important;
         color: rgba(234,240,255,.92) !important;
@@ -135,7 +129,6 @@
         outline: none !important;
     }
 
-    /* hover */
     .dataTables_wrapper .dataTables_paginate .pagination .page-item .page-link:hover{
         background: rgba(45,168,255,.18) !important;
         border-color: rgba(45,168,255,.45) !important;
@@ -143,14 +136,12 @@
         transform: translateY(-1px);
     }
 
-    /* activo (el número seleccionado) */
     .dataTables_wrapper .dataTables_paginate .pagination .page-item.active .page-link{
         background: linear-gradient(135deg, rgba(45,168,255,.35), rgba(124,92,255,.30)) !important;
         border-color: rgba(45,168,255,.60) !important;
         color: rgba(234,240,255,.98) !important;
     }
 
-    /* deshabilitado (Anterior cuando no aplica, etc.) */
     .dataTables_wrapper .dataTables_paginate .pagination .page-item.disabled .page-link{
         background: rgba(0,0,0,.14) !important;
         border-color: rgba(255,255,255,.10) !important;
@@ -160,12 +151,10 @@
         transform: none !important;
     }
 
-    /* quita el azul/halo feo al dar click */
     .dataTables_wrapper .dataTables_paginate .pagination .page-item .page-link:focus{
         box-shadow: 0 0 0 3px rgba(45,168,255,.18) !important;
     }
 
-    /* por si DataTables sigue pintando con su clase vieja */
     .dataTables_wrapper .dataTables_paginate .paginate_button a{
         background: rgba(0,0,0,.22) !important;
         color: rgba(234,240,255,.92) !important;

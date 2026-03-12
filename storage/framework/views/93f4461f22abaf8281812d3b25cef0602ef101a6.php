@@ -137,7 +137,7 @@
             padding-bottom:1rem !important;
         }
         .brand-link .brand-text{
-            color:#31473b !important;
+            color:#2f6289 !important;
             font-weight:800 !important;
             letter-spacing:.2px;
         }
@@ -499,6 +499,88 @@
             background:rgba(100,112,84,.44);
         }
     </style>
+    <style>
+        /* Sidebar buttons in police-blue shades without altering the base beige theme */
+        .nav-sidebar > .nav-item:nth-of-type(1) > .nav-link{
+            background:linear-gradient(135deg, #5a88af 0%, #2f6289 100%) !important;
+        }
+        .nav-sidebar > .nav-item:nth-of-type(2) > .nav-link{
+            background:linear-gradient(135deg, #4c7ea9 0%, #27557d 100%) !important;
+        }
+        .nav-sidebar > .nav-item:nth-of-type(3) > .nav-link{
+            background:linear-gradient(135deg, #3f739d 0%, #1e486f 100%) !important;
+        }
+        .nav-sidebar > .nav-item:nth-of-type(4) > .nav-link{
+            background:linear-gradient(135deg, #35688f 0%, #133c61 100%) !important;
+        }
+        .nav-sidebar > .nav-item:nth-of-type(5) > .nav-link{
+            background:linear-gradient(135deg, #638db2 0%, #365f85 100%) !important;
+        }
+        .nav-sidebar > .nav-item:nth-of-type(6) > .nav-link{
+            background:linear-gradient(135deg, #557da2 0%, #2e5578 100%) !important;
+        }
+        .nav-sidebar > .nav-item:nth-of-type(7) > .nav-link{
+            background:linear-gradient(135deg, #6d97ba 0%, #3f678a 100%) !important;
+            color:#f3e7d9 !important;
+        }
+        .nav-sidebar > .nav-item:nth-of-type(7) > .nav-link .nav-icon,
+        .nav-sidebar > .nav-item:nth-of-type(7) > .nav-link .right,
+        .nav-sidebar > .nav-item:nth-of-type(7) > .nav-link i.right{
+            color:rgba(255,248,240,.95) !important;
+        }
+        .nav-sidebar > .nav-item:nth-of-type(8) > .nav-link{
+            background:linear-gradient(135deg, #4d7fa8 0%, #244f77 100%) !important;
+        }
+        .nav-sidebar > .nav-item:nth-of-type(9) > .nav-link{
+            background:linear-gradient(135deg, #3b6f98 0%, #173f64 100%) !important;
+        }
+        .nav-sidebar > .nav-item:nth-of-type(10) > .nav-link{
+            background:linear-gradient(135deg, #6a8baa 0%, #42617f 100%) !important;
+        }
+        .nav-sidebar > .nav-item:nth-of-type(11) > .nav-link{
+            background:linear-gradient(135deg, #2f6e98 0%, #10456b 100%) !important;
+        }
+        .nav-sidebar > .nav-item:nth-of-type(13) > .nav-link{
+            background:linear-gradient(135deg, #465d76 0%, #27384b 100%) !important;
+        }
+
+        /* Keep text readable inside beige cards even if a view forces white text */
+        .content-wrapper .card .table.table-bordered tbody td,
+        .content-wrapper .card .table.table-bordered tbody th,
+        .content-wrapper .card td[style*="white-space: pre-wrap"],
+        .content-wrapper .card td[style*="white-space: normal"]{
+            color:var(--text) !important;
+            background:rgba(0,0,0,.05) !important;
+        }
+        .content-wrapper .card .table.table-sm.table-bordered tbody th{
+            color:var(--text) !important;
+            background:rgba(255,255,255,.10) !important;
+        }
+    </style>
+    <style>
+        /* Temporary background preview using public/img/logoper.png */
+        .content-wrapper{
+            position:relative;
+            overflow:hidden;
+        }
+        .content-wrapper::after{
+            content:'';
+            position:absolute;
+            inset:0;
+            background:url('/img/logoper.png') center 120px / min(78vw, 980px) auto no-repeat;
+            opacity:.22;
+            pointer-events:none;
+            z-index:0;
+        }
+        .content-header,
+        .content,
+        .content-wrapper .card,
+        .content-wrapper .small-box,
+        .content-wrapper .info-box{
+            position:relative;
+            z-index:1;
+        }
+    </style>
     
     <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
@@ -545,6 +627,11 @@
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>
+
+
+
+
+
 
 
 
