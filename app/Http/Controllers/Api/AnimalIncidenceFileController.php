@@ -4,55 +4,47 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Animal;
-use App\Models\AnimalMedicalFile;
-use App\Models\AnimalMedicalRecord;
+use App\Models\AnimalIncidence;
+use App\Models\AnimalIncidenceFile;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
-class AnimalMedicalFileController extends Controller
+class AnimalIncidenceFileController extends Controller
 {
-    public function store(Request $request, Animal $animal, $record)
+    public function store(Request $request, Animal $animal, AnimalIncidence $incidence)
     {
+        if ((int) $incidence->animal_id !== (int) $animal->id) {
+            abort(404);
+        }
+
         $request->validate([
-            'archivo' => 'required|file|max:10240'
+            'archivo' => 'required|file|max:10240',
         ]);
 
-        $recordModel = AnimalMedicalRecord::query()
-            ->where('id', $record)
-            ->where('animal_id', $animal->id)
-            ->firstOrFail();
-
         try {
-            $path = $request->file('archivo')->store('animals/medical', 'public');
+            $path = $request->file('archivo')->store('animals/incidences', 'public');
 
-            $file = AnimalMedicalFile::create([
-                'animal_medical_record_id' => $recordModel->id,
+            $file = AnimalIncidenceFile::create([
+                'animal_incidence_id' => $incidence->id,
                 'archivo' => $path,
-                'tipo' => $request->file('archivo')->getClientOriginalExtension()
+                'tipo' => $request->file('archivo')->getClientOriginalExtension(),
             ]);
 
             return response()->json([
                 'ok' => true,
-                'message' => 'Archivo agregado',
-                'data' => $file
+                'message' => 'Archivo agregado.',
+                'data' => $file,
             ], 201);
-
-        } catch (\Exception $e) {
-
-            Log::error("API Error al subir archivo medico animal: " . $e->getMessage());
-
-            return response()->json([
-                'ok' => false,
-                'message' => 'Error al subir el archivo'
-            ], 500);
+        } catch (\Throwable $e) {
+            Log::error('API Error al subir archivo de incidencia animal: ' . $e->getMessage());
+            return response()->json(['ok' => false, 'message' => 'Error al subir el archivo.'], 500);
         }
     }
 
-    public function destroy(AnimalMedicalFile $file)
+    public function destroy(AnimalIncidenceFile $file)
     {
         try {
-
             if ($file->archivo && Storage::disk('public')->exists($file->archivo)) {
                 Storage::disk('public')->delete($file->archivo);
             }
@@ -61,17 +53,11 @@ class AnimalMedicalFileController extends Controller
 
             return response()->json([
                 'ok' => true,
-                'message' => 'Archivo eliminado'
+                'message' => 'Archivo eliminado.',
             ]);
-
-        } catch (\Exception $e) {
-
-            Log::error("API Error al eliminar archivo medico animal: " . $e->getMessage());
-
-            return response()->json([
-                'ok' => false,
-                'message' => 'Error al eliminar el archivo'
-            ], 500);
+        } catch (\Throwable $e) {
+            Log::error('API Error al eliminar archivo de incidencia animal: ' . $e->getMessage());
+            return response()->json(['ok' => false, 'message' => 'Error al eliminar el archivo.'], 500);
         }
     }
 }

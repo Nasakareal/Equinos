@@ -111,31 +111,57 @@
 
 <?php $__env->startSection('css'); ?>
 <style>
-.table th, .table td{
-    text-align:center;
-    vertical-align:middle;
-}
+    .table th, .table td{
+        text-align:center;
+        vertical-align:middle;
+    }
 
-.btn-purple{
-    background: linear-gradient(135deg, #6f42c1, #4e2a8e);
-    border: none;
-    color: #ffffff !important;
-    font-weight: 600;
-    box-shadow: 0 4px 10px rgba(111, 66, 193, 0.35);
-    transition: all 0.3s ease-in-out;
-}
+    .dataTables_wrapper .dataTables_paginate{
+        padding-top: 10px;
+    }
 
-.btn-purple:hover{
-    background: linear-gradient(135deg, #5a32a3, #3d1f73);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(111, 66, 193, 0.45);
-}
+    .dataTables_wrapper .dataTables_paginate .pagination .page-item .page-link{
+        background: rgba(0,0,0,.22) !important;
+        color: rgba(234,240,255,.92) !important;
+        border: 1px solid rgba(255,255,255,.14) !important;
+        border-radius: 12px !important;
+        margin: 0 4px !important;
+        padding: 10px 14px !important;
+        font-weight: 900 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
 
-.btn-purple:focus,
-.btn-purple:active{
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.4);
-}
+    .dataTables_wrapper .dataTables_paginate .pagination .page-item .page-link:hover{
+        background: rgba(45,168,255,.18) !important;
+        border-color: rgba(45,168,255,.45) !important;
+        color: rgba(234,240,255,.98) !important;
+        transform: translateY(-1px);
+    }
+
+    .dataTables_wrapper .dataTables_paginate .pagination .page-item.active .page-link{
+        background: linear-gradient(135deg, rgba(45,168,255,.35), rgba(124,92,255,.30)) !important;
+        border-color: rgba(45,168,255,.60) !important;
+        color: rgba(234,240,255,.98) !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .pagination .page-item.disabled .page-link{
+        background: rgba(0,0,0,.14) !important;
+        border-color: rgba(255,255,255,.10) !important;
+        color: rgba(234,240,255,.55) !important;
+        opacity: .55 !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .pagination .page-item .page-link:focus{
+        box-shadow: 0 0 0 3px rgba(45,168,255,.18) !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button a{
+        background: rgba(0,0,0,.22) !important;
+        color: rgba(234,240,255,.92) !important;
+    }
 </style>
 <?php $__env->stopSection(); ?>
 
