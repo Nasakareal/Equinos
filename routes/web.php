@@ -298,3 +298,5 @@ Route::middleware('auth')->group(function () {
 Route::get('/prueba-404', function () {
     return response()->view('errors.404', [], 404);
 });
+
+Route::view('/privacy-policy', 'privacy_policy')->name('privacy.policy');
