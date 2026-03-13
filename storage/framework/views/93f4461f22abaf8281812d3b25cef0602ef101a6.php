@@ -109,10 +109,10 @@
             z-index:1;
         }
         .main-header.navbar{
-            background:linear-gradient(90deg, rgba(34,71,57,.96), rgba(22,54,44,.92)) !important;
+            background:linear-gradient(90deg, rgba(76,126,169,.96), rgba(39,85,125,.94)) !important;
             backdrop-filter:blur(10px);
             border-bottom:1px solid rgba(255,255,255,.14) !important;
-            box-shadow:0 12px 26px rgba(34,56,43,.18);
+            box-shadow:0 12px 26px rgba(30,63,100,.20);
         }
         .main-header .nav-link,
         .main-header .navbar-nav .nav-link{
@@ -627,6 +627,7 @@
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>
+
 
 
 

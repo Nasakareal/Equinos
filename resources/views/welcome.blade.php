@@ -66,9 +66,9 @@
       top:0;
       z-index:1000;
       backdrop-filter:blur(10px);
-      background:linear-gradient(90deg, rgba(34,71,57,.96), rgba(22,54,44,.92));
+      background:linear-gradient(90deg, rgba(76,126,169,.96), rgba(39,85,125,.94));
       border-bottom:1px solid rgba(255,255,255,.14);
-      box-shadow:0 12px 26px rgba(34,56,43,.18);
+      box-shadow:0 12px 26px rgba(30,63,100,.20);
     }
 
     .brand-badge{
@@ -661,4 +661,5 @@
   </script>
 </body>
 </html>
+
 
