@@ -1,8 +1,6 @@
-@extends('adminlte::page')
+<?php $__env->startSection('title', 'Configuraciones del Sistema'); ?>
 
-@section('title', 'Configuraciones del Sistema')
-
-@section('content_header')
+<?php $__env->startSection('content_header'); ?>
     <div class="sv-hero">
         <div class="sv-hero__inner">
             <div class="sv-hero__badge">
@@ -19,12 +17,12 @@
             </div>
         </div>
     </div>
-@stop
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="row">
 
-        @can('ver usuarios')
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver usuarios')): ?>
             <div class="col-md-3 col-sm-6 col-12">
                 <div class="sv-card">
                     <div class="sv-card__icon bg-orange">
@@ -33,15 +31,15 @@
                     <div class="sv-card__body">
                         <div class="sv-card__title">Usuarios</div>
                         <div class="sv-card__desc">Alta, edición y control de accesos.</div>
-                        <a href="{{ route('users.index') }}" class="btn sv-btn">
+                        <a href="<?php echo e(route('users.index')); ?>" class="btn sv-btn">
                             <i class="fas fa-arrow-right"></i> Acceder
                         </a>
                     </div>
                 </div>
             </div>
-        @endcan
+        <?php endif; ?>
 
-        @can('ver roles')
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver roles')): ?>
             <div class="col-md-3 col-sm-6 col-12">
                 <div class="sv-card">
                     <div class="sv-card__icon bg-navy">
@@ -50,15 +48,15 @@
                     <div class="sv-card__body">
                         <div class="sv-card__title">Roles</div>
                         <div class="sv-card__desc">Permisos, roles y asignaciones.</div>
-                        <a href="{{ route('roles.index') }}" class="btn sv-btn">
+                        <a href="<?php echo e(route('roles.index')); ?>" class="btn sv-btn">
                             <i class="fas fa-arrow-right"></i> Acceder
                         </a>
                     </div>
                 </div>
             </div>
-        @endcan
+        <?php endif; ?>
 
-        @can('ver areas')
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver areas')): ?>
             <div class="col-md-3 col-sm-6 col-12">
                 <div class="sv-card">
                     <div class="sv-card__icon bg-teal">
@@ -67,15 +65,15 @@
                     <div class="sv-card__body">
                         <div class="sv-card__title">Áreas</div>
                         <div class="sv-card__desc">Gestión de áreas (p. ej. Canina, Operativa, etc.).</div>
-                        <a href="{{ route('areas.index') }}" class="btn sv-btn">
+                        <a href="<?php echo e(route('areas.index')); ?>" class="btn sv-btn">
                             <i class="fas fa-arrow-right"></i> Acceder
                         </a>
                     </div>
                 </div>
             </div>
-        @endcan
+        <?php endif; ?>
 
-        @can('ver responsables')
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver responsables')): ?>
             <div class="col-md-3 col-sm-6 col-12">
                 <div class="sv-card">
                     <div class="sv-card__icon bg-warning">
@@ -84,15 +82,15 @@
                     <div class="sv-card__body">
                         <div class="sv-card__title">Responsables</div>
                         <div class="sv-card__desc">Asignación de responsables por área/personal.</div>
-                        <a href="{{ route('responsables.index') }}" class="btn sv-btn">
+                        <a href="<?php echo e(route('responsables.index')); ?>" class="btn sv-btn">
                             <i class="fas fa-arrow-right"></i> Acceder
                         </a>
                     </div>
                 </div>
             </div>
-        @endcan
+        <?php endif; ?>
 
-        @can('ver estadisticas')
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver estadisticas')): ?>
             <div class="col-md-3 col-sm-6 col-12">
                 <div class="sv-card">
                     <div class="sv-card__icon bg-success">
@@ -101,15 +99,15 @@
                     <div class="sv-card__body">
                         <div class="sv-card__title">Estadísticas</div>
                         <div class="sv-card__desc">Reportes, exportaciones y análisis.</div>
-                        <a href="{{ url('/admin/settings/estadisticas') }}" class="btn sv-btn">
+                        <a href="<?php echo e(url('/admin/settings/estadisticas')); ?>" class="btn sv-btn">
                             <i class="fas fa-arrow-right"></i> Acceder
                         </a>
                     </div>
                 </div>
             </div>
-        @endcan
+        <?php endif; ?>
 
-        @can('ver configuraciones')
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver configuraciones')): ?>
             <div class="col-md-3 col-sm-6 col-12">
                 <div class="sv-card">
                     <div class="sv-card__icon bg-primary">
@@ -118,15 +116,15 @@
                     <div class="sv-card__body">
                         <div class="sv-card__title">Respaldos SQL</div>
                         <div class="sv-card__desc">Consulta y descarga copias de seguridad de la base de datos.</div>
-                        <a href="{{ route('backups_sql.index') }}" class="btn sv-btn">
+                        <a href="<?php echo e(route('backups_sql.index')); ?>" class="btn sv-btn">
                             <i class="fas fa-arrow-right"></i> Acceder
                         </a>
                     </div>
                 </div>
             </div>
-        @endcan
+        <?php endif; ?>
 
-        @can('ver vaciados')
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver vaciados')): ?>
             <div class="col-md-3 col-sm-6 col-12">
                 <div class="sv-card">
                     <div class="sv-card__icon bg-danger">
@@ -135,18 +133,18 @@
                     <div class="sv-card__body">
                         <div class="sv-card__title">Vaciar Base de Datos</div>
                         <div class="sv-card__desc">Herramienta de mantenimiento (con cuidado).</div>
-                        <a href="{{ url('/admin/vaciados') }}" class="btn sv-btn">
+                        <a href="<?php echo e(url('/admin/vaciados')); ?>" class="btn sv-btn">
                             <i class="fas fa-arrow-right"></i> Acceder
                         </a>
                     </div>
                 </div>
             </div>
-        @endcan
+        <?php endif; ?>
 
     </div>
-@stop
+<?php $__env->stopSection(); ?>
 
-@section('css')
+<?php $__env->startSection('css'); ?>
 <style>
     :root{
         --sv-text: #2f3d2f;
@@ -326,8 +324,10 @@
         }
     }
 </style>
-@stop
+<?php $__env->stopSection(); ?>
 
-@section('js')
+<?php $__env->startSection('js'); ?>
     <script> console.log("Configuraciones del Sistema con estilo SV."); </script>
-@stop
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('adminlte::page', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\wamp64\www\equinosCaninos\resources\views/admin/settings/index.blade.php ENDPATH**/ ?>

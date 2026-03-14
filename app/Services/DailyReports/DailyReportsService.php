@@ -15,6 +15,8 @@ class DailyReportsService
     {
         $this->registrar(new \App\Services\DailyReports\Generators\ArmamentoEquinosCaninosGenerator());
         $this->registrar(new \App\Services\DailyReports\Generators\ListaPersonalGenerator());
+        $this->registrar(new \App\Services\DailyReports\Generators\PaseListaCaninaGenerator());
+        $this->registrar(new \App\Services\DailyReports\Generators\PaseListaAgrupamientoEquinosCaninosGenerator());
     }
 
     public function registrar(DailyReportGenerator $gen): void
@@ -102,8 +104,13 @@ class DailyReportsService
         $ext = $this->generadores[$tipo]->extension() ?? 'xlsx';
 
         $suffix = '';
+
         if ($tipo === 'armamento_equinos_caninos' && !empty($params['dependencia'])) {
             $suffix = '_' . Str::slug((string) $params['dependencia'], '_');
+        }
+
+        if ($tipo === 'pase_lista_canina') {
+            $suffix = '_canina';
         }
 
         return "daily_reports/{$fecha}/turno_{$turno_id}/{$safeTipo}_{$fecha}_turno_{$turno_id}{$suffix}.{$ext}";

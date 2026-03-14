@@ -25,7 +25,7 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
 
     public function label(): string
     {
-        return 'Armamento Equinos y Caninos (Excel)';
+        return 'Armamento Equinos y Caninos';
     }
 
     public function extension(): string
