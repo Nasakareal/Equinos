@@ -193,6 +193,27 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
+                                    <label for="actividad">Actividad</label>
+                                    <select name="actividad" id="actividad" class="form-control @error('actividad') is-invalid @enderror">
+                                        <option value="">Seleccione una actividad</option>
+                                        <option value="Veterinario" {{ old('actividad', $personal->actividad) == 'Veterinario' ? 'selected' : '' }}>Veterinario</option>
+                                        <option value="Cuartelero" {{ old('actividad', $personal->actividad) == 'Cuartelero' ? 'selected' : '' }}>Cuartelero</option>
+                                        <option value="Arrendador" {{ old('actividad', $personal->actividad) == 'Arrendador' ? 'selected' : '' }}>Arrendador</option>
+                                        <option value="Administrativo" {{ old('actividad', $personal->actividad) == 'Administrativo' ? 'selected' : '' }}>Administrativo</option>
+                                        <option value="Operativo" {{ old('actividad', $personal->actividad) == 'Operativo' ? 'selected' : '' }}>Operativo</option>
+                                        <option value="Instructor Canino" {{ old('actividad', $personal->actividad) == 'Instructor Canino' ? 'selected' : '' }}>Instructor Canino</option>
+                                        <option value="Terapeuta" {{ old('actividad', $personal->actividad) == 'Terapeuta' ? 'selected' : '' }}>Terapeuta</option>
+                                    </select>
+                                    @error('actividad')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
                                     <label for="area_patrullaje">Área de patrullaje</label>
                                     <input type="text"
                                            name="area_patrullaje"
@@ -204,6 +225,8 @@
                                     @enderror
                                 </div>
                             </div>
+
+                            <div class="col-md-8"></div>
                         </div>
 
                         <div class="row">

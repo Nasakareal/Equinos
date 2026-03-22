@@ -436,6 +436,29 @@ return [
         ],
 
         [
+            'text' => 'Servicios y Apoyos',
+            'icon' => 'fa-solid fa-handshake',
+            'classes' => 'bg-purple text-white',
+            'can' => 'ver animales',
+            'submenu' => [
+                [
+                    'text' => 'Listado',
+                    'icon' => 'fa-solid fa-list',
+                    'classes' => 'text-white',
+                    'url' => 'servicios',
+                    'can' => 'ver animales',
+                ],
+                [
+                    'text' => 'Registrar servicio',
+                    'icon' => 'fa-solid fa-plus',
+                    'classes' => 'text-white',
+                    'url' => 'servicios/create',
+                    'can' => 'editar animales',
+                ],
+            ],
+        ],
+
+        [
             'text' => 'Turnos y servicio',
             'icon' => 'fa-solid fa-calendar-days',
             'classes' => 'bg-secondary text-white',

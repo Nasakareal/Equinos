@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "C:\\wamp64\\www\\equinosCaninos\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\resources\\views\\privacy_policy.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:resources\\views\\privacy_policy.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Models\\Personal.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Models\\Personal.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\PersonalController.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Http\\Controllers\\PersonalController.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\routes\\web.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
@@ -23,27 +27,40 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "privacy_policy.blade.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\privacy_policy.blade.php",
-              "RelativeDocumentMoniker": "resources\\views\\privacy_policy.blade.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\privacy_policy.blade.php",
-              "RelativeToolTip": "resources\\views\\privacy_policy.blade.php",
-              "ViewState": "AgIAAFUAAAAAAAAAAAAmwG4AAABRAAAAAAAAAA==",
+              "Title": "Personal.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Models\\Personal.php",
+              "RelativeDocumentMoniker": "app\\Models\\Personal.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Models\\Personal.php",
+              "RelativeToolTip": "app\\Models\\Personal.php",
+              "ViewState": "AgIAAFgAAAAAAAAAAAAuwIsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-03-13T19:39:14.366Z",
+              "WhenOpened": "2026-03-20T22:18:02.869Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "PersonalController.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\PersonalController.php",
+              "RelativeDocumentMoniker": "app\\Http\\Controllers\\PersonalController.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\PersonalController.php",
+              "RelativeToolTip": "app\\Http\\Controllers\\PersonalController.php",
+              "ViewState": "AgIAAGoBAAAAAAAAAAAuwIcBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
+              "WhenOpened": "2026-03-20T22:08:37.017Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "web.php",
               "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\routes\\web.php",
               "RelativeDocumentMoniker": "routes\\web.php",
               "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\routes\\web.php",
               "RelativeToolTip": "routes\\web.php",
-              "ViewState": "AgIAAA4BAAAAAAAAAAAAAC4BAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAP0AAAAAAAAAAAAUwC4BAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-03-13T19:37:59.121Z",
+              "WhenOpened": "2026-03-16T03:29:13.986Z",
               "EditorCaption": ""
             }
           ]

@@ -33,7 +33,6 @@
                                     @error('user_id')
                                         <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                     @enderror
-                                    <small class="text-muted">Si lo vinculas, luego puedes relacionar permisos/roles del usuario con este registro.</small>
                                 </div>
                             </div>
 
@@ -201,6 +200,27 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
+                                    <label for="actividad">Actividad</label>
+                                    <select name="actividad" id="actividad" class="form-control @error('actividad') is-invalid @enderror">
+                                        <option value="" selected>Seleccione una actividad</option>
+                                        <option value="Veterinario" {{ old('actividad') == 'Veterinario' ? 'selected' : '' }}>Veterinario</option>
+                                        <option value="Cuartelero" {{ old('actividad') == 'Cuartelero' ? 'selected' : '' }}>Cuartelero</option>
+                                        <option value="Arrendador" {{ old('actividad') == 'Arrendador' ? 'selected' : '' }}>Arrendador</option>
+                                        <option value="Administrativo" {{ old('actividad') == 'Administrativo' ? 'selected' : '' }}>Administrativo</option>
+                                        <option value="Operativo" {{ old('actividad') == 'Operativo' ? 'selected' : '' }}>Operativo</option>
+                                        <option value="Instructor Canino" {{ old('actividad') == 'Instructor Canino' ? 'selected' : '' }}>Instructor Canino</option>
+                                        <option value="Terapeuta" {{ old('actividad') == 'Terapeuta' ? 'selected' : '' }}>Terapeuta</option>
+                                    </select>
+                                    @error('actividad')
+                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
                                     <label for="area_patrullaje">Área de patrullaje</label>
                                     <input type="text"
                                            name="area_patrullaje"
@@ -213,6 +233,8 @@
                                     @enderror
                                 </div>
                             </div>
+
+                            <div class="col-md-8"></div>
                         </div>
 
                         <div class="row">

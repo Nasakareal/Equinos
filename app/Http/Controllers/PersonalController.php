@@ -111,6 +111,7 @@ class PersonalController extends Controller
                 }
             ],
             'dependencia' => 'nullable|string|max:120',
+            'actividad' => 'nullable|string|max:120',
             'area_id' => 'nullable|exists:areas,id',
             'turno_id' => 'nullable|exists:turnos,id',
             'crp' => 'nullable|string|max:60',
@@ -143,6 +144,12 @@ class PersonalController extends Controller
         $validatedData['cuip'] = $this->normalizeText($validatedData['cuip'] ?? null);
         $validatedData['celular'] = $this->normalizeText($validatedData['celular'] ?? null);
         $validatedData['nombres'] = $this->normalizeText($validatedData['nombres'] ?? null) ?? $validatedData['nombres'];
+        $validatedData['dependencia'] = $this->normalizeText($validatedData['dependencia'] ?? null);
+        $validatedData['actividad'] = $this->normalizeText($validatedData['actividad'] ?? null);
+        $validatedData['grado'] = $this->normalizeText($validatedData['grado'] ?? null);
+        $validatedData['crp'] = $this->normalizeText($validatedData['crp'] ?? null);
+        $validatedData['cargo'] = $this->normalizeText($validatedData['cargo'] ?? null);
+        $validatedData['area_patrullaje'] = $this->normalizeText($validatedData['area_patrullaje'] ?? null);
 
         try {
             $personal = Personal::create([
@@ -152,6 +159,7 @@ class PersonalController extends Controller
                 'grado' => $validatedData['grado'] ?? null,
                 'nombres' => $validatedData['nombres'],
                 'dependencia' => $validatedData['dependencia'] ?? null,
+                'actividad' => $validatedData['actividad'] ?? null,
                 'area_id' => $validatedData['area_id'] ?? null,
                 'turno_id' => $validatedData['turno_id'] ?? null,
                 'crp' => $validatedData['crp'] ?? null,
@@ -272,7 +280,16 @@ class PersonalController extends Controller
                 'nullable',
                 'string',
                 'max:40',
-                Rule::unique('personals', 'cuip')->ignore($personal->id),
+                Rule::unique('personals', 'cuip')->ignore($personal->id)->where(function ($q) use ($request) {
+                    $cuip = $this->normalizeText($request->input('cuip'));
+
+                    if ($cuip === null) {
+                        $q->whereRaw('1=0');
+                        return $q;
+                    }
+
+                    return $q;
+                }),
             ],
             'grado' => 'nullable|string|max:60',
             'nombres' => [
@@ -295,6 +312,7 @@ class PersonalController extends Controller
                 }
             ],
             'dependencia' => 'nullable|string|max:120',
+            'actividad' => 'nullable|string|max:120',
             'area_id' => 'nullable|exists:areas,id',
             'turno_id' => 'nullable|exists:turnos,id',
             'crp' => 'nullable|string|max:60',
@@ -302,7 +320,16 @@ class PersonalController extends Controller
                 'nullable',
                 'string',
                 'max:10',
-                Rule::unique('personals', 'celular')->ignore($personal->id),
+                Rule::unique('personals', 'celular')->ignore($personal->id)->where(function ($q) use ($request) {
+                    $cel = $this->normalizeText($request->input('celular'));
+
+                    if ($cel === null) {
+                        $q->whereRaw('1=0');
+                        return $q;
+                    }
+
+                    return $q;
+                }),
             ],
             'cargo' => 'nullable|string|max:160',
             'es_responsable' => 'nullable|boolean',
@@ -318,6 +345,12 @@ class PersonalController extends Controller
         $validatedData['cuip'] = $this->normalizeText($validatedData['cuip'] ?? null);
         $validatedData['celular'] = $this->normalizeText($validatedData['celular'] ?? null);
         $validatedData['nombres'] = $this->normalizeText($validatedData['nombres'] ?? null) ?? $validatedData['nombres'];
+        $validatedData['dependencia'] = $this->normalizeText($validatedData['dependencia'] ?? null);
+        $validatedData['actividad'] = $this->normalizeText($validatedData['actividad'] ?? null);
+        $validatedData['grado'] = $this->normalizeText($validatedData['grado'] ?? null);
+        $validatedData['crp'] = $this->normalizeText($validatedData['crp'] ?? null);
+        $validatedData['cargo'] = $this->normalizeText($validatedData['cargo'] ?? null);
+        $validatedData['area_patrullaje'] = $this->normalizeText($validatedData['area_patrullaje'] ?? null);
 
         try {
             $personal->update([
@@ -327,6 +360,7 @@ class PersonalController extends Controller
                 'grado' => $validatedData['grado'] ?? null,
                 'nombres' => $validatedData['nombres'],
                 'dependencia' => $validatedData['dependencia'] ?? null,
+                'actividad' => $validatedData['actividad'] ?? null,
                 'area_id' => $validatedData['area_id'] ?? null,
                 'turno_id' => $validatedData['turno_id'] ?? null,
                 'crp' => $validatedData['crp'] ?? null,

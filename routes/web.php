@@ -32,6 +32,7 @@ use App\Http\Controllers\AnimalIncidenceFileController;
 use App\Http\Controllers\DailyReportsController;
 use App\Http\Controllers\PersonalDocumentController;
 use App\Http\Controllers\BackupsSqlController;
+use App\Http\Controllers\ServicioController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -238,6 +239,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/{patrol_assignment}/edit', [PatrolAssignmentController::class, 'edit'])->middleware('can:editar turnos')->name('patrullas_asignaciones.edit');
         Route::put('/{patrol_assignment}', [PatrolAssignmentController::class, 'update'])->middleware('can:editar turnos')->name('patrullas_asignaciones.update');
         Route::delete('/{patrol_assignment}', [PatrolAssignmentController::class, 'destroy'])->middleware('can:editar turnos')->name('patrullas_asignaciones.destroy');
+    });
+
+    Route::prefix('servicios')->middleware('can:ver servicios')->group(function () {
+        Route::get('/', [ServicioController::class, 'index'])->name('servicios.index');
+        Route::get('/create', [ServicioController::class, 'create'])->middleware('can:crear servicios')->name('servicios.create');
+        Route::post('/', [ServicioController::class, 'store'])->middleware('can:crear servicios')->name('servicios.store');
+        Route::get('/{servicio}', [ServicioController::class, 'show'])->name('servicios.show');
+        Route::get('/{servicio}/edit', [ServicioController::class, 'edit'])->middleware('can:editar servicios')->name('servicios.edit');
+        Route::put('/{servicio}', [ServicioController::class, 'update'])->middleware('can:editar servicios')->name('servicios.update');
+        Route::delete('/{servicio}', [ServicioController::class, 'destroy'])->middleware('can:eliminar servicios')->name('servicios.destroy');
     });
 
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');

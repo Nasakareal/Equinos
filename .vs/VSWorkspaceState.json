@@ -1,13 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\app",
-    "\\app\\Http",
-    "\\app\\Services",
-    "\\app\\Services\\DailyReports",
-    "\\app\\Services\\DailyReports\\Exporters",
-    "\\app\\Services\\DailyReports\\Generators"
+    "\\resources",
+    "\\resources\\views",
+    "\\resources\\views\\servicios"
   ],
-  "SelectedNode": "\\app\\Services\\DailyReports\\Generators\\ArmamentoEquinosCaninosGenerator.php",
+  "SelectedNode": "\\resources\\views\\servicios\\index.blade.php",
   "PreviewInSolutionExplorer": false
 }

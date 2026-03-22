@@ -18,6 +18,7 @@ class Personal extends Model
         'grado',
         'nombres',
         'dependencia',
+        'actividad',
         'area_id',
         'turno_id',
         'crp',
