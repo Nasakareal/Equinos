@@ -35,9 +35,9 @@ class ListaPersonalGenerator implements DailyReportGenerator
 
     public function generar(string $fecha, int $turno_id, array $params = []): string
     {
-        $dependencia = trim((string)($params['dependencia'] ?? ''));
-        if ($dependencia === '') {
-            $dependencia = 'AGRUPAMIENTO DE EQUINOS Y CANINOS';
+        $area = trim((string)($params['area'] ?? ''));
+        if ($area === '') {
+            $area = 'AGRUPAMIENTO DE EQUINOS Y CANINOS';
         }
 
         $tz = 'America/Mexico_City';
@@ -52,12 +52,15 @@ class ListaPersonalGenerator implements DailyReportGenerator
         $turno = Turno::query()->find($turno_id);
         $turnoClave = mb_strtoupper(trim((string)($turno?->clave ?? '')));
 
-        $depArchivo = trim(str_ireplace('AGRUPAMIENTO DE ', '', $dependencia));
-        $filename = $fechaArchivo . ' LISTA DE PERSONAL ' . mb_strtoupper($depArchivo) . ' TURNO ' . $turnoClave . '.xlsx';
+        $areaArchivo = trim(str_ireplace('AGRUPAMIENTO DE ', '', $area));
+        $filename = $fechaArchivo . ' LISTA DE PERSONAL ' . mb_strtoupper($areaArchivo) . ' TURNO ' . $turnoClave . '.xlsx';
 
         $personals = Personal::query()
-            ->where('activo', 1)
-            ->where('dependencia', $dependencia)
+            ->leftJoin('areas', 'personals.area_id', '=', 'areas.id')
+            ->where('personals.activo', 1)
+            ->where(function ($q) use ($area) {
+                $q->whereRaw('TRIM(UPPER(areas.nombre)) = ?', [mb_strtoupper(trim($area))]);
+            })
             ->whereHas('asignacionesArmamento', function ($q) {
                 $q->whereNull('fecha_devolucion')
                     ->where('status', 'ASIGNADA')
@@ -73,12 +76,13 @@ class ListaPersonalGenerator implements DailyReportGenerator
                 },
                 'asignacionesArmamento.weapon',
             ])
-            ->orderBy('grado')
-            ->orderBy('nombres')
+            ->select('personals.*')
+            ->orderBy('personals.grado')
+            ->orderBy('personals.nombres')
             ->get();
 
         if ($personals->isEmpty()) {
-            abort(404, 'No hay personal activo con armamento asignado para esa dependencia.');
+            abort(404, 'No hay personal activo con armamento asignado para esa área.');
         }
 
         $turnoPorPersonal = ServiceSchedule::query()
@@ -104,8 +108,8 @@ class ListaPersonalGenerator implements DailyReportGenerator
                 || str_contains($nombre, 'FREDY ERASTO GONZALEZ OROZCO');
         };
 
-        $siemprePrimero = $personals->filter(fn($p) => $esSiemprePrimero($p))->values();
-        $resto = $personals->reject(fn($p) => $esSiemprePrimero($p))->values();
+        $siemprePrimero = $personals->filter(fn ($p) => $esSiemprePrimero($p))->values();
+        $resto = $personals->reject(fn ($p) => $esSiemprePrimero($p))->values();
 
         $grupoA = collect();
         $grupoB = collect();
@@ -183,14 +187,14 @@ class ListaPersonalGenerator implements DailyReportGenerator
         $sheet->getRowDimension(14)->setRowHeight(36);
 
         $sheet->mergeCells('B16:G16');
-        $sheet->setCellValue('B16', mb_strtoupper($dependencia) . ' TURNO "' . $turnoClave . '"');
+        $sheet->setCellValue('B16', mb_strtoupper($area) . ' TURNO "' . $turnoClave . '"');
         $sheet->getStyle('B16')->getFont()->setBold(true)->setSize(11);
         $sheet->getStyle('B16')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $sheet->setCellValue('B17', 'No.');
         $sheet->setCellValue('C17', 'GRADO');
         $sheet->setCellValue('D17', 'NOMBRES');
-        $sheet->setCellValue('E17', 'DEPENDENCIA');
+        $sheet->setCellValue('E17', 'ÁREA');
         $sheet->setCellValue('F17', 'ARMAMENTO');
 
         $sheet->mergeCells('F17:G17');
@@ -307,7 +311,7 @@ class ListaPersonalGenerator implements DailyReportGenerator
         $dir = "daily_reports/{$fecha}/turno_{$turno_id}";
         Storage::disk('local')->makeDirectory($dir);
 
-        $path = "{$dir}/lista_personal_{$fecha}_turno_{$turno_id}.xlsx";
+        $path = "{$dir}/{$filename}";
 
         $tmp = storage_path('app/tmp_' . Str::uuid() . '.xlsx');
         (new Xlsx($spreadsheet))->save($tmp);

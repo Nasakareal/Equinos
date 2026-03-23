@@ -16,20 +16,25 @@ class TurnoActual
     public static function getSetting(): Setting
     {
         $s = Setting::query()->orderBy('id')->first();
-        if (!$s) $s = Setting::create([]);
+        if (!$s) {
+            $s = Setting::create([]);
+        }
         return $s;
     }
 
     public static function getTurnoActualId(): ?int
     {
         $s = Setting::query()->orderBy('id')->first();
-        return $s ? ((int)($s->turno_actual_id ?: 0) ?: null) : null;
+        return $s ? ((int) ($s->turno_actual_id ?: 0) ?: null) : null;
     }
 
     public static function getInicioSemanaA(): ?string
     {
         $s = Setting::query()->orderBy('id')->first();
-        if (!$s) return null;
+        if (!$s) {
+            return null;
+        }
+
         return $s->inicio_semana_a ? (string) $s->inicio_semana_a : null;
     }
 
@@ -39,9 +44,12 @@ class TurnoActual
 
         $turnoAId = (int) (Turno::query()->where('clave', 'A')->value('id') ?: 0);
         $turnoBId = (int) (Turno::query()->where('clave', 'B')->value('id') ?: 0);
-        if ($turnoAId <= 0 || $turnoBId <= 0) return;
 
-        if (!in_array((int)$turnoHoyId, [$turnoAId, $turnoBId], true)) {
+        if ($turnoAId <= 0 || $turnoBId <= 0) {
+            return;
+        }
+
+        if (!in_array((int) $turnoHoyId, [$turnoAId, $turnoBId], true)) {
             return;
         }
 
@@ -74,10 +82,15 @@ class TurnoActual
     {
         $turnoAId = (int) (Turno::query()->where('clave', 'A')->value('id') ?: 0);
         $turnoBId = (int) (Turno::query()->where('clave', 'B')->value('id') ?: 0);
-        if ($turnoAId <= 0 || $turnoBId <= 0) return null;
+
+        if ($turnoAId <= 0 || $turnoBId <= 0) {
+            return null;
+        }
 
         $inicioSemanaA = self::getInicioSemanaA();
-        if (empty($inicioSemanaA)) return null;
+        if (empty($inicioSemanaA)) {
+            return null;
+        }
 
         return TurnoResolver::turnoQueLabora($fechaYmd, $turnoAId, $turnoBId, $inicioSemanaA);
     }
@@ -87,9 +100,12 @@ class TurnoActual
         $hoy = Carbon::now(self::TZ)->toDateString();
 
         $turnoCalculadoId = self::resolverTurnoIdEnFecha($hoy);
-        if (empty($turnoCalculadoId)) return null;
+        if (empty($turnoCalculadoId)) {
+            return null;
+        }
 
         $turnoGuardadoId = self::getTurnoActualId();
+
         if ((int) $turnoGuardadoId !== (int) $turnoCalculadoId) {
             $s = self::getSetting();
             $s->update([
@@ -102,29 +118,55 @@ class TurnoActual
         return (int) $turnoCalculadoId;
     }
 
-    public static function laborandoIds(): array
+    public static function laborandoIds(?int $areaId = null): array
     {
         $turnoActualId = self::syncTurnoActualHoy();
         if (empty($turnoActualId)) {
             $turnoActualId = self::getTurnoActualId();
         }
-        if (empty($turnoActualId)) return [];
+
+        if (empty($turnoActualId)) {
+            return [];
+        }
 
         $turnoClave = (string) (Turno::query()->where('id', (int) $turnoActualId)->value('clave') ?: '');
-        if (!in_array($turnoClave, ['A', 'B'], true)) return [];
+        if (!in_array($turnoClave, ['A', 'B'], true)) {
+            return [];
+        }
 
-        $idsCiclicos = Personal::query()
+        $queryCiclicos = Personal::query()
             ->where('activo', 1)
-            ->where('turno_id', (int) $turnoActualId)
+            ->where('turno_id', (int) $turnoActualId);
+
+        if (!is_null($areaId)) {
+            $queryCiclicos->where('area_id', (int) $areaId);
+        }
+
+        $idsCiclicos = $queryCiclicos
             ->pluck('id')
             ->unique()
             ->values()
             ->toArray();
 
-        $idsPersonalizados = ServiceSchedule::query()
+        $queryPersonalizados = Personal::query()
             ->where('activo', 1)
-            ->where('tipo', 'PERSONALIZADO')
-            ->pluck('personal_id')
+            ->whereIn(
+                'id',
+                ServiceSchedule::query()
+                    ->where('activo', 1)
+                    ->where('tipo', 'PERSONALIZADO')
+                    ->pluck('personal_id')
+                    ->unique()
+                    ->values()
+                    ->toArray()
+            );
+
+        if (!is_null($areaId)) {
+            $queryPersonalizados->where('area_id', (int) $areaId);
+        }
+
+        $idsPersonalizados = $queryPersonalizados
+            ->pluck('id')
             ->unique()
             ->values()
             ->toArray();
@@ -136,33 +178,52 @@ class TurnoActual
         return $ids;
     }
 
-    public static function siempreVisiblesIds(): array
+    public static function siempreVisiblesIds(?int $areaId = null): array
     {
-        return Personal::query()
+        $query = Personal::query()
             ->where('activo', 1)
-            ->where('siempre_visible', 1)
+            ->where('siempre_visible', 1);
+
+        if (!is_null($areaId)) {
+            $query->where('area_id', (int) $areaId);
+        }
+
+        return $query
             ->pluck('id')
             ->unique()
             ->values()
             ->toArray();
     }
 
-    public static function requeridosIds(): array
+    public static function requeridosIds(?int $areaId = null): array
     {
-        $ids = array_merge(self::laborandoIds(), self::siempreVisiblesIds());
+        $ids = array_merge(
+            self::laborandoIds($areaId),
+            self::siempreVisiblesIds($areaId)
+        );
+
         $ids = array_values(array_unique(array_map('intval', $ids)));
         sort($ids);
+
         return $ids;
     }
 
     public static function turnoActual(): ?Turno
     {
         $id = self::syncTurnoActualHoy();
-        if (!$id) $id = self::getTurnoActualId();
-        if (!$id) return null;
+
+        if (!$id) {
+            $id = self::getTurnoActualId();
+        }
+
+        if (!$id) {
+            return null;
+        }
 
         $t = Turno::query()->find((int) $id);
-        if (!$t) return null;
+        if (!$t) {
+            return null;
+        }
 
         return in_array((string) $t->clave, ['A', 'B'], true) ? $t : null;
     }

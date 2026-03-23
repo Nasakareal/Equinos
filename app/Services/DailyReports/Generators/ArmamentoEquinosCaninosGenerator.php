@@ -2,12 +2,12 @@
 
 namespace App\Services\DailyReports\Generators;
 
+use Illuminate\Support\Facades\Storage;
 use App\Models\Personal;
 use App\Models\ServiceSchedule;
 use App\Models\Turno;
 use App\Services\DailyReports\Contracts\DailyReportGenerator;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -35,10 +35,9 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
 
     public function generar(string $fecha, int $turno_id, array $params = []): string
     {
-
-        $dependencia = trim((string)($params['dependencia'] ?? ''));
-        if ($dependencia === '') {
-            $dependencia = 'AGRUPAMIENTO DE EQUINOS Y CANINOS';
+        $area = trim((string)($params['area'] ?? ''));
+        if ($area === '') {
+            $area = 'AGRUPAMIENTO DE EQUINOS Y CANINOS';
         }
 
         $tz = 'America/Mexico_City';
@@ -49,25 +48,29 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
         $turno = Turno::query()->find($turno_id);
         $turno_clave = (string)($turno?->clave ?? '');
 
-        $dep_archivo = trim(str_ireplace('AGRUPAMIENTO DE ', '', $dependencia));
-        $filename = $fecha_titulo . ' ARMAMENTO ' . mb_strtoupper($dep_archivo) . ' TURNO ' . mb_strtoupper($turno_clave) . '.xlsx';
+        $area_archivo = trim(str_ireplace('AGRUPAMIENTO DE ', '', $area));
+        $filename = $fecha_titulo . ' ARMAMENTO ' . mb_strtoupper($area_archivo) . ' TURNO ' . mb_strtoupper($turno_clave) . '.xlsx';
 
         $personals = Personal::query()
-            ->where('activo', 1)
-            ->where('dependencia', $dependencia)
+            ->leftJoin('areas', 'personals.area_id', '=', 'areas.id')
+            ->where('personals.activo', 1)
+            ->where(function ($q) use ($area) {
+                $q->whereRaw('TRIM(UPPER(areas.nombre)) = ?', [mb_strtoupper(trim($area))]);
+            })
             ->whereHas('asignacionesArmamento', function ($q) {
                 $q->whereNull('fecha_devolucion')
-                  ->where('status', 'ASIGNADA')
-                  ->whereHas('weapon', function ($w) {
-                      $w->where('estado', 'ACTIVA');
-                  });
+                    ->where('status', 'ASIGNADA')
+                    ->whereHas('weapon', function ($w) {
+                        $w->where('estado', 'ACTIVA');
+                    });
             })
-            ->orderBy('grado')
-            ->orderBy('nombres')
+            ->select('personals.*')
+            ->orderBy('personals.grado')
+            ->orderBy('personals.nombres')
             ->get();
 
         if ($personals->isEmpty()) {
-            abort(404, 'No hay personal activo con armamento asignado para esa dependencia.');
+            abort(404, 'No hay personal activo con armamento asignado para esa área.');
         }
 
         $turnoPorPersonal = ServiceSchedule::query()
@@ -89,24 +92,20 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
             return str_contains($cargo, 'ENCARGADO DE AGRUPAMIENTO');
         };
 
-        $esEncargadoDeTurno = function (Personal $p): bool {
-            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
-            return str_contains($cargo, 'ENCARGADO TURNO');
-        };
-
         $esSiemprePrimero = function (Personal $p): bool {
             $cargo = mb_strtoupper((string)($p->cargo ?? ''));
+            $nombre = mb_strtoupper((string)($p->nombres ?? ''));
             return str_contains($cargo, 'SUBDIRECTOR')
                 || str_contains($cargo, 'CMTE. FREDY ERASTO')
-                || str_contains($cargo, 'FREDY ERASTO GONZALEZ OROZCO');
+                || str_contains($nombre, 'FREDY ERASTO GONZALEZ OROZCO');
         };
 
-        $siemprePrimero = $personals->filter(fn($p) => $esSiemprePrimero($p))->values();
+        $siemprePrimero = $personals->filter(fn ($p) => $esSiemprePrimero($p))->values();
 
-        $personalsSinSiemprePrimero = $personals->reject(fn($p) => $esSiemprePrimero($p))->values();
+        $personalsSinSiemprePrimero = $personals->reject(fn ($p) => $esSiemprePrimero($p))->values();
 
-        $encargadosAgrupamiento = $personalsSinSiemprePrimero->filter(fn($p) => $esJefeAgrupamiento($p))->values();
-        $resto = $personalsSinSiemprePrimero->reject(fn($p) => $esJefeAgrupamiento($p))->values();
+        $encargadosAgrupamiento = $personalsSinSiemprePrimero->filter(fn ($p) => $esJefeAgrupamiento($p))->values();
+        $resto = $personalsSinSiemprePrimero->reject(fn ($p) => $esJefeAgrupamiento($p))->values();
 
         $grupoA = collect();
         $grupoB = collect();
@@ -115,11 +114,17 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
         foreach ($resto as $p) {
             $tId = $turnoPorPersonal->get($p->id)->turno_id ?? null;
             $clave = $tId ? ($turnos->get($tId)->clave ?? null) : null;
+            $clave = mb_strtoupper(trim((string)$clave));
 
-            if ($clave === 'A') $grupoA->push($p);
-            elseif ($clave === 'B') $grupoB->push($p);
-            elseif ($clave === 'MIXTO') $grupoM->push($p);
-            else $grupoB->push($p);
+            if ($clave === 'A') {
+                $grupoA->push($p);
+            } elseif ($clave === 'B') {
+                $grupoB->push($p);
+            } elseif ($clave === 'MIXTO') {
+                $grupoM->push($p);
+            } else {
+                $grupoB->push($p);
+            }
         }
 
         $grupoA = $this->ponerEncargadosDeTurnoAlInicio($grupoA, 'A');
@@ -130,7 +135,6 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
         $forzar_franco_A = ($turno_activo === 'B');
         $forzar_franco_B = ($turno_activo === 'A');
 
-        // ===== Excel =====
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('ARMAMENTO');
@@ -154,7 +158,7 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
         }
 
         $sheet->mergeCells('A1:F1');
-        $sheet->setCellValue('A1', mb_strtoupper($dependencia));
+        $sheet->setCellValue('A1', mb_strtoupper($area));
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(13);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -169,13 +173,12 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
         $sheet->getStyle('A3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
         $startRow = 5;
-        $sheet->fromArray(['No.','GRADO','NOMBRE','ENTRADA','SALIDA','HORARIO'], null, "A{$startRow}");
+        $sheet->fromArray(['No.', 'GRADO', 'NOMBRE', 'ENTRADA', 'SALIDA', 'HORARIO'], null, "A{$startRow}");
         $this->styleHeaderRow($sheet, $startRow);
 
         $row = $startRow + 1;
         $contador = 1;
 
-        // 1) Subdirector/Fredy primero (si aplica)
         foreach ($siemprePrimero as $p) {
             $sheet->setCellValue("A{$row}", $contador++);
             $sheet->setCellValue("B{$row}", $p->grado);
@@ -185,7 +188,6 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
             $row++;
         }
 
-        // 2) Encargados de agrupamiento
         foreach ($encargadosAgrupamiento as $enc) {
             $sheet->setCellValue("A{$row}", $contador++);
             $sheet->setCellValue("B{$row}", $enc->grado);
@@ -217,11 +219,13 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
         $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $row++;
 
-        $nombreEnc = ($encargadosAgrupamiento->first()?->nombres ?? '');
-        if (!$nombreEnc && $siemprePrimero->isNotEmpty()) $nombreEnc = (string)($siemprePrimero->first()?->nombres ?? '');
+        $nombreEnc = (string)($encargadosAgrupamiento->first()?->nombres ?? '');
+        if ($nombreEnc === '' && $siemprePrimero->isNotEmpty()) {
+            $nombreEnc = (string)($siemprePrimero->first()?->nombres ?? '');
+        }
 
         $sheet->mergeCells("A{$row}:F{$row}");
-        $sheet->setCellValue("A{$row}", $nombreEnc ? ('CMTE. ' . $nombreEnc) : '');
+        $sheet->setCellValue("A{$row}", $nombreEnc !== '' ? ('CMTE. ' . $nombreEnc) : '');
         $sheet->getStyle("A{$row}")->getFont()->setBold(true);
         $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -229,16 +233,15 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
             ->getBorders()->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
 
-        // === Guardar a storage/app (para el esquema nuevo) ===
         $dir = "daily_reports/{$fecha}/turno_{$turno_id}";
         Storage::disk('local')->makeDirectory($dir);
 
         $suffix = '';
-        if (!empty($params['dependencia'])) {
-            $suffix = '_' . Str::slug($dependencia, '_');
+        if (!empty($params['area'])) {
+            $suffix = '_' . Str::slug($area, '_');
         }
 
-        $path = "{$dir}/armamento_equinos_caninos_{$fecha}_turno_{$turno_id}{$suffix}.xlsx";
+        $path = "{$dir}/{$filename}";
 
         $tmp = storage_path('app/tmp_armamento_' . uniqid() . '.xlsx');
         (new Xlsx($spreadsheet))->save($tmp);

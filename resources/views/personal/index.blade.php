@@ -1,5 +1,3 @@
-{{-- resources/views/personal/index.blade.php --}}
-
 @extends('adminlte::page')
 
 @section('title', 'Listado de Personal')
@@ -29,9 +27,9 @@
                             <thead>
                                 <tr>
                                     <th><center>Número</center></th>
-                                    <th><center>Grado</center></th>
                                     <th><center>Nombre</center></th>
-                                    <th><center>Dependencia</center></th>
+                                    <th><center>Área</center></th>
+                                    <th><center>Actividad</center></th>
                                     <th><center>CRP</center></th>
                                     <th><center>Puestas</center></th>
                                     <th><center>Acciones</center></th>
@@ -42,9 +40,9 @@
                                 @foreach ($personals as $index => $personal)
                                     <tr>
                                         <td style="text-align: center">{{ $index + 1 }}</td>
-                                        <td>{{ $personal->grado ?? '-' }}</td>
                                         <td>{{ $personal->nombres }}</td>
-                                        <td>{{ $personal->dependencia ?? '-' }}</td>
+                                        <td>{{ $personal->area->nombre ?? 'Sin área' }}</td>
+                                        <td>{{ $personal->actividad ?? '-' }}</td>
                                         <td>{{ $personal->crp ?? '-' }}</td>
                                         <td style="text-align: center">{{ $personal->puestas_disposicion_count ?? 0 }}</td>
                                         <td style="text-align: center">
@@ -158,68 +156,68 @@
 @stop
 
 @section('js')
-    <script>
-        $(function () {
-            const dt = $('#personals').DataTable({
-                "pageLength": 10,
-                "language": {
-                    "emptyTable": "No hay información",
-                    "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-                    "infoEmpty": "Mostrando 0 a 0 de 0 registros",
-                    "infoFiltered": "(Filtrado de _MAX_ total registros)",
-                    "lengthMenu": "Mostrar _MENU_ registros",
-                    "loadingRecords": "Cargando...",
-                    "processing": "Procesando...",
-                    "search": "Buscador:",
-                    "zeroRecords": "Sin resultados encontrados",
-                    "paginate": {
-                        "first": "Primero",
-                        "last": "Último",
-                        "next": "Siguiente",
-                        "previous": "Anterior"
-                    }
-                },
-                "responsive": true,
-                "lengthChange": true,
-                "autoWidth": false,
-                "scrollX": true,
-                "deferRender": true
-            });
-
-            setTimeout(function () {
-                dt.columns.adjust().responsive.recalc();
-            }, 150);
-        });
-
-        @if (session('success'))
-            Swal.fire({
-                position: 'center',
-                icon: 'success',
-                title: '{{ session('success') }}',
-                showConfirmButton: false,
-                timer: 12000
-            });
-        @endif
-
-        $(document).on('click', '.delete-btn', function (e) {
-            e.preventDefault();
-
-            let form = $(this).closest('form');
-
-            Swal.fire({
-                title: '¿Estás seguro de eliminar este registro?',
-                text: "¡No podrás revertir esta acción!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
+<script>
+    $(function () {
+        const dt = $('#personals').DataTable({
+            "pageLength": 10,
+            "language": {
+                "emptyTable": "No hay información",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando 0 a 0 de 0 registros",
+                "infoFiltered": "(Filtrado de _MAX_ total registros)",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscador:",
+                "zeroRecords": "Sin resultados encontrados",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
                 }
-            });
+            },
+            "responsive": true,
+            "lengthChange": true,
+            "autoWidth": false,
+            "scrollX": true,
+            "deferRender": true
         });
-    </script>
+
+        setTimeout(function () {
+            dt.columns.adjust().responsive.recalc();
+        }, 150);
+    });
+
+    @if (session('success'))
+        Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: '{{ session('success') }}',
+            showConfirmButton: false,
+            timer: 12000
+        });
+    @endif
+
+    $(document).on('click', '.delete-btn', function (e) {
+        e.preventDefault();
+
+        let form = $(this).closest('form');
+
+        Swal.fire({
+            title: '¿Estás seguro de eliminar este registro?',
+            text: "¡No podrás revertir esta acción!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+</script>
 @stop

@@ -109,6 +109,40 @@
             </div>
         @endcan
 
+        @can('ver incidencias')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Incidencias</div>
+                        <div class="sv-card__desc">Creación de Incidencias como Vacaciones, Permisos, etc.</div>
+                        <a href="{{ route('incidencias.index') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endcan
+
+        @can('ver incidencias')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Tipos de Incidencias</div>
+                        <div class="sv-card__desc">Todos los tipos de incidencias.</div>
+                        <a href="{{ route('incidence_types.index') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endcan
+
         @can('ver configuraciones')
             <div class="col-md-3 col-sm-6 col-12">
                 <div class="sv-card">

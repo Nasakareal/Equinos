@@ -47,20 +47,20 @@ class PaseListaAgrupamientoEquinosCaninosGenerator implements DailyReportGenerat
         $turno = Turno::query()->find($turno_id);
         $turnoClave = mb_strtoupper(trim((string)($turno->clave ?? '')));
 
-        /*
-        |--------------------------------------------------------------------------
-        | SOLO PERSONAL DE AGRUPAMIENTO DE EQUINOS Y CANINOS
-        |--------------------------------------------------------------------------
-        */
         $personals = Personal::query()
-            ->where('activo', 1)
-            ->whereRaw('TRIM(UPPER(dependencia)) = ?', ['AGRUPAMIENTO DE EQUINOS Y CANINOS'])
-            ->orderBy('grado')
-            ->orderBy('nombres')
+            ->leftJoin('areas', 'personals.area_id', '=', 'areas.id')
+            ->where('personals.activo', 1)
+            ->where(function ($q) {
+                $q->whereRaw('TRIM(UPPER(areas.nombre)) = ?', ['AGRUPAMIENTO DE EQUINOS Y CANINOS'])
+                  ->orWhereRaw('TRIM(UPPER(areas.nombre)) = ?', ['AGRUPAMIENTO DE EQUINOS CANINOS']);
+            })
+            ->select('personals.*')
+            ->orderBy('personals.grado')
+            ->orderBy('personals.nombres')
             ->get();
 
         if ($personals->isEmpty()) {
-            throw new \RuntimeException('No hay personal activo con dependencia AGRUPAMIENTO DE EQUINOS Y CANINOS para generar el pase de lista.');
+            throw new \RuntimeException('No hay personal activo en el área AGRUPAMIENTO DE EQUINOS Y CANINOS para generar el pase de lista.');
         }
 
         $turnoPorPersonal = ServiceSchedule::query()

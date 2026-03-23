@@ -251,34 +251,6 @@ return [
         ],
 
         [
-            'text' => 'Incidencias',
-            'icon' => 'fa-solid fa-triangle-exclamation',
-            'classes' => 'bg-warning text-dark',
-            'can' => 'ver incidencias',
-            'submenu' => [
-                [
-                    'text' => 'Listado',
-                    'icon' => 'fa-solid fa-list',
-                    'url' => 'incidencias',
-                    'can' => 'ver incidencias',
-                ],
-                [
-                    'text' => 'Registrar',
-                    'icon' => 'fa-solid fa-plus',
-                    'url' => 'incidencias/create',
-                    'can' => 'crear incidencias',
-                ],
-                ['header' => 'Catálogos'],
-                [
-                    'text' => 'Tipos de Incidencia',
-                    'icon' => 'fa-solid fa-tags',
-                    'url' => 'incidencias/tipos',
-                    'can' => 'ver incidencias',
-                ],
-            ],
-        ],
-
-        [
             'text' => 'Armamento',
             'icon' => 'fa-solid fa-gun',
             'classes' => 'bg-navy text-white',
@@ -532,6 +504,18 @@ return [
                     'classes' => 'text-white',
                     'url' => 'admin/settings/roles',
                     'can' => 'ver roles',
+                ],
+                [
+                        'text' => 'Incidencias',
+                        'icon' => 'fa-solid fa-list',
+                        'url' => 'incidencias',
+                        'can' => 'ver incidencias',
+                ],
+                [
+                    'text' => 'Tipos de Incidencia',
+                    'icon' => 'fa-solid fa-tags',
+                    'url' => 'incidencias/tipos',
+                    'can' => 'ver incidencias',
                 ],
             ],
         ],

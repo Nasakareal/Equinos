@@ -107,6 +107,40 @@
             </div>
         <?php endif; ?>
 
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver incidencias')): ?>
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Incidencias</div>
+                        <div class="sv-card__desc">Creación de Incidencias como Vacaciones, Permisos, etc.</div>
+                        <a href="<?php echo e(route('incidencias.index')); ?>" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver incidencias')): ?>
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Tipos de Incidencias</div>
+                        <div class="sv-card__desc">Todos los tipos de incidencias.</div>
+                        <a href="<?php echo e(route('incidence_types.index')); ?>" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver configuraciones')): ?>
             <div class="col-md-3 col-sm-6 col-12">
                 <div class="sv-card">

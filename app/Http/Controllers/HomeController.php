@@ -19,10 +19,11 @@ class HomeController extends Controller
 
         $total_personal = Personal::query()->count();
 
-        $total_por_dependencia = Personal::query()
-            ->selectRaw('dependencia, COUNT(*) as total')
-            ->groupBy('dependencia')
-            ->orderBy('dependencia')
+        $total_por_area = Personal::query()
+            ->leftJoin('areas', 'personals.area_id', '=', 'areas.id')
+            ->selectRaw('COALESCE(areas.nombre, "Sin área") as area, COUNT(personals.id) as total')
+            ->groupBy('areas.nombre')
+            ->orderBy('areas.nombre')
             ->get();
 
         $turno_en_servicio_id = TurnoActual::syncTurnoActualHoy();
@@ -35,20 +36,21 @@ class HomeController extends Controller
             ? 0
             : Personal::query()->whereIn('id', $laborando_ids)->count();
 
-        $laborando_por_dependencia = empty($laborando_ids)
+        $laborando_por_area = empty($laborando_ids)
             ? collect()
             : Personal::query()
-                ->selectRaw('dependencia, COUNT(*) as total')
-                ->whereIn('id', $laborando_ids)
-                ->groupBy('dependencia')
-                ->orderBy('dependencia')
+                ->leftJoin('areas', 'personals.area_id', '=', 'areas.id')
+                ->selectRaw('COALESCE(areas.nombre, "Sin área") as area, COUNT(personals.id) as total')
+                ->whereIn('personals.id', $laborando_ids)
+                ->groupBy('areas.nombre')
+                ->orderBy('areas.nombre')
                 ->get();
 
         return view('home', compact(
             'total_personal',
-            'total_por_dependencia',
+            'total_por_area',
             'total_laborando',
-            'laborando_por_dependencia',
+            'laborando_por_area',
             'now',
             'turno_en_servicio_id',
             'turno_actual'

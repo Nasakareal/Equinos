@@ -1,7 +1,5 @@
 
 
-
-
 <?php $__env->startSection('title', 'Listado de Personal'); ?>
 
 <?php $__env->startSection('content_header'); ?>
@@ -29,9 +27,9 @@
                             <thead>
                                 <tr>
                                     <th><center>Número</center></th>
-                                    <th><center>Grado</center></th>
                                     <th><center>Nombre</center></th>
-                                    <th><center>Dependencia</center></th>
+                                    <th><center>Área</center></th>
+                                    <th><center>Actividad</center></th>
                                     <th><center>CRP</center></th>
                                     <th><center>Puestas</center></th>
                                     <th><center>Acciones</center></th>
@@ -42,9 +40,9 @@
                                 <?php $__currentLoopData = $personals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $personal): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr>
                                         <td style="text-align: center"><?php echo e($index + 1); ?></td>
-                                        <td><?php echo e($personal->grado ?? '-'); ?></td>
                                         <td><?php echo e($personal->nombres); ?></td>
-                                        <td><?php echo e($personal->dependencia ?? '-'); ?></td>
+                                        <td><?php echo e($personal->area->nombre ?? 'Sin área'); ?></td>
+                                        <td><?php echo e($personal->actividad ?? '-'); ?></td>
                                         <td><?php echo e($personal->crp ?? '-'); ?></td>
                                         <td style="text-align: center"><?php echo e($personal->puestas_disposicion_count ?? 0); ?></td>
                                         <td style="text-align: center">
@@ -158,70 +156,70 @@
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('js'); ?>
-    <script>
-        $(function () {
-            const dt = $('#personals').DataTable({
-                "pageLength": 10,
-                "language": {
-                    "emptyTable": "No hay información",
-                    "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-                    "infoEmpty": "Mostrando 0 a 0 de 0 registros",
-                    "infoFiltered": "(Filtrado de _MAX_ total registros)",
-                    "lengthMenu": "Mostrar _MENU_ registros",
-                    "loadingRecords": "Cargando...",
-                    "processing": "Procesando...",
-                    "search": "Buscador:",
-                    "zeroRecords": "Sin resultados encontrados",
-                    "paginate": {
-                        "first": "Primero",
-                        "last": "Último",
-                        "next": "Siguiente",
-                        "previous": "Anterior"
-                    }
-                },
-                "responsive": true,
-                "lengthChange": true,
-                "autoWidth": false,
-                "scrollX": true,
-                "deferRender": true
-            });
-
-            setTimeout(function () {
-                dt.columns.adjust().responsive.recalc();
-            }, 150);
-        });
-
-        <?php if(session('success')): ?>
-            Swal.fire({
-                position: 'center',
-                icon: 'success',
-                title: '<?php echo e(session('success')); ?>',
-                showConfirmButton: false,
-                timer: 12000
-            });
-        <?php endif; ?>
-
-        $(document).on('click', '.delete-btn', function (e) {
-            e.preventDefault();
-
-            let form = $(this).closest('form');
-
-            Swal.fire({
-                title: '¿Estás seguro de eliminar este registro?',
-                text: "¡No podrás revertir esta acción!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
+<script>
+    $(function () {
+        const dt = $('#personals').DataTable({
+            "pageLength": 10,
+            "language": {
+                "emptyTable": "No hay información",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando 0 a 0 de 0 registros",
+                "infoFiltered": "(Filtrado de _MAX_ total registros)",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscador:",
+                "zeroRecords": "Sin resultados encontrados",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
                 }
-            });
+            },
+            "responsive": true,
+            "lengthChange": true,
+            "autoWidth": false,
+            "scrollX": true,
+            "deferRender": true
         });
-    </script>
+
+        setTimeout(function () {
+            dt.columns.adjust().responsive.recalc();
+        }, 150);
+    });
+
+    <?php if(session('success')): ?>
+        Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: '<?php echo e(session('success')); ?>',
+            showConfirmButton: false,
+            timer: 12000
+        });
+    <?php endif; ?>
+
+    $(document).on('click', '.delete-btn', function (e) {
+        e.preventDefault();
+
+        let form = $(this).closest('form');
+
+        Swal.fire({
+            title: '¿Estás seguro de eliminar este registro?',
+            text: "¡No podrás revertir esta acción!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+</script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('adminlte::page', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\wamp64\www\equinosCaninos\resources\views/personal/index.blade.php ENDPATH**/ ?>

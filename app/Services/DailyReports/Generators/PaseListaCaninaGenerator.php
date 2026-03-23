@@ -47,23 +47,20 @@ class PaseListaCaninaGenerator implements DailyReportGenerator
         $turno = Turno::query()->find($turno_id);
         $turnoClave = mb_strtoupper(trim((string)($turno->clave ?? '')));
 
-        /*
-        |--------------------------------------------------------------------------
-        | SOLO PERSONAL DE AREA CANINA
-        |--------------------------------------------------------------------------
-        */
         $personals = Personal::query()
-            ->where('activo', 1)
+            ->leftJoin('areas', 'personals.area_id', '=', 'areas.id')
+            ->where('personals.activo', 1)
             ->where(function ($q) {
-                $q->whereRaw('TRIM(UPPER(dependencia)) = ?', ['AREA CANINA'])
-                  ->orWhereRaw('TRIM(UPPER(dependencia)) = ?', ['ÁREA CANINA']);
+                $q->whereRaw('TRIM(UPPER(areas.nombre)) = ?', ['AREA CANINA'])
+                  ->orWhereRaw('TRIM(UPPER(areas.nombre)) = ?', ['ÁREA CANINA']);
             })
-            ->orderBy('grado')
-            ->orderBy('nombres')
+            ->select('personals.*')
+            ->orderBy('personals.grado')
+            ->orderBy('personals.nombres')
             ->get();
 
         if ($personals->isEmpty()) {
-            throw new \RuntimeException('No hay personal activo con dependencia AREA CANINA para generar el pase de lista.');
+            throw new \RuntimeException('No hay personal activo en el área canina para generar el pase de lista.');
         }
 
         $turnoPorPersonal = ServiceSchedule::query()

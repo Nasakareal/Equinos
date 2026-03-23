@@ -1,3 +1,5 @@
+
+
 <?php $__env->startSection('title', 'Estado de Fuerza'); ?>
 
 <?php $__env->startSection('content_header'); ?>
@@ -66,7 +68,7 @@
                 <div class="card card-outline card-primary h-100">
                     <div class="card-header">
                         <h3 class="card-title">
-                            <i class="fa-solid fa-chart-pie"></i> Estado de fuerza por dependencia (laborando)
+                            <i class="fa-solid fa-chart-pie"></i> Estado de fuerza por área (laborando)
                         </h3>
                         <div class="card-tools">
                             <span class="badge badge-light">
@@ -80,19 +82,19 @@
                             <table class="table table-sm table-bordered mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Dependencia</th>
+                                        <th>Área</th>
                                         <th class="text-center" style="width:140px;">Laborando</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                        $hayLaborando = isset($laborando_por_dependencia) && $laborando_por_dependencia->count() > 0;
+                                        $hayLaborando = isset($laborando_por_area) && $laborando_por_area->count() > 0;
                                     ?>
 
                                     <?php if($hayLaborando): ?>
-                                        <?php $__currentLoopData = $laborando_por_dependencia; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php $__currentLoopData = $laborando_por_area; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <tr>
-                                                <td><?php echo e($row->dependencia ?? 'Sin dependencia'); ?></td>
+                                                <td><?php echo e($row->area ?? 'Sin área'); ?></td>
                                                 <td class="text-center">
                                                     <span class="badge badge-success"><?php echo e($row->total); ?></span>
                                                 </td>
@@ -100,7 +102,7 @@
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="2"><center>Sin datos de laborando por dependencia.</center></td>
+                                            <td colspan="2"><center>Sin datos de laborando por área.</center></td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -113,19 +115,19 @@
                             <table class="table table-sm table-bordered mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Dependencia</th>
+                                        <th>Área</th>
                                         <th class="text-center" style="width:140px;">Plantilla</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                        $hayTotales = isset($total_por_dependencia) && $total_por_dependencia->count() > 0;
+                                        $hayTotales = isset($total_por_area) && $total_por_area->count() > 0;
                                     ?>
 
                                     <?php if($hayTotales): ?>
-                                        <?php $__currentLoopData = $total_por_dependencia; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php $__currentLoopData = $total_por_area; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <tr>
-                                                <td><?php echo e($row->dependencia ?? 'Sin dependencia'); ?></td>
+                                                <td><?php echo e($row->area ?? 'Sin área'); ?></td>
                                                 <td class="text-center">
                                                     <span class="badge badge-primary"><?php echo e($row->total); ?></span>
                                                 </td>
@@ -133,7 +135,7 @@
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="2"><center>Sin datos de plantilla por dependencia.</center></td>
+                                            <td colspan="2"><center>Sin datos de plantilla por área.</center></td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -289,7 +291,7 @@
                 <i class="fa-solid fa-calendar-days"></i> Turnos y servicio
             </div>
             <div class="ef-section__desc">
-                Definición de turnos, horarios y patrón 24x24 (sin pares/nonones).
+                Definición de turnos, horarios y patrón 24x24.
             </div>
         </div>
     </div>
@@ -348,7 +350,7 @@
                 <i class="fa-solid fa-gear"></i> Configuración
             </div>
             <div class="ef-section__desc">
-                Usuarios, roles y permisos (Spatie).
+                Usuarios, roles y permisos.
             </div>
         </div>
     </div>
@@ -543,7 +545,5 @@
     .ef-card--soft{ opacity: .92; }
 </style>
 <?php $__env->stopSection(); ?>
-
-
 
 <?php echo $__env->make('adminlte::page', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\wamp64\www\equinosCaninos\resources\views/home.blade.php ENDPATH**/ ?>
