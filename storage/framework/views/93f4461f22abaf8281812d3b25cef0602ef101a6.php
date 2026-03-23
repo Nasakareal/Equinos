@@ -122,6 +122,16 @@
         .main-header .nav-link:hover{
             color:#fffaf1 !important;
         }
+        .main-header .navbar-nav-left{
+            flex:0 0 auto;
+            min-width:max-content;
+        }
+        .main-header .navbar-nav-right{
+            min-width:0;
+        }
+        .main-header .user-menu .user-menu-icon{
+            display:none;
+        }
         .main-sidebar{
             background:
                 radial-gradient(360px 280px at 12% 0%, rgba(126,154,111,.16), transparent 58%),
@@ -294,8 +304,17 @@
             border-radius:18px !important;
         }
         @media (max-width: 991.98px){
-            .main-sidebar{
+            .main-sidebar,
+            .main-sidebar::before{
                 width:290px !important;
+            }
+            .main-header.navbar{
+                padding-left:.35rem;
+                padding-right:.35rem;
+            }
+            .main-header .navbar-nav-right{
+                flex:1 1 auto;
+                justify-content:flex-end;
             }
             .sidebar{
                 padding-left:.45rem;
@@ -308,6 +327,33 @@
             }
             .nav-sidebar .nav-treeview .nav-link{
                 margin:0 8px 0 18px !important;
+            }
+        }
+        @media (max-width: 767.98px){
+            .main-sidebar,
+            .main-sidebar::before{
+                margin-left:-290px !important;
+            }
+            .sidebar-open .main-sidebar,
+            .sidebar-open .main-sidebar::before{
+                margin-left:0 !important;
+            }
+            .main-header .navbar-nav-right .nav-link{
+                padding-left:.55rem;
+                padding-right:.55rem;
+            }
+            .main-header .navbar-nav-right .user-menu .nav-link{
+                display:flex;
+                align-items:center;
+                gap:.35rem;
+            }
+            .main-header .navbar-nav-right .user-menu .user-menu-icon{
+                display:inline-block;
+                font-size:1rem;
+                line-height:1;
+            }
+            .main-header .navbar-nav-right .user-menu .nav-link span{
+                display:none;
             }
         }
         .card,

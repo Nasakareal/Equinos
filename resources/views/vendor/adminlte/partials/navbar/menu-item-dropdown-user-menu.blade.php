@@ -16,11 +16,13 @@
 <li class="nav-item dropdown user-menu">
 
     {{-- User menu toggler --}}
-    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-label="{{ Auth::user()->name }}">
         @if(config('adminlte.usermenu_image'))
             <img src="{{ Auth::user()->adminlte_image() }}"
                  class="user-image img-circle elevation-2"
                  alt="{{ Auth::user()->name }}">
+        @else
+            <i class="fas fa-user-circle user-menu-icon" aria-hidden="true"></i>
         @endif
         <span @if(config('adminlte.usermenu_image')) class="d-none d-md-inline" @endif>
             {{ Auth::user()->name }}

@@ -6,7 +6,7 @@
     <?php echo e(config('adminlte.classes_topnav', 'navbar-white navbar-light')); ?>">
 
     
-    <ul class="navbar-nav">
+    <ul class="navbar-nav navbar-nav-left">
         
         <?php echo $__env->make('adminlte::partials.navbar.menu-item-left-sidebar-toggler', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
@@ -18,7 +18,7 @@
     </ul>
 
     
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ml-auto navbar-nav-right">
         
         <?php echo $__env->yieldContent('content_top_nav_right'); ?>
 

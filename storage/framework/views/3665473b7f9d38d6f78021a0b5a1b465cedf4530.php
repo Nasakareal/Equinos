@@ -16,11 +16,13 @@
 <li class="nav-item dropdown user-menu">
 
     
-    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-label="<?php echo e(Auth::user()->name); ?>">
         <?php if(config('adminlte.usermenu_image')): ?>
             <img src="<?php echo e(Auth::user()->adminlte_image()); ?>"
                  class="user-image img-circle elevation-2"
                  alt="<?php echo e(Auth::user()->name); ?>">
+        <?php else: ?>
+            <i class="fas fa-user-circle user-menu-icon" aria-hidden="true"></i>
         <?php endif; ?>
         <span <?php if(config('adminlte.usermenu_image')): ?> class="d-none d-md-inline" <?php endif; ?>>
             <?php echo e(Auth::user()->name); ?>
