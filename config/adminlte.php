@@ -429,6 +429,21 @@ return [
                 ],
             ],
         ],
+        [
+            'text' => 'Mis Servicios',
+            'icon' => 'fa-solid fa-clipboard',
+            'classes' => 'bg-success text-white',
+            'can' => 'ver reportes de servicios',
+            'submenu' => [
+                [
+                    'text' => 'Panel operativo',
+                    'icon' => 'fa-solid fa-list-check',
+                    'classes' => 'text-white',
+                    'url' => 'mis-servicios',
+                    'can' => 'ver reportes de servicios',
+                ],
+            ],
+        ],
 
         [
             'text' => 'Turnos y servicio',

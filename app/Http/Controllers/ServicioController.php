@@ -8,6 +8,7 @@ use App\Models\Personal;
 use App\Models\Patrol;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
@@ -36,19 +37,200 @@ class ServicioController extends Controller
         }
 
         $value = preg_replace('/\s+/u', ' ', $value);
-        $value = mb_strtoupper($value, 'UTF-8');
 
-        return $value;
+        return mb_strtoupper($value, 'UTF-8');
+    }
+
+    private function validationRules(): array
+    {
+        return [
+            'categoria_registro' => ['required', 'string', Rule::in(['SERVICIO', 'APOYO', 'MEMORANDUM'])],
+            'tipo_servicio' => ['required', 'string', 'max:255'],
+            'estatus_servicio' => ['nullable', 'string', 'max:255'],
+            'oficio_referencia' => ['nullable', 'string', 'max:255'],
+            'memorandum_referencia' => ['nullable', 'string', 'max:255'],
+            'unidad_clave' => ['nullable', 'string', 'max:255'],
+            'crp' => ['nullable', 'string', 'max:255'],
+            'objetivo_servicio' => ['nullable', 'string', 'max:255'],
+            'folio_operativo' => ['nullable', 'string', 'max:255'],
+
+            'fecha' => ['required', 'date'],
+            'hora' => ['required', 'date_format:H:i'],
+            'hora_fin' => ['nullable', 'date_format:H:i'],
+
+            'cumplio' => ['nullable', 'boolean'],
+            'seguridad' => ['nullable', 'boolean'],
+            'barrido_seguridad' => ['nullable', 'boolean'],
+            'desfiles' => ['nullable', 'boolean'],
+            'proximidad_social' => ['nullable', 'boolean'],
+            'actos_civicos' => ['nullable', 'boolean'],
+
+            'tipo_busqueda' => ['nullable', 'string', 'max:255'],
+            'asunto' => ['nullable', 'string', 'max:255'],
+            'municipio' => ['nullable', 'string', 'max:255'],
+            'lugar' => ['nullable', 'string', 'max:255'],
+            'descripcion' => ['nullable', 'string'],
+            'acciones_realizadas' => ['nullable', 'string'],
+            'resultados' => ['nullable', 'string'],
+            'conclusion_operativa' => ['nullable', 'string'],
+            'comandante_responsable' => ['nullable', 'string', 'max:255'],
+            'cargo_responsable' => ['nullable', 'string', 'max:255'],
+            'observaciones' => ['nullable', 'string'],
+
+            'lat' => ['nullable', 'numeric', 'between:-90,90'],
+            'lng' => ['nullable', 'numeric', 'between:-180,180'],
+
+            'personal_id' => ['nullable', 'exists:personals,id'],
+            'canino_id' => ['nullable', 'exists:animals,id'],
+            'equino_id' => ['nullable', 'exists:animals,id'],
+            'patrulla_id' => ['nullable', 'exists:patrols,id'],
+
+            'archivo' => ['nullable', 'string'],
+            'archivo_nombre_original' => ['nullable', 'string', 'max:255'],
+            'archivo_mime' => ['nullable', 'string', 'max:255'],
+            'archivo_size' => ['nullable', 'integer'],
+
+            'estado_fuerza.elementos' => ['nullable', 'integer', 'min:0'],
+            'estado_fuerza.unidades' => ['nullable', 'integer', 'min:0'],
+            'estado_fuerza.remolques' => ['nullable', 'integer', 'min:0'],
+            'estado_fuerza.equinos' => ['nullable', 'integer', 'min:0'],
+            'estado_fuerza.caninos' => ['nullable', 'integer', 'min:0'],
+            'estado_fuerza.medicos_veterinarios' => ['nullable', 'integer', 'min:0'],
+            'estado_fuerza.crp' => ['nullable', 'string', 'max:255'],
+            'estado_fuerza.observaciones' => ['nullable', 'string'],
+
+            'participantes' => ['nullable', 'array'],
+            'participantes.*.institucion' => ['nullable', 'string', 'max:255'],
+            'participantes.*.responsable' => ['nullable', 'string', 'max:255'],
+            'participantes.*.elementos' => ['nullable', 'integer', 'min:0'],
+            'participantes.*.vehiculos' => ['nullable', 'integer', 'min:0'],
+            'participantes.*.unidad_identificador' => ['nullable', 'string', 'max:255'],
+            'participantes.*.descripcion' => ['nullable', 'string'],
+
+            'coordenadas' => ['nullable', 'array'],
+            'coordenadas.*.lat' => ['nullable', 'numeric', 'between:-90,90'],
+            'coordenadas.*.lng' => ['nullable', 'numeric', 'between:-180,180'],
+            'coordenadas.*.descripcion' => ['nullable', 'string', 'max:255'],
+            'coordenadas.*.orden' => ['nullable', 'integer', 'min:1'],
+
+            'recursos' => ['nullable', 'array'],
+            'recursos.*.tipo_recurso' => ['nullable', 'string', 'max:255'],
+            'recursos.*.descripcion' => ['nullable', 'string', 'max:255'],
+            'recursos.*.cantidad' => ['nullable', 'integer', 'min:1'],
+        ];
+    }
+
+    private function normalizeValidatedData(array $validatedData): array
+    {
+        $validatedData['categoria_registro'] = $this->normalizeText($validatedData['categoria_registro'] ?? null);
+        $validatedData['tipo_servicio'] = $this->normalizeText($validatedData['tipo_servicio'] ?? null);
+        $validatedData['estatus_servicio'] = $this->normalizeText($validatedData['estatus_servicio'] ?? null);
+        $validatedData['oficio_referencia'] = $validatedData['oficio_referencia'] ?? null;
+        $validatedData['memorandum_referencia'] = $validatedData['memorandum_referencia'] ?? null;
+        $validatedData['unidad_clave'] = $this->normalizeText($validatedData['unidad_clave'] ?? null);
+        $validatedData['crp'] = $this->normalizeText($validatedData['crp'] ?? null);
+        $validatedData['objetivo_servicio'] = $this->normalizeText($validatedData['objetivo_servicio'] ?? null);
+        $validatedData['folio_operativo'] = $validatedData['folio_operativo'] ?? null;
+        $validatedData['tipo_busqueda'] = $this->normalizeText($validatedData['tipo_busqueda'] ?? null);
+        $validatedData['asunto'] = $this->normalizeText($validatedData['asunto'] ?? null);
+        $validatedData['municipio'] = $this->normalizeText($validatedData['municipio'] ?? null);
+        $validatedData['lugar'] = $this->normalizeText($validatedData['lugar'] ?? null);
+        $validatedData['comandante_responsable'] = $this->normalizeText($validatedData['comandante_responsable'] ?? null);
+        $validatedData['cargo_responsable'] = $this->normalizeText($validatedData['cargo_responsable'] ?? null);
+
+        $validatedData['cumplio'] = (bool) ($validatedData['cumplio'] ?? false);
+        $validatedData['seguridad'] = (bool) ($validatedData['seguridad'] ?? false);
+        $validatedData['barrido_seguridad'] = (bool) ($validatedData['barrido_seguridad'] ?? false);
+        $validatedData['desfiles'] = (bool) ($validatedData['desfiles'] ?? false);
+        $validatedData['proximidad_social'] = (bool) ($validatedData['proximidad_social'] ?? false);
+        $validatedData['actos_civicos'] = (bool) ($validatedData['actos_civicos'] ?? false);
+
+        return $validatedData;
+    }
+
+    private function syncServicioDetalles(Servicio $servicio, array $validatedData): void
+    {
+        $estadoFuerza = $validatedData['estado_fuerza'] ?? [];
+
+        $tieneEstadoFuerza =
+            !empty($estadoFuerza['elementos']) ||
+            !empty($estadoFuerza['unidades']) ||
+            !empty($estadoFuerza['remolques']) ||
+            !empty($estadoFuerza['equinos']) ||
+            !empty($estadoFuerza['caninos']) ||
+            !empty($estadoFuerza['medicos_veterinarios']) ||
+            !empty($estadoFuerza['crp']) ||
+            !empty($estadoFuerza['observaciones']);
+
+        if ($tieneEstadoFuerza) {
+            $servicio->estadoFuerza()->updateOrCreate(
+                ['servicio_id' => $servicio->id],
+                [
+                    'elementos' => $estadoFuerza['elementos'] ?? null,
+                    'unidades' => $estadoFuerza['unidades'] ?? null,
+                    'remolques' => $estadoFuerza['remolques'] ?? null,
+                    'equinos' => $estadoFuerza['equinos'] ?? null,
+                    'caninos' => $estadoFuerza['caninos'] ?? null,
+                    'medicos_veterinarios' => $estadoFuerza['medicos_veterinarios'] ?? null,
+                    'crp' => $this->normalizeText($estadoFuerza['crp'] ?? null),
+                    'observaciones' => $estadoFuerza['observaciones'] ?? null,
+                ]
+            );
+        } else {
+            $servicio->estadoFuerza()->delete();
+        }
+
+        $servicio->participantes()->delete();
+
+        foreach (($validatedData['participantes'] ?? []) as $participante) {
+            if (empty($participante['institucion']) && empty($participante['responsable']) && empty($participante['descripcion'])) {
+                continue;
+            }
+
+            $servicio->participantes()->create([
+                'institucion' => $this->normalizeText($participante['institucion'] ?? null),
+                'responsable' => $this->normalizeText($participante['responsable'] ?? null),
+                'elementos' => $participante['elementos'] ?? null,
+                'vehiculos' => $participante['vehiculos'] ?? null,
+                'unidad_identificador' => $this->normalizeText($participante['unidad_identificador'] ?? null),
+                'descripcion' => $participante['descripcion'] ?? null,
+            ]);
+        }
+
+        $servicio->coordenadas()->delete();
+
+        foreach (($validatedData['coordenadas'] ?? []) as $index => $coordenada) {
+            if (($coordenada['lat'] ?? null) === null || ($coordenada['lng'] ?? null) === null) {
+                continue;
+            }
+
+            $servicio->coordenadas()->create([
+                'lat' => $coordenada['lat'],
+                'lng' => $coordenada['lng'],
+                'descripcion' => $coordenada['descripcion'] ?? null,
+                'orden' => $coordenada['orden'] ?? ($index + 1),
+            ]);
+        }
+
+        $servicio->recursos()->delete();
+
+        foreach (($validatedData['recursos'] ?? []) as $recurso) {
+            if (empty($recurso['tipo_recurso']) && empty($recurso['descripcion'])) {
+                continue;
+            }
+
+            $servicio->recursos()->create([
+                'tipo_recurso' => $this->normalizeText($recurso['tipo_recurso'] ?? null),
+                'descripcion' => $this->normalizeText($recurso['descripcion'] ?? null),
+                'cantidad' => $recurso['cantidad'] ?? 1,
+            ]);
+        }
     }
 
     public function index()
     {
         $servicios = Servicio::query()
-            ->with('creador')
-            ->with('personal')
-            ->with('canino')
-            ->with('equino')
-            ->with('patrulla')
+            ->with(['creador', 'personal', 'canino', 'equino', 'patrulla', 'estadoFuerza'])
             ->orderByDesc('fecha')
             ->orderByDesc('hora')
             ->get();
@@ -58,88 +240,57 @@ class ServicioController extends Controller
 
     public function create()
     {
-        $personales = Personal::query()
-            ->where('activo', 1)
-            ->orderBy('nombres')
-            ->get();
-
-        $caninos = Animal::query()
-            ->where('tipo', 'CANINO')
-            ->where('estatus', 'ACTIVO')
-            ->orderBy('nombre')
-            ->get();
-
-        $equinos = Animal::query()
-            ->where('tipo', 'EQUINO')
-            ->where('estatus', 'ACTIVO')
-            ->orderBy('nombre')
-            ->get();
-
-        $patrullas = Patrol::query()
-            ->orderBy('id')
-            ->get();
+        $personales = Personal::query()->where('activo', 1)->orderBy('nombres')->get();
+        $caninos = Animal::query()->where('tipo', 'CANINO')->where('estatus', 'ACTIVO')->orderBy('nombre')->get();
+        $equinos = Animal::query()->where('tipo', 'EQUINO')->where('estatus', 'ACTIVO')->orderBy('nombre')->get();
+        $patrullas = Patrol::query()->orderBy('id')->get();
 
         return view('servicios.create', compact('personales', 'caninos', 'equinos', 'patrullas'));
     }
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'categoria_registro' => ['required', 'string', Rule::in(['SERVICIO', 'APOYO', 'MEMORANDUM'])],
-            'tipo_servicio' => ['required', 'string'],
-            'fecha' => 'required|date',
-            'hora' => 'required|date_format:H:i',
-            'cumplio' => 'nullable|boolean',
-            'seguridad' => 'nullable|boolean',
-            'barrido_seguridad' => 'nullable|boolean',
-            'tipo_busqueda' => 'nullable|string',
-            'desfiles' => 'nullable|boolean',
-            'proximidad_social' => 'nullable|boolean',
-            'actos_civicos' => 'nullable|boolean',
-            'personal_id' => 'nullable|exists:personals,id',
-            'canino_id' => 'nullable|exists:animals,id',
-            'equino_id' => 'nullable|exists:animals,id',
-            'patrulla_id' => 'nullable',
-            'asunto' => 'nullable|string|max:255',
-            'lugar' => 'nullable|string|max:255',
-            'descripcion' => 'nullable|string',
-            'observaciones' => 'nullable|string|max:1000',
-        ]);
-
-        $validatedData['categoria_registro'] = $this->normalizeText($validatedData['categoria_registro'] ?? null);
-        $validatedData['tipo_servicio'] = $this->normalizeText($validatedData['tipo_servicio'] ?? null);
-        $validatedData['tipo_busqueda'] = $this->normalizeText($validatedData['tipo_busqueda'] ?? null);
+        $validatedData = $request->validate($this->validationRules());
+        $validatedData = $this->normalizeValidatedData($validatedData);
         $validatedData['created_by'] = Auth::id();
-        $validatedData['cumplio'] = (bool) ($validatedData['cumplio'] ?? false);
-        $validatedData['seguridad'] = (bool) ($validatedData['seguridad'] ?? false);
-        $validatedData['barrido_seguridad'] = (bool) ($validatedData['barrido_seguridad'] ?? false);
-        $validatedData['desfiles'] = (bool) ($validatedData['desfiles'] ?? false);
-        $validatedData['proximidad_social'] = (bool) ($validatedData['proximidad_social'] ?? false);
-        $validatedData['actos_civicos'] = (bool) ($validatedData['actos_civicos'] ?? false);
+
+        DB::beginTransaction();
 
         try {
             $servicio = Servicio::create($validatedData);
 
+            $this->syncServicioDetalles($servicio, $validatedData);
+
+            DB::commit();
+
             Log::info('Servicio creado: ' . $servicio->id . ' por usuario ' . (Auth::id() ?? 'N/A'));
 
             return redirect()->route('servicios.index')->with('success', 'Servicio creado correctamente.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
             Log::error('Error al crear servicio: ' . $e->getMessage());
 
-            return redirect()->back()
-                ->withErrors('Hubo un error al crear el servicio.')
-                ->withInput();
+            return redirect()->back()->withErrors('Hubo un error al crear el servicio.')->withInput();
         }
     }
 
     public function show($id)
     {
         $servicio = Servicio::query()
-            ->with('creador')
-            ->with('personal')
-            ->with('canino')
-            ->with('equino')
-            ->with('patrulla')
+            ->with([
+                'creador',
+                'personal',
+                'canino',
+                'equino',
+                'patrulla',
+                'estadoFuerza',
+                'participantes',
+                'coordenadas',
+                'recursos',
+                'reportes.creador',
+                'reportes.fotos',
+            ])
             ->findOrFail($id);
 
         return view('servicios.show', compact('servicio'));
@@ -148,33 +299,13 @@ class ServicioController extends Controller
     public function edit($id)
     {
         $servicio = Servicio::query()
-            ->with('creador')
-            ->with('personal')
-            ->with('canino')
-            ->with('equino')
-            ->with('patrulla')
+            ->with(['creador', 'personal', 'canino', 'equino', 'patrulla', 'estadoFuerza', 'participantes', 'coordenadas', 'recursos'])
             ->findOrFail($id);
 
-        $personales = Personal::query()
-            ->where('activo', 1)
-            ->orderBy('nombres')
-            ->get();
-
-        $caninos = Animal::query()
-            ->where('tipo', 'CANINO')
-            ->where('estatus', 'ACTIVO')
-            ->orderBy('nombre')
-            ->get();
-
-        $equinos = Animal::query()
-            ->where('tipo', 'EQUINO')
-            ->where('estatus', 'ACTIVO')
-            ->orderBy('nombre')
-            ->get();
-
-        $patrullas = Patrol::query()
-            ->orderBy('id')
-            ->get();
+        $personales = Personal::query()->where('activo', 1)->orderBy('nombres')->get();
+        $caninos = Animal::query()->where('tipo', 'CANINO')->where('estatus', 'ACTIVO')->orderBy('nombre')->get();
+        $equinos = Animal::query()->where('tipo', 'EQUINO')->where('estatus', 'ACTIVO')->orderBy('nombre')->get();
+        $patrullas = Patrol::query()->orderBy('id')->get();
 
         return view('servicios.edit', compact('servicio', 'personales', 'caninos', 'equinos', 'patrullas'));
     }
@@ -183,50 +314,27 @@ class ServicioController extends Controller
     {
         $servicio = Servicio::query()->findOrFail($id);
 
-        $validatedData = $request->validate([
-            'categoria_registro' => ['required', 'string', Rule::in(['SERVICIO', 'APOYO', 'MEMORANDUM'])],
-            'tipo_servicio' => ['required', 'string'],
-            'fecha' => 'required|date',
-            'hora' => 'required|date_format:H:i',
-            'cumplio' => 'nullable|boolean',
-            'seguridad' => 'nullable|boolean',
-            'barrido_seguridad' => 'nullable|boolean',
-            'tipo_busqueda' => 'nullable|string',
-            'desfiles' => 'nullable|boolean',
-            'proximidad_social' => 'nullable|boolean',
-            'actos_civicos' => 'nullable|boolean',
-            'personal_id' => 'nullable|exists:personals,id',
-            'canino_id' => 'nullable|exists:animals,id',
-            'equino_id' => 'nullable|exists:animals,id',
-            'patrulla_id' => 'nullable',
-            'asunto' => 'nullable|string|max:255',
-            'lugar' => 'nullable|string|max:255',
-            'descripcion' => 'nullable|string',
-            'observaciones' => 'nullable|string|max:1000',
-        ]);
+        $validatedData = $request->validate($this->validationRules());
+        $validatedData = $this->normalizeValidatedData($validatedData);
 
-        $validatedData['categoria_registro'] = $this->normalizeText($validatedData['categoria_registro'] ?? null);
-        $validatedData['tipo_servicio'] = $this->normalizeText($validatedData['tipo_servicio'] ?? null);
-        $validatedData['tipo_busqueda'] = $this->normalizeText($validatedData['tipo_busqueda'] ?? null);
-        $validatedData['cumplio'] = (bool) ($validatedData['cumplio'] ?? false);
-        $validatedData['seguridad'] = (bool) ($validatedData['seguridad'] ?? false);
-        $validatedData['barrido_seguridad'] = (bool) ($validatedData['barrido_seguridad'] ?? false);
-        $validatedData['desfiles'] = (bool) ($validatedData['desfiles'] ?? false);
-        $validatedData['proximidad_social'] = (bool) ($validatedData['proximidad_social'] ?? false);
-        $validatedData['actos_civicos'] = (bool) ($validatedData['actos_civicos'] ?? false);
+        DB::beginTransaction();
 
         try {
             $servicio->update($validatedData);
 
+            $this->syncServicioDetalles($servicio, $validatedData);
+
+            DB::commit();
+
             Log::info('Servicio actualizado: ' . $servicio->id . ' por usuario ' . (Auth::id() ?? 'N/A'));
 
             return redirect()->route('servicios.index')->with('success', 'Servicio actualizado correctamente.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
             Log::error('Error al actualizar servicio: ' . $e->getMessage());
 
-            return redirect()->back()
-                ->withErrors('Hubo un error al actualizar el servicio.')
-                ->withInput();
+            return redirect()->back()->withErrors('Hubo un error al actualizar el servicio.')->withInput();
         }
     }
 
@@ -234,7 +342,6 @@ class ServicioController extends Controller
     {
         try {
             $servicio = Servicio::query()->findOrFail($id);
-
             $idServicio = $servicio->id;
 
             $servicio->delete();
@@ -242,7 +349,7 @@ class ServicioController extends Controller
             Log::info('Servicio eliminado: ' . $idServicio . ' por usuario ' . (Auth::id() ?? 'N/A'));
 
             return redirect()->route('servicios.index')->with('success', 'Servicio eliminado correctamente.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error al eliminar servicio: ' . $e->getMessage());
 
             return redirect()->back()->withErrors('Hubo un error al eliminar servicio.');

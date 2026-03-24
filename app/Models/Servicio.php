@@ -19,8 +19,16 @@ class Servicio extends Model
         'patrulla_id',
         'categoria_registro',
         'tipo_servicio',
+        'estatus_servicio',
+        'oficio_referencia',
+        'memorandum_referencia',
+        'unidad_clave',
+        'crp',
+        'objetivo_servicio',
+        'folio_operativo',
         'fecha',
         'hora',
+        'hora_fin',
         'cumplio',
         'seguridad',
         'barrido_seguridad',
@@ -29,9 +37,17 @@ class Servicio extends Model
         'actos_civicos',
         'tipo_busqueda',
         'asunto',
+        'municipio',
         'lugar',
         'descripcion',
+        'acciones_realizadas',
+        'resultados',
+        'conclusion_operativa',
+        'comandante_responsable',
+        'cargo_responsable',
         'observaciones',
+        'lat',
+        'lng',
         'archivo',
         'archivo_nombre_original',
         'archivo_mime',
@@ -46,6 +62,8 @@ class Servicio extends Model
         'desfiles' => 'boolean',
         'proximidad_social' => 'boolean',
         'actos_civicos' => 'boolean',
+        'lat' => 'decimal:7',
+        'lng' => 'decimal:7',
     ];
 
     public function creador()
@@ -71,5 +89,38 @@ class Servicio extends Model
     public function patrulla()
     {
         return $this->belongsTo(Patrol::class, 'patrulla_id');
+    }
+
+    public function estadoFuerza()
+    {
+        return $this->hasOne(ServicioEstadoFuerza::class, 'servicio_id');
+    }
+
+    public function movimientos()
+    {
+        return $this->hasMany(ServicioMovimiento::class, 'servicio_id')
+            ->orderBy('fecha')
+            ->orderBy('hora');
+    }
+
+    public function participantes()
+    {
+        return $this->hasMany(ServicioParticipante::class, 'servicio_id');
+    }
+
+    public function coordenadas()
+    {
+        return $this->hasMany(ServicioCoordenada::class, 'servicio_id')
+            ->orderBy('orden');
+    }
+
+    public function recursos()
+    {
+        return $this->hasMany(ServicioRecurso::class, 'servicio_id');
+    }
+
+    public function reportes()
+    {
+        return $this->hasMany(ServicioReporte::class, 'servicio_id')->orderByDesc('fecha')->orderByDesc('hora');
     }
 }

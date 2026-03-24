@@ -34,6 +34,10 @@ use App\Http\Controllers\PersonalDocumentController;
 use App\Http\Controllers\BackupsSqlController;
 use App\Http\Controllers\ServicioController;
 
+
+use App\Http\Controllers\ServicioReporteController;
+use App\Http\Controllers\ServicioReporteFotoController;
+
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
@@ -249,6 +253,23 @@ Route::middleware('auth')->group(function () {
         Route::get('/{servicio}/edit', [ServicioController::class, 'edit'])->middleware('can:editar servicios')->name('servicios.edit');
         Route::put('/{servicio}', [ServicioController::class, 'update'])->middleware('can:editar servicios')->name('servicios.update');
         Route::delete('/{servicio}', [ServicioController::class, 'destroy'])->middleware('can:eliminar servicios')->name('servicios.destroy');
+    });
+
+    Route::prefix('mis-servicios')->middleware('can:ver reportes de servicios')->group(function () {
+        Route::get('/', [ServicioReporteController::class, 'misServicios'])->name('mis_servicios.index');
+        Route::get('/{servicio}', [ServicioReporteController::class, 'panelServicio'])->name('mis_servicios.show');
+
+        Route::get('/{servicio}/reportes', [ServicioReporteController::class, 'index'])->name('mis_servicios.reportes.index');
+        Route::get('/{servicio}/reportes/create', [ServicioReporteController::class, 'create'])->middleware('can:crear reportes de servicios')->name('mis_servicios.reportes.create');
+        Route::post('/{servicio}/reportes', [ServicioReporteController::class, 'store'])->middleware('can:crear reportes de servicios')->name('mis_servicios.reportes.store');
+        Route::get('/{servicio}/reportes/{reporte}', [ServicioReporteController::class, 'show'])->name('mis_servicios.reportes.show');
+        Route::get('/{servicio}/reportes/{reporte}/edit', [ServicioReporteController::class, 'edit'])->middleware('can:editar reportes de servicios')->name('mis_servicios.reportes.edit');
+        Route::put('/{servicio}/reportes/{reporte}', [ServicioReporteController::class, 'update'])->middleware('can:editar reportes de servicios')->name('mis_servicios.reportes.update');
+        Route::delete('/{servicio}/reportes/{reporte}', [ServicioReporteController::class, 'destroy'])->middleware('can:eliminar reportes de servicios')->name('mis_servicios.reportes.destroy');
+        Route::get('/{servicio}/reportes/{reporte}/whatsapp', [ServicioReporteController::class, 'whatsapp'])->middleware('can:compartir whatsapp reportes de servicios')->name('mis_servicios.reportes.whatsapp');
+
+        Route::post('/{servicio}/reportes/{reporte}/fotos', [ServicioReporteFotoController::class, 'store'])->middleware('can:subir fotos reportes de servicios')->name('mis_servicios.reportes.fotos.store');
+        Route::delete('/{servicio}/reportes/{reporte}/fotos/{foto}', [ServicioReporteFotoController::class, 'destroy'])->middleware('can:eliminar fotos reportes de servicios')->name('mis_servicios.reportes.fotos.destroy');
     });
 
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');

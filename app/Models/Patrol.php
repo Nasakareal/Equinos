@@ -27,4 +27,9 @@ class Patrol extends Model
     {
         return $this->hasMany(PatrolAssignment::class, 'patrol_id');
     }
+
+    public function servicios()
+    {
+        return $this->hasMany(Servicio::class, 'patrulla_id');
+    }
 }

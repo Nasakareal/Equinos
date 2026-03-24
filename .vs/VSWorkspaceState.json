@@ -1,13 +1,15 @@
 {
   "ExpandedNodes": [
     "",
-    "\\config",
+    "\\app",
+    "\\app\\Http",
+    "\\app\\Http\\Controllers",
     "\\resources",
     "\\resources\\views",
-    "\\resources\\views\\admin",
-    "\\resources\\views\\admin\\settings",
-    "\\resources\\views\\incidence_types"
+    "\\resources\\views\\mis_servicios",
+    "\\resources\\views\\personal",
+    "\\routes"
   ],
-  "SelectedNode": "\\resources\\views\\admin\\settings\\index.blade.php",
+  "SelectedNode": "\\resources\\views\\mis_servicios\\index.blade.php",
   "PreviewInSolutionExplorer": false
 }
