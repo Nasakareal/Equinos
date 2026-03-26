@@ -3,12 +3,32 @@
   "WorkspaceRootPath": "C:\\wamp64\\www\\equinosCaninos\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\reportes\\compartir_nativo.blade.php||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:resources\\views\\mis_servicios\\reportes\\compartir_nativo.blade.php||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\routes\\web.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:routes\\web.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\ServicioReporteController.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Http\\Controllers\\ServicioReporteController.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\resources\\views\\servicios_operativos\\movimiento_create.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:resources\\views\\servicios_operativos\\movimiento_create.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\reportes\\show.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:resources\\views\\mis_servicios\\reportes\\show.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\ServicioController.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Http\\Controllers\\ServicioController.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\reportes\\create.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:resources\\views\\mis_servicios\\reportes\\create.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\reportes\\edit.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:resources\\views\\mis_servicios\\reportes\\edit.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -23,27 +43,92 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "ServicioReporteController.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\ServicioReporteController.php",
-              "RelativeDocumentMoniker": "app\\Http\\Controllers\\ServicioReporteController.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\ServicioReporteController.php",
-              "RelativeToolTip": "app\\Http\\Controllers\\ServicioReporteController.php",
-              "ViewState": "AgIAAB4BAAAAAAAAAAAmwFEBAAAAAAAAAAAAAA==",
+              "Title": "compartir_nativo.blade.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\reportes\\compartir_nativo.blade.php",
+              "RelativeDocumentMoniker": "resources\\views\\mis_servicios\\reportes\\compartir_nativo.blade.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\reportes\\compartir_nativo.blade.php",
+              "RelativeToolTip": "resources\\views\\mis_servicios\\reportes\\compartir_nativo.blade.php",
+              "ViewState": "AgIAABYAAAAAAAAAAAAmwEkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-03-24T00:06:27.752Z",
+              "WhenOpened": "2026-03-26T02:11:45.362Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "movimiento_create.blade.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\servicios_operativos\\movimiento_create.blade.php",
-              "RelativeDocumentMoniker": "resources\\views\\servicios_operativos\\movimiento_create.blade.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\servicios_operativos\\movimiento_create.blade.php",
-              "RelativeToolTip": "resources\\views\\servicios_operativos\\movimiento_create.blade.php",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Title": "web.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\routes\\web.php",
+              "RelativeDocumentMoniker": "routes\\web.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\routes\\web.php",
+              "RelativeToolTip": "routes\\web.php",
+              "ViewState": "AgIAAOQAAAAAAAAAAAAWwA0BAADqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-03-23T23:18:06.515Z",
+              "WhenOpened": "2026-03-26T02:09:37.8Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "edit.blade.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\reportes\\edit.blade.php",
+              "RelativeDocumentMoniker": "resources\\views\\mis_servicios\\reportes\\edit.blade.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\reportes\\edit.blade.php",
+              "RelativeToolTip": "resources\\views\\mis_servicios\\reportes\\edit.blade.php",
+              "ViewState": "AgIAADUBAAAAAAAAAAAmwGgBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
+              "WhenOpened": "2026-03-26T01:55:16.164Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "create.blade.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\reportes\\create.blade.php",
+              "RelativeDocumentMoniker": "resources\\views\\mis_servicios\\reportes\\create.blade.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\reportes\\create.blade.php",
+              "RelativeToolTip": "resources\\views\\mis_servicios\\reportes\\create.blade.php",
+              "ViewState": "AgIAAAsBAAAAAAAAAAAmwD0BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
+              "WhenOpened": "2026-03-26T01:50:26.409Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ServicioController.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\ServicioController.php",
+              "RelativeDocumentMoniker": "app\\Http\\Controllers\\ServicioController.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\ServicioController.php",
+              "RelativeToolTip": "app\\Http\\Controllers\\ServicioController.php",
+              "ViewState": "AgIAADQBAAAAAAAAAAAmwGYBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
+              "WhenOpened": "2026-03-26T01:50:06.251Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ServicioReporteController.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\ServicioReporteController.php",
+              "RelativeDocumentMoniker": "app\\Http\\Controllers\\ServicioReporteController.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\ServicioReporteController.php",
+              "RelativeToolTip": "app\\Http\\Controllers\\ServicioReporteController.php",
+              "ViewState": "AgIAAGEBAAAAAAAAAAAmwHsBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
+              "WhenOpened": "2026-03-26T01:49:03.389Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "show.blade.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\reportes\\show.blade.php",
+              "RelativeDocumentMoniker": "resources\\views\\mis_servicios\\reportes\\show.blade.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\reportes\\show.blade.php",
+              "RelativeToolTip": "resources\\views\\mis_servicios\\reportes\\show.blade.php",
+              "ViewState": "AgIAAJIBAAAAAAAAAAAWwKsBAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
+              "WhenOpened": "2026-03-26T01:48:26.336Z",
               "EditorCaption": ""
             }
           ]

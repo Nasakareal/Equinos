@@ -267,7 +267,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/{servicio}/reportes/{reporte}', [ServicioReporteController::class, 'update'])->middleware('can:editar reportes de servicios')->name('mis_servicios.reportes.update');
         Route::delete('/{servicio}/reportes/{reporte}', [ServicioReporteController::class, 'destroy'])->middleware('can:eliminar reportes de servicios')->name('mis_servicios.reportes.destroy');
         Route::get('/{servicio}/reportes/{reporte}/whatsapp', [ServicioReporteController::class, 'whatsapp'])->middleware('can:compartir whatsapp reportes de servicios')->name('mis_servicios.reportes.whatsapp');
-
+        Route::get('/{servicio}/reportes/{reporte}/compartir-nativo', [ServicioReporteController::class, 'compartirNativo'])->middleware('can:compartir whatsapp reportes de servicios')->name('mis_servicios.reportes.compartir_nativo');
         Route::post('/{servicio}/reportes/{reporte}/fotos', [ServicioReporteFotoController::class, 'store'])->middleware('can:subir fotos reportes de servicios')->name('mis_servicios.reportes.fotos.store');
         Route::delete('/{servicio}/reportes/{reporte}/fotos/{foto}', [ServicioReporteFotoController::class, 'destroy'])->middleware('can:eliminar fotos reportes de servicios')->name('mis_servicios.reportes.fotos.destroy');
     });

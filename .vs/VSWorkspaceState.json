@@ -6,10 +6,11 @@
     "\\app\\Http\\Controllers",
     "\\resources",
     "\\resources\\views",
+    "\\resources\\views\\animales",
     "\\resources\\views\\mis_servicios",
-    "\\resources\\views\\personal",
+    "\\resources\\views\\mis_servicios\\reportes",
     "\\routes"
   ],
-  "SelectedNode": "\\resources\\views\\mis_servicios\\index.blade.php",
+  "SelectedNode": "\\resources\\views\\mis_servicios\\reportes\\compartir_nativo.blade.php",
   "PreviewInSolutionExplorer": false
 }

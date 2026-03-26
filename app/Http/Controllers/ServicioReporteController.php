@@ -7,6 +7,7 @@ use App\Models\ServicioReporte;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class ServicioReporteController extends Controller
@@ -25,6 +26,7 @@ class ServicioReporteController extends Controller
             'edit',
             'update',
             'whatsapp',
+            'compartirNativo',
         ]);
 
         $this->middleware('can:crear reportes de servicios')->only([
@@ -43,6 +45,7 @@ class ServicioReporteController extends Controller
 
         $this->middleware('can:compartir whatsapp reportes de servicios')->only([
             'whatsapp',
+            'compartirNativo',
         ]);
     }
 
@@ -138,6 +141,11 @@ class ServicioReporteController extends Controller
             'conclusion' => ['nullable', 'string'],
             'lat' => ['nullable', 'numeric', 'between:-90,90'],
             'lng' => ['nullable', 'numeric', 'between:-180,180'],
+
+            'fotos' => ['nullable', 'array'],
+            'fotos.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'descripcion' => ['nullable', 'array'],
+            'descripcion.*' => ['nullable', 'string', 'max:255'],
         ];
     }
 
@@ -224,6 +232,29 @@ class ServicioReporteController extends Controller
         return trim(implode("\n", $lineas));
     }
 
+    private function guardarFotos(Request $request, ServicioReporte $reporte): void
+    {
+        if (!$request->hasFile('fotos')) {
+            return;
+        }
+
+        foreach ($request->file('fotos') as $index => $archivo) {
+            if (!$archivo) {
+                continue;
+            }
+
+            $ruta = $archivo->store('servicios/reportes', 'public');
+
+            $reporte->fotos()->create([
+                'ruta' => $ruta,
+                'nombre_original' => $archivo->getClientOriginalName(),
+                'mime' => $archivo->getClientMimeType(),
+                'size' => $archivo->getSize(),
+                'descripcion' => $request->input("descripcion.$index"),
+            ]);
+        }
+    }
+
     public function create(Servicio $servicio)
     {
         return view('mis_servicios.reportes.create', compact('servicio'));
@@ -239,7 +270,11 @@ class ServicioReporteController extends Controller
         $validatedData['asunto'] = $this->normalizeText($validatedData['asunto'] ?? $servicio->asunto);
         $validatedData['created_by'] = Auth::id();
 
+        unset($validatedData['fotos'], $validatedData['descripcion']);
+
         $reporte = $servicio->reportes()->create($validatedData);
+
+        $this->guardarFotos($request, $reporte);
 
         $reporte->whatsapp_texto = $this->buildWhatsappText($servicio, $reporte);
         $reporte->save();
@@ -270,6 +305,8 @@ class ServicioReporteController extends Controller
     {
         abort_if($reporte->servicio_id !== $servicio->id, 404);
 
+        $reporte->load('fotos');
+
         return view('mis_servicios.reportes.edit', compact('servicio', 'reporte'));
     }
 
@@ -284,7 +321,11 @@ class ServicioReporteController extends Controller
         $validatedData['lugar'] = $this->normalizeText($validatedData['lugar'] ?? null);
         $validatedData['asunto'] = $this->normalizeText($validatedData['asunto'] ?? null);
 
+        unset($validatedData['fotos'], $validatedData['descripcion']);
+
         $reporte->update($validatedData);
+
+        $this->guardarFotos($request, $reporte);
 
         $reporte->whatsapp_texto = $this->buildWhatsappText($servicio, $reporte);
         $reporte->save();
@@ -306,8 +347,8 @@ class ServicioReporteController extends Controller
         $reporte->load('fotos');
 
         foreach ($reporte->fotos as $foto) {
-            if ($foto->ruta && file_exists(storage_path('app/public/' . $foto->ruta))) {
-                @unlink(storage_path('app/public/' . $foto->ruta));
+            if ($foto->ruta && Storage::disk('public')->exists($foto->ruta)) {
+                Storage::disk('public')->delete($foto->ruta);
             }
         }
 
@@ -333,5 +374,32 @@ class ServicioReporteController extends Controller
         }
 
         return redirect()->away('https://wa.me/?text=' . urlencode($reporte->whatsapp_texto));
+    }
+
+    public function compartirNativo(Servicio $servicio, ServicioReporte $reporte)
+    {
+        abort_if($reporte->servicio_id !== $servicio->id, 404);
+
+        $reporte->load('fotos');
+
+        if (!$reporte->whatsapp_texto) {
+            $reporte->whatsapp_texto = $this->buildWhatsappText($servicio, $reporte);
+            $reporte->save();
+        }
+
+        $imagenes = [];
+
+        foreach ($reporte->fotos as $foto) {
+            if (!empty($foto->ruta) && Storage::disk('public')->exists($foto->ruta)) {
+                $imagenes[] = asset('storage/' . $foto->ruta);
+            }
+        }
+
+        return view('mis_servicios.reportes.compartir_nativo', [
+            'servicio' => $servicio,
+            'reporte' => $reporte,
+            'texto' => $reporte->whatsapp_texto,
+            'imagenes' => $imagenes,
+        ]);
     }
 }
