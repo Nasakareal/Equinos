@@ -81,7 +81,14 @@ class ServicioReporteController extends Controller
             'reportes.fotos',
         ]);
 
-        return view('mis_servicios.show', compact('servicio'));
+        $reportes = $servicio->reportes()
+            ->with([
+                'creador',
+                'fotos',
+            ])
+            ->get();
+
+        return view('mis_servicios.reportes.index', compact('servicio', 'reportes'));
     }
 
     public function index(Servicio $servicio)
@@ -141,7 +148,6 @@ class ServicioReporteController extends Controller
             'conclusion' => ['nullable', 'string'],
             'lat' => ['nullable', 'numeric', 'between:-90,90'],
             'lng' => ['nullable', 'numeric', 'between:-180,180'],
-
             'fotos' => ['nullable', 'array'],
             'fotos.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'descripcion' => ['nullable', 'array'],

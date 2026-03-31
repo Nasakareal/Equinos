@@ -1,16 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\app",
-    "\\app\\Http",
-    "\\app\\Http\\Controllers",
-    "\\resources",
-    "\\resources\\views",
-    "\\resources\\views\\animales",
-    "\\resources\\views\\mis_servicios",
-    "\\resources\\views\\mis_servicios\\reportes",
     "\\routes"
   ],
-  "SelectedNode": "\\resources\\views\\mis_servicios\\reportes\\compartir_nativo.blade.php",
+  "SelectedNode": "\\routes\\api.php",
   "PreviewInSolutionExplorer": false
 }
