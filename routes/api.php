@@ -2,8 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\ActividadCatalogController;
-use App\Http\Controllers\Api\ActividadController;
 use App\Http\Controllers\Api\AnimalAssignmentController;
 use App\Http\Controllers\Api\AnimalController;
 use App\Http\Controllers\Api\AnimalIncidenceController;
@@ -11,23 +9,13 @@ use App\Http\Controllers\Api\AnimalIncidenceFileController;
 use App\Http\Controllers\Api\AnimalMedicalFileController;
 use App\Http\Controllers\Api\AnimalMedicalRecordController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\DailyReportController;
 use App\Http\Controllers\Api\EquinoterapiaReporteController;
 use App\Http\Controllers\Api\FeedController;
-use App\Http\Controllers\Api\IncidenceController;
-use App\Http\Controllers\Api\IncidenceTypeController;
-use App\Http\Controllers\Api\PatrolAssignmentController;
-use App\Http\Controllers\Api\PatrolController;
 use App\Http\Controllers\Api\PersonalController;
 use App\Http\Controllers\Api\PersonalDocumentController;
 use App\Http\Controllers\Api\PersonalHorarioController;
 use App\Http\Controllers\Api\PersonalHorarioDetalleController;
-use App\Http\Controllers\Api\PuestaDisposicionController;
-use App\Http\Controllers\Api\ServiceScheduleController;
-use App\Http\Controllers\Api\TurnoController;
-use App\Http\Controllers\Api\TurnoHorarioController;
-use App\Http\Controllers\Api\WeaponAssignmentController;
-use App\Http\Controllers\Api\WeaponController;
+use App\Http\Controllers\Api\ServicioController;
 
 Route::get('/ping', function () {
     return response()->json(['ok' => true, 'message' => 'pong']);
@@ -39,13 +27,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/feed', [FeedController::class, 'index']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
-
-    Route::get('actividades', [ActividadController::class, 'index']);
-    Route::post('actividades', [ActividadController::class, 'store']);
-    Route::get('actividades/{actividad}', [ActividadController::class, 'show']);
-    Route::delete('actividades/{actividad}', [ActividadController::class, 'destroy']);
-    Route::get('actividad-categorias', [ActividadCatalogController::class, 'categorias']);
-    Route::get('actividad-categorias/{categoriaId}/subcategorias', [ActividadCatalogController::class, 'subcategorias']);
 
     Route::prefix('animales')->middleware('can:ver animales')->group(function () {
         Route::get('/', [AnimalController::class, 'index']);
@@ -108,95 +89,20 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    Route::prefix('puestas-disposicion')->middleware('can:ver puestas_disposicion')->group(function () {
-        Route::get('/catalogos', [PuestaDisposicionController::class, 'catalogos']);
-        Route::get('/', [PuestaDisposicionController::class, 'index']);
-        Route::post('/', [PuestaDisposicionController::class, 'store'])->middleware('can:crear puestas_disposicion');
-        Route::get('/{puesta_disposicion}', [PuestaDisposicionController::class, 'show']);
-        Route::put('/{puesta_disposicion}', [PuestaDisposicionController::class, 'update'])->middleware('can:editar puestas_disposicion');
-        Route::delete('/{puesta_disposicion}', [PuestaDisposicionController::class, 'destroy'])->middleware('can:eliminar puestas_disposicion');
+    Route::prefix('servicios')->middleware('can:ver servicios')->group(function () {
+        Route::get('/', [ServicioController::class, 'index']);
+        Route::post('/', [ServicioController::class, 'store'])->middleware('can:crear servicios');
+        Route::get('/{servicio}', [ServicioController::class, 'show']);
+        Route::put('/{servicio}', [ServicioController::class, 'update'])->middleware('can:editar servicios');
+        Route::delete('/{servicio}', [ServicioController::class, 'destroy'])->middleware('can:eliminar servicios');
     });
 
-    Route::prefix('incidencias')->middleware('can:ver incidencias')->group(function () {
-        Route::get('/catalogos', [IncidenceController::class, 'catalogos']);
-        Route::get('/tipos', [IncidenceTypeController::class, 'index']);
-        Route::post('/tipos', [IncidenceTypeController::class, 'store'])->middleware('can:crear incidencias');
-        Route::get('/tipos/{incidence_type}', [IncidenceTypeController::class, 'show']);
-        Route::put('/tipos/{incidence_type}', [IncidenceTypeController::class, 'update'])->middleware('can:editar incidencias');
-        Route::delete('/tipos/{incidence_type}', [IncidenceTypeController::class, 'destroy'])->middleware('can:eliminar incidencias');
-        Route::get('/', [IncidenceController::class, 'index']);
-        Route::post('/', [IncidenceController::class, 'store'])->middleware('can:crear incidencias');
-        Route::get('/{incidence}', [IncidenceController::class, 'show']);
-        Route::put('/{incidence}', [IncidenceController::class, 'update'])->middleware('can:editar incidencias');
-        Route::delete('/{incidence}', [IncidenceController::class, 'destroy'])->middleware('can:eliminar incidencias');
-    });
-
-    Route::prefix('armamento')->middleware('can:ver armamento')->group(function () {
-        Route::get('/weapons', [WeaponController::class, 'index']);
-        Route::post('/weapons', [WeaponController::class, 'store'])->middleware('can:crear armamento');
-        Route::get('/weapons/{weapon}', [WeaponController::class, 'show']);
-        Route::put('/weapons/{weapon}', [WeaponController::class, 'update'])->middleware('can:editar armamento');
-        Route::delete('/weapons/{weapon}', [WeaponController::class, 'destroy'])->middleware('can:eliminar armamento');
-
-        Route::get('/asignaciones/catalogos', [WeaponAssignmentController::class, 'catalogos']);
-        Route::get('/asignaciones', [WeaponAssignmentController::class, 'index']);
-        Route::post('/asignaciones', [WeaponAssignmentController::class, 'store'])->middleware('can:crear armamento');
-        Route::get('/asignaciones/{weapon_assignment}', [WeaponAssignmentController::class, 'show']);
-        Route::put('/asignaciones/{weapon_assignment}', [WeaponAssignmentController::class, 'update'])->middleware('can:editar armamento');
-        Route::delete('/asignaciones/{weapon_assignment}', [WeaponAssignmentController::class, 'destroy'])->middleware('can:eliminar armamento');
-    });
-
-    Route::prefix('patrullas')->middleware('can:ver turnos')->group(function () {
-        Route::get('/', [PatrolController::class, 'index']);
-        Route::post('/', [PatrolController::class, 'store'])->middleware('can:editar turnos');
-        Route::get('/{patrol}', [PatrolController::class, 'show']);
-        Route::put('/{patrol}', [PatrolController::class, 'update'])->middleware('can:editar turnos');
-        Route::delete('/{patrol}', [PatrolController::class, 'destroy'])->middleware('can:editar turnos');
-        Route::get('/asignaciones', [PatrolAssignmentController::class, 'index']);
-        Route::get('/asignaciones/{patrol_assignment}', [PatrolAssignmentController::class, 'show']);
-        Route::post('/asignaciones', [PatrolAssignmentController::class, 'store'])->middleware('can:editar turnos');
-        Route::put('/asignaciones/{patrol_assignment}', [PatrolAssignmentController::class, 'update'])->middleware('can:editar turnos');
-        Route::delete('/asignaciones/{patrol_assignment}', [PatrolAssignmentController::class, 'destroy'])->middleware('can:editar turnos');
-    });
-
-    Route::prefix('turnos')->middleware('can:ver turnos')->group(function () {
-        Route::get('/', [TurnoController::class, 'index']);
-        Route::post('/', [TurnoController::class, 'store'])->middleware('can:crear turnos');
-        Route::get('/{turno}', [TurnoController::class, 'show']);
-        Route::put('/{turno}', [TurnoController::class, 'update'])->middleware('can:editar turnos');
-        Route::delete('/{turno}', [TurnoController::class, 'destroy'])->middleware('can:eliminar turnos');
-    });
-
-    Route::prefix('turnos-horarios')->middleware('can:ver turnos')->group(function () {
-        Route::get('/catalogos', [TurnoHorarioController::class, 'catalogos']);
-        Route::get('/', [TurnoHorarioController::class, 'index']);
-        Route::post('/', [TurnoHorarioController::class, 'store'])->middleware('can:crear turnos');
-        Route::get('/{turno_horario}', [TurnoHorarioController::class, 'show']);
-        Route::put('/{turno_horario}', [TurnoHorarioController::class, 'update'])->middleware('can:editar turnos');
-        Route::delete('/{turno_horario}', [TurnoHorarioController::class, 'destroy'])->middleware('can:eliminar turnos');
-    });
-
-    Route::prefix('servicio')->middleware('can:ver turnos')->group(function () {
-        Route::get('/catalogos', [ServiceScheduleController::class, 'catalogos']);
-        Route::get('/', [ServiceScheduleController::class, 'index']);
-        Route::post('/', [ServiceScheduleController::class, 'store'])->middleware('can:editar turnos');
-        Route::get('/{service_schedule}', [ServiceScheduleController::class, 'show']);
-        Route::put('/{service_schedule}', [ServiceScheduleController::class, 'update'])->middleware('can:editar turnos');
-        Route::delete('/{service_schedule}', [ServiceScheduleController::class, 'destroy'])->middleware('can:editar turnos');
-    });
-
-    Route::prefix('reportes-diarios')->middleware('can:ver reportes')->group(function () {
-        Route::get('/', [DailyReportController::class, 'index']);
-        Route::post('/generar', [DailyReportController::class, 'generar'])->middleware('can:crear reportes');
-        Route::get('/descargar/{tipo}', [DailyReportController::class, 'descargar']);
-    });
-
-    Route::prefix('equinoterapias')->middleware('can:ver animales')->group(function () {
+    Route::prefix('equinoterapias')->middleware('can:ver equinoterapias')->group(function () {
         Route::get('/', [EquinoterapiaReporteController::class, 'index']);
-        Route::post('/', [EquinoterapiaReporteController::class, 'store'])->middleware('can:editar animales');
+        Route::post('/', [EquinoterapiaReporteController::class, 'store'])->middleware('can:editar equinoterapias');
         Route::get('/{equinoterapia}', [EquinoterapiaReporteController::class, 'show']);
-        Route::put('/{equinoterapia}', [EquinoterapiaReporteController::class, 'update'])->middleware('can:editar animales');
-        Route::delete('/{equinoterapia}', [EquinoterapiaReporteController::class, 'destroy'])->middleware('can:editar animales');
+        Route::put('/{equinoterapia}', [EquinoterapiaReporteController::class, 'update'])->middleware('can:editar equinoterapias');
+        Route::delete('/{equinoterapia}', [EquinoterapiaReporteController::class, 'destroy'])->middleware('can:editar equinoterapias');
         Route::get('/{equinoterapia}/whatsapp', [EquinoterapiaReporteController::class, 'whatsapp']);
     });
 });

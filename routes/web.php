@@ -48,14 +48,14 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::middleware('auth')->group(function () {
 
-    Route::prefix('equinoterapias')->middleware('can:ver animales')->group(function () {
+    Route::prefix('equinoterapias')->middleware('can:ver equinoterapias')->group(function () {
         Route::get('/', [EquinoterapiaReporteController::class, 'index'])->name('equinoterapias.index');
-        Route::get('/create', [EquinoterapiaReporteController::class, 'create'])->middleware('can:editar animales')->name('equinoterapias.create');
-        Route::post('/', [EquinoterapiaReporteController::class, 'store'])->middleware('can:editar animales')->name('equinoterapias.store');
+        Route::get('/create', [EquinoterapiaReporteController::class, 'create'])->middleware('can:editar equinoterapias')->name('equinoterapias.create');
+        Route::post('/', [EquinoterapiaReporteController::class, 'store'])->middleware('can:editar equinoterapias')->name('equinoterapias.store');
         Route::get('/{equinoterapia}', [EquinoterapiaReporteController::class, 'show'])->name('equinoterapias.show');
-        Route::get('/{equinoterapia}/edit', [EquinoterapiaReporteController::class, 'edit'])->middleware('can:editar animales')->name('equinoterapias.edit');
-        Route::put('/{equinoterapia}', [EquinoterapiaReporteController::class, 'update'])->middleware('can:editar animales')->name('equinoterapias.update');
-        Route::delete('/{equinoterapia}', [EquinoterapiaReporteController::class, 'destroy'])->middleware('can:editar animales')->name('equinoterapias.destroy');
+        Route::get('/{equinoterapia}/edit', [EquinoterapiaReporteController::class, 'edit'])->middleware('can:editar equinoterapias')->name('equinoterapias.edit');
+        Route::put('/{equinoterapia}', [EquinoterapiaReporteController::class, 'update'])->middleware('can:editar equinoterapias')->name('equinoterapias.update');
+        Route::delete('/{equinoterapia}', [EquinoterapiaReporteController::class, 'destroy'])->middleware('can:editar equinoterapias')->name('equinoterapias.destroy');
         Route::get('/{equinoterapia}/whatsapp', [EquinoterapiaReporteController::class, 'whatsapp'])->name('equinoterapias.whatsapp');
     });
 
