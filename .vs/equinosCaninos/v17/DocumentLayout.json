@@ -3,28 +3,12 @@
   "WorkspaceRootPath": "C:\\wamp64\\www\\equinosCaninos\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\index.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:resources\\views\\mis_servicios\\index.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\routes\\api.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:routes\\api.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Models\\Servicio.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Models\\Servicio.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\Api\\ServicioController.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Http\\Controllers\\Api\\ServicioController.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\resources\\views\\equinoterapias\\create.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:resources\\views\\equinoterapias\\create.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\Api\\EquinoterapiaReporteController.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Http\\Controllers\\Api\\EquinoterapiaReporteController.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\EquinoterapiaReporteController.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Http\\Controllers\\EquinoterapiaReporteController.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,82 +18,33 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Servicio.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Models\\Servicio.php",
-              "RelativeDocumentMoniker": "app\\Models\\Servicio.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Models\\Servicio.php",
-              "RelativeToolTip": "app\\Models\\Servicio.php",
-              "ViewState": "AgIAAEwAAAAAAAAAAAAowH4AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-04-04T05:50:12.588Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ServicioController.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\Api\\ServicioController.php",
-              "RelativeDocumentMoniker": "app\\Http\\Controllers\\Api\\ServicioController.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\Api\\ServicioController.php",
-              "RelativeToolTip": "app\\Http\\Controllers\\Api\\ServicioController.php",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAJwBAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-04-04T05:26:20.666Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "index.blade.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\index.blade.php",
+              "RelativeDocumentMoniker": "resources\\views\\mis_servicios\\index.blade.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\mis_servicios\\index.blade.php",
+              "RelativeToolTip": "resources\\views\\mis_servicios\\index.blade.php",
+              "ViewState": "AgIAAIoAAAAAAAAAAAAmwLwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
+              "WhenOpened": "2026-04-07T23:30:47.572Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "api.php",
               "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\routes\\api.php",
               "RelativeDocumentMoniker": "routes\\api.php",
               "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\routes\\api.php",
               "RelativeToolTip": "routes\\api.php",
-              "ViewState": "AgIAADwAAAAAAAAAAAAAAFsAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAEwAAAAAAAAAAAAmwH4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
               "WhenOpened": "2026-03-31T20:50:43.125Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "create.blade.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\equinoterapias\\create.blade.php",
-              "RelativeDocumentMoniker": "resources\\views\\equinoterapias\\create.blade.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\equinoterapias\\create.blade.php",
-              "RelativeToolTip": "resources\\views\\equinoterapias\\create.blade.php",
-              "ViewState": "AgIAAJIBAAAAAAAAAAAmwMQBAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-03-31T20:49:11.078Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "EquinoterapiaReporteController.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\Api\\EquinoterapiaReporteController.php",
-              "RelativeDocumentMoniker": "app\\Http\\Controllers\\Api\\EquinoterapiaReporteController.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\Api\\EquinoterapiaReporteController.php",
-              "RelativeToolTip": "app\\Http\\Controllers\\Api\\EquinoterapiaReporteController.php",
-              "ViewState": "AgIAALoAAAAAAAAAAAAmwOwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-03-31T20:47:34.798Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "EquinoterapiaReporteController.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\EquinoterapiaReporteController.php",
-              "RelativeDocumentMoniker": "app\\Http\\Controllers\\EquinoterapiaReporteController.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\EquinoterapiaReporteController.php",
-              "RelativeToolTip": "app\\Http\\Controllers\\EquinoterapiaReporteController.php",
-              "ViewState": "AgIAAAQBAAAAAAAAAAAmwDYBAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-03-31T20:46:43.304Z"
             }
           ]
         }

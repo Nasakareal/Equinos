@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\PersonalDocumentController;
 use App\Http\Controllers\Api\PersonalHorarioController;
 use App\Http\Controllers\Api\PersonalHorarioDetalleController;
 use App\Http\Controllers\Api\ServicioController;
+use App\Http\Controllers\Api\ServicioReporteController;
 
 Route::get('/ping', function () {
     return response()->json(['ok' => true, 'message' => 'pong']);
@@ -95,6 +96,23 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{servicio}', [ServicioController::class, 'show']);
         Route::put('/{servicio}', [ServicioController::class, 'update'])->middleware('can:editar servicios');
         Route::delete('/{servicio}', [ServicioController::class, 'destroy'])->middleware('can:eliminar servicios');
+    });
+
+    Route::prefix('mis-servicios')->middleware('can:ver reportes de servicios')->group(function () {
+        Route::get('/', [ServicioReporteController::class, 'misServicios']);
+        Route::get('/{servicio}', [ServicioReporteController::class, 'panelServicio']);
+
+        Route::get('/{servicio}/reportes', [ServicioReporteController::class, 'index']);
+        Route::post('/{servicio}/reportes', [ServicioReporteController::class, 'store'])->middleware('can:crear reportes de servicios');
+        Route::get('/{servicio}/reportes/{reporte}', [ServicioReporteController::class, 'show']);
+        Route::put('/{servicio}/reportes/{reporte}', [ServicioReporteController::class, 'update'])->middleware('can:editar reportes de servicios');
+        Route::delete('/{servicio}/reportes/{reporte}', [ServicioReporteController::class, 'destroy'])->middleware('can:eliminar reportes de servicios');
+
+        Route::get('/{servicio}/reportes/{reporte}/whatsapp', [ServicioReporteController::class, 'whatsapp'])->middleware('can:compartir whatsapp reportes de servicios');
+        Route::get('/{servicio}/reportes/{reporte}/compartir-nativo', [ServicioReporteController::class, 'compartirNativo'])->middleware('can:compartir whatsapp reportes de servicios');
+
+        Route::post('/{servicio}/reportes/{reporte}/fotos', [ServicioReporteController::class, 'storeFoto'])->middleware('can:subir fotos reportes de servicios');
+        Route::delete('/{servicio}/reportes/{reporte}/fotos/{foto}', [ServicioReporteController::class, 'destroyFoto'])->middleware('can:eliminar fotos reportes de servicios');
     });
 
     Route::prefix('equinoterapias')->middleware('can:ver equinoterapias')->group(function () {
