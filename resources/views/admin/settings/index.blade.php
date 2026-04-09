@@ -58,6 +58,91 @@
             </div>
         @endcan
 
+        @can('ver personal')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-primary">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Personal</div>
+                        <div class="sv-card__desc">Gestión de elementos, horarios y documentos.</div>
+                        <a href="{{ url('/admin/settings/personal') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endcan
+
+        @can('ver armamento')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-navy">
+                        <i class="fa-solid fa-gun"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Armamento</div>
+                        <div class="sv-card__desc">Inventario, control y asignación de armas.</div>
+                        <a href="{{ url('/admin/settings/armamento') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endcan
+
+        @can('ver armamento')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-warning">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Asignaciones de Armamento</div>
+                        <div class="sv-card__desc">Control y seguimiento de armas asignadas al personal.</div>
+                        <a href="{{ url('/admin/settings/armamento-asignaciones') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endcan
+
+        @can('ver patrullas')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-info">
+                        <i class="fa-solid fa-car"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Patrullas</div>
+                        <div class="sv-card__desc">Listado y control de patrullas registradas.</div>
+                        <a href="{{ url('/admin/settings/patrullas') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endcan
+
+        @can('ver patrullas asignaciones')
+            <div class="col-md-3 col-sm-6 col-12">
+                <div class="sv-card">
+                    <div class="sv-card__icon bg-info">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                    </div>
+                    <div class="sv-card__body">
+                        <div class="sv-card__title">Asignaciones diarias de Patrullas</div>
+                        <div class="sv-card__desc">Consulta y administración de asignaciones diarias.</div>
+                        <a href="{{ url('/admin/settings/patrullas-asignaciones') }}" class="btn sv-btn">
+                            <i class="fas fa-arrow-right"></i> Acceder
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endcan
+
         @can('ver areas')
             <div class="col-md-3 col-sm-6 col-12">
                 <div class="sv-card">

@@ -18,6 +18,9 @@ use App\Http\Controllers\Api\PersonalHorarioDetalleController;
 use App\Http\Controllers\Api\ServicioController;
 use App\Http\Controllers\Api\ServicioReporteController;
 
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\RoleController;
+
 Route::get('/ping', function () {
     return response()->json(['ok' => true, 'message' => 'pong']);
 });
@@ -122,5 +125,26 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{equinoterapia}', [EquinoterapiaReporteController::class, 'update'])->middleware('can:editar equinoterapias');
         Route::delete('/{equinoterapia}', [EquinoterapiaReporteController::class, 'destroy'])->middleware('can:editar equinoterapias');
         Route::get('/{equinoterapia}/whatsapp', [EquinoterapiaReporteController::class, 'whatsapp']);
+    });
+
+    Route::prefix('configuracion')->middleware('can:ver configuraciones')->group(function () {
+        Route::prefix('usuarios')->middleware('can:ver usuarios')->group(function () {
+            Route::get('/', [UserController::class, 'index']);
+            Route::post('/', [UserController::class, 'store'])->middleware('can:crear usuarios');
+            Route::get('/{user}', [UserController::class, 'show']);
+            Route::put('/{user}', [UserController::class, 'update'])->middleware('can:editar usuarios');
+            Route::delete('/{user}', [UserController::class, 'destroy'])->middleware('can:eliminar usuarios');
+        });
+
+        Route::prefix('roles')->middleware('can:ver roles')->group(function () {
+            Route::get('/', [RoleController::class, 'index']);
+            Route::post('/', [RoleController::class, 'store'])->middleware('can:crear roles');
+            Route::get('/{role}', [RoleController::class, 'show']);
+            Route::put('/{role}', [RoleController::class, 'update'])->middleware('can:editar roles');
+            Route::delete('/{role}', [RoleController::class, 'destroy'])->middleware('can:eliminar roles');
+
+            Route::get('/{role}/permissions', [RoleController::class, 'permissions'])->middleware('can:editar roles');
+            Route::post('/{role}/permissions', [RoleController::class, 'assignPermissions'])->middleware('can:editar roles');
+        });
     });
 });
