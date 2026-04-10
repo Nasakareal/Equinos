@@ -7,12 +7,21 @@
 @stop
 
 @section('content')
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <form action="{{ url('/servicios/' . $servicio->id) }}" method="POST">
     @csrf
     @method('PUT')
 
     <div class="card card-outline card-primary shadow-sm">
-
         <div class="card-header">
             <h3 class="card-title">Datos del servicio</h3>
         </div>
@@ -20,17 +29,16 @@
         <div class="card-body">
 
             <div class="row">
-
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>Tipo de registro</label>
-                        <select name="tipo_registro" class="form-control @error('tipo_registro') is-invalid @enderror" required>
+                        <select name="categoria_registro" id="categoria_registro" class="form-control @error('categoria_registro') is-invalid @enderror" required>
                             <option value="">Seleccione</option>
-                            <option value="SERVICIO" {{ old('tipo_registro', $servicio->tipo_registro) == 'SERVICIO' ? 'selected' : '' }}>SERVICIO</option>
-                            <option value="APOYO" {{ old('tipo_registro', $servicio->tipo_registro) == 'APOYO' ? 'selected' : '' }}>APOYO</option>
-                            <option value="MEMORANDUM" {{ old('tipo_registro', $servicio->tipo_registro) == 'MEMORANDUM' ? 'selected' : '' }}>MEMORANDUM</option>
+                            <option value="SERVICIO" {{ old('categoria_registro', $servicio->categoria_registro) == 'SERVICIO' ? 'selected' : '' }}>SERVICIO</option>
+                            <option value="APOYO" {{ old('categoria_registro', $servicio->categoria_registro) == 'APOYO' ? 'selected' : '' }}>APOYO</option>
+                            <option value="MEMORANDUM" {{ old('categoria_registro', $servicio->categoria_registro) == 'MEMORANDUM' ? 'selected' : '' }}>MEMORANDUM</option>
                         </select>
-                        @error('tipo_registro')
+                        @error('categoria_registro')
                             <span class="invalid-feedback d-block">{{ $message }}</span>
                         @enderror
                     </div>
@@ -47,6 +55,7 @@
                             <option value="DESFILES" {{ old('tipo_servicio', $servicio->tipo_servicio) == 'DESFILES' ? 'selected' : '' }}>DESFILES</option>
                             <option value="PROXIMIDAD SOCIAL" {{ old('tipo_servicio', $servicio->tipo_servicio) == 'PROXIMIDAD SOCIAL' ? 'selected' : '' }}>PROXIMIDAD SOCIAL</option>
                             <option value="ACTOS CIVICOS" {{ old('tipo_servicio', $servicio->tipo_servicio) == 'ACTOS CIVICOS' ? 'selected' : '' }}>ACTOS CIVICOS</option>
+                            <option value="OTRO" {{ old('tipo_servicio', $servicio->tipo_servicio) == 'OTRO' ? 'selected' : '' }}>OTRO</option>
                         </select>
                         @error('tipo_servicio')
                             <span class="invalid-feedback d-block">{{ $message }}</span>
@@ -56,15 +65,9 @@
 
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label>Fecha</label>
-                        <input
-                            type="date"
-                            name="fecha"
-                            class="form-control @error('fecha') is-invalid @enderror"
-                            value="{{ old('fecha', $servicio->fecha ? \Carbon\Carbon::parse($servicio->fecha)->format('Y-m-d') : '') }}"
-                            required
-                        >
-                        @error('fecha')
+                        <label>Número / Referencia</label>
+                        <input type="text" name="folio_referencia" class="form-control @error('folio_referencia') is-invalid @enderror" value="{{ old('folio_referencia', $servicio->folio_referencia) }}">
+                        @error('folio_referencia')
                             <span class="invalid-feedback d-block">{{ $message }}</span>
                         @enderror
                     </div>
@@ -72,26 +75,62 @@
 
                 <div class="col-md-3">
                     <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" name="fecha" class="form-control @error('fecha') is-invalid @enderror" value="{{ old('fecha', $servicio->fecha ? \Carbon\Carbon::parse($servicio->fecha)->format('Y-m-d') : '') }}" required>
+                        @error('fecha')
+                            <span class="invalid-feedback d-block">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-3">
+                    <div class="form-group">
                         <label>Hora</label>
-                        <input
-                            type="time"
-                            name="hora"
-                            class="form-control @error('hora') is-invalid @enderror"
-                            value="{{ old('hora', $servicio->hora ? \Carbon\Carbon::parse($servicio->hora)->format('H:i') : '') }}"
-                            required
-                        >
+                        <input type="time" name="hora" class="form-control @error('hora') is-invalid @enderror" value="{{ old('hora', $servicio->hora ? \Carbon\Carbon::parse($servicio->hora)->format('H:i') : '') }}" required>
                         @error('hora')
                             <span class="invalid-feedback d-block">{{ $message }}</span>
                         @enderror
                     </div>
                 </div>
 
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Municipio</label>
+                        <input type="text" name="municipio" class="form-control @error('municipio') is-invalid @enderror" value="{{ old('municipio', $servicio->municipio) }}">
+                        @error('municipio')
+                            <span class="invalid-feedback d-block">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Lugar</label>
+                        <input type="text" name="lugar" class="form-control @error('lugar') is-invalid @enderror" value="{{ old('lugar', $servicio->lugar) }}">
+                        @error('lugar')
+                            <span class="invalid-feedback d-block">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Asunto base</label>
+                        <input type="text" name="asunto" id="asunto" class="form-control @error('asunto') is-invalid @enderror" value="{{ old('asunto', $servicio->asunto) }}">
+                        @error('asunto')
+                            <span class="invalid-feedback d-block">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
             </div>
 
             <hr>
 
             <div class="row">
-
                 <div class="col-md-4 {{ old('tipo_servicio', $servicio->tipo_servicio) == 'BUSQUEDA' ? '' : 'd-none' }}" id="bloque_busqueda">
                     <div class="form-group">
                         <label>Tipo de búsqueda</label>
@@ -108,77 +147,11 @@
                         @enderror
                     </div>
                 </div>
-
-            </div>
-
-            <div class="row mt-3">
-
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label>Seguridad</label><br>
-                        <input
-                            type="checkbox"
-                            name="seguridad"
-                            value="1"
-                            {{ old('seguridad', $servicio->seguridad) ? 'checked' : '' }}
-                        >
-                    </div>
-                </div>
-
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label>Barridos</label><br>
-                        <input
-                            type="checkbox"
-                            name="barridos_seguridad"
-                            value="1"
-                            {{ old('barridos_seguridad', $servicio->barridos_seguridad) ? 'checked' : '' }}
-                        >
-                    </div>
-                </div>
-
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label>Desfiles</label><br>
-                        <input
-                            type="checkbox"
-                            name="desfiles"
-                            value="1"
-                            {{ old('desfiles', $servicio->desfiles) ? 'checked' : '' }}
-                        >
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label>Proximidad social</label><br>
-                        <input
-                            type="checkbox"
-                            name="proximidad_social"
-                            value="1"
-                            {{ old('proximidad_social', $servicio->proximidad_social) ? 'checked' : '' }}
-                        >
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label>Actos cívicos</label><br>
-                        <input
-                            type="checkbox"
-                            name="actos_civicos"
-                            value="1"
-                            {{ old('actos_civicos', $servicio->actos_civicos) ? 'checked' : '' }}
-                        >
-                    </div>
-                </div>
-
             </div>
 
             <hr>
 
             <div class="row">
-
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>Elemento</label>
@@ -246,7 +219,6 @@
                         @enderror
                     </div>
                 </div>
-
             </div>
 
             <div class="row mt-3">
@@ -279,57 +251,50 @@
         </div>
 
         <div class="card-footer text-right">
-            <a href="{{ url('/servicios') }}" class="btn btn-secondary">
-                Cancelar
-            </a>
-
-            <button type="submit" class="btn btn-primary">
-                Actualizar
-            </button>
+            <a href="{{ url('/servicios') }}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Actualizar</button>
         </div>
-
     </div>
 </form>
 @stop
 
 @section('css')
 <style>
-    .card {
-        border-radius: 14px;
-    }
-
-    .btn {
-        border-radius: 10px;
-    }
-
-    label {
-        font-weight: 600;
-    }
-
-    .form-control {
-        border-radius: 10px;
-    }
+    .card { border-radius: 14px; }
+    .btn { border-radius: 10px; }
+    label { font-weight: 600; }
+    .form-control { border-radius: 10px; }
 </style>
 @stop
 
 @section('js')
 <script>
-    function toggleBusqueda() {
-        let val = $('#tipo_servicio').val();
+    function actualizarBloquesServicio() {
+        let tipoServicio = ($('#tipo_servicio').val() || '').toUpperCase().trim();
+        let categoriaRegistro = ($('#categoria_registro').val() || '').toUpperCase().trim();
+        let asunto = $('#asunto');
 
         $('#bloque_busqueda').addClass('d-none');
 
-        if (val === 'BUSQUEDA') {
+        if (tipoServicio === 'BUSQUEDA') {
             $('#bloque_busqueda').removeClass('d-none');
+        }
+
+        if (!asunto.val().trim()) {
+            if (categoriaRegistro && tipoServicio) {
+                asunto.val(categoriaRegistro + ' DE ' + tipoServicio);
+            } else if (tipoServicio) {
+                asunto.val(tipoServicio);
+            }
         }
     }
 
-    $(function () {
-        toggleBusqueda();
+    $('#tipo_servicio, #categoria_registro').on('change', function () {
+        actualizarBloquesServicio();
+    });
 
-        $('#tipo_servicio').on('change', function () {
-            toggleBusqueda();
-        });
+    $(document).ready(function () {
+        actualizarBloquesServicio();
     });
 </script>
 @stop

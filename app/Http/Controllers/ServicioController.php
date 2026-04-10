@@ -26,19 +26,12 @@ class ServicioController extends Controller
 
     private function normalizeText(?string $value): ?string
     {
-        if ($value === null) {
-            return null;
-        }
+        if ($value === null) return null;
 
         $value = trim($value);
+        if ($value === '') return null;
 
-        if ($value === '') {
-            return null;
-        }
-
-        $value = preg_replace('/\s+/u', ' ', $value);
-
-        return mb_strtoupper($value, 'UTF-8');
+        return mb_strtoupper(preg_replace('/\s+/u', ' ', $value), 'UTF-8');
     }
 
     private function validationRules(): array
@@ -46,9 +39,9 @@ class ServicioController extends Controller
         return [
             'categoria_registro' => ['required', 'string', Rule::in(['SERVICIO', 'APOYO', 'MEMORANDUM'])],
             'tipo_servicio' => ['required', 'string', 'max:255'],
+            'folio_referencia' => ['nullable', 'string', 'max:255'],
+
             'estatus_servicio' => ['nullable', 'string', 'max:255'],
-            'oficio_referencia' => ['nullable', 'string', 'max:255'],
-            'memorandum_referencia' => ['nullable', 'string', 'max:255'],
             'unidad_clave' => ['nullable', 'string', 'max:255'],
             'crp' => ['nullable', 'string', 'max:255'],
             'objetivo_servicio' => ['nullable', 'string', 'max:255'],
@@ -124,13 +117,14 @@ class ServicioController extends Controller
     {
         $validatedData['categoria_registro'] = $this->normalizeText($validatedData['categoria_registro'] ?? null);
         $validatedData['tipo_servicio'] = $this->normalizeText($validatedData['tipo_servicio'] ?? null);
+        $validatedData['folio_referencia'] = $this->normalizeText($validatedData['folio_referencia'] ?? null);
+
         $validatedData['estatus_servicio'] = $this->normalizeText($validatedData['estatus_servicio'] ?? null);
-        $validatedData['oficio_referencia'] = $validatedData['oficio_referencia'] ?? null;
-        $validatedData['memorandum_referencia'] = $validatedData['memorandum_referencia'] ?? null;
         $validatedData['unidad_clave'] = $this->normalizeText($validatedData['unidad_clave'] ?? null);
         $validatedData['crp'] = $this->normalizeText($validatedData['crp'] ?? null);
         $validatedData['objetivo_servicio'] = $this->normalizeText($validatedData['objetivo_servicio'] ?? null);
         $validatedData['folio_operativo'] = $validatedData['folio_operativo'] ?? null;
+
         $validatedData['tipo_busqueda'] = $this->normalizeText($validatedData['tipo_busqueda'] ?? null);
         $validatedData['asunto'] = $this->normalizeText($validatedData['asunto'] ?? null);
         $validatedData['municipio'] = $this->normalizeText($validatedData['municipio'] ?? null);
@@ -227,15 +221,18 @@ class ServicioController extends Controller
         }
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $fecha = $request->input('fecha', now()->toDateString());
+
         $servicios = Servicio::query()
             ->with(['creador', 'personal', 'canino', 'equino', 'patrulla', 'estadoFuerza'])
+            ->whereDate('fecha', $fecha)
             ->orderByDesc('fecha')
             ->orderByDesc('hora')
             ->get();
 
-        return view('servicios.index', compact('servicios'));
+        return view('servicios.index', compact('servicios', 'fecha'));
     }
 
     public function create()

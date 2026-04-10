@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserController;
@@ -39,7 +41,16 @@ use App\Http\Controllers\ServicioReporteController;
 use App\Http\Controllers\ServicioReporteFotoController;
 
 Route::get('/', function () {
-    return view('welcome');
+    $totalCaninos = DB::table('animals')->where('tipo', 'CANINO')->count();
+    $totalEquinos = DB::table('animals')->where('tipo', 'EQUINO')->count();
+
+    $totalEquinoterapias = DB::table('equinoterapia_registros')
+        ->where(function ($query) {
+            $query->whereNull('es_valoracion')->orWhere('es_valoracion', 0);
+        })
+        ->count();
+
+    return view('welcome', compact('totalCaninos', 'totalEquinos', 'totalEquinoterapias'));
 })->name('welcome');
 
 Auth::routes();

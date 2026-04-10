@@ -19,9 +19,8 @@ class Servicio extends Model
         'patrulla_id',
         'categoria_registro',
         'tipo_servicio',
+        'folio_referencia',
         'estatus_servicio',
-        'oficio_referencia',
-        'memorandum_referencia',
         'unidad_clave',
         'crp',
         'objetivo_servicio',
@@ -121,6 +120,8 @@ class Servicio extends Model
 
     public function reportes()
     {
-        return $this->hasMany(ServicioReporte::class, 'servicio_id')->orderByDesc('fecha')->orderByDesc('hora');
+        return $this->hasMany(ServicioReporte::class, 'servicio_id')
+            ->orderByDesc('fecha')
+            ->orderByDesc('hora');
     }
 }

@@ -45,6 +45,10 @@
                         <a href="<?php echo e(route('mis_servicios.reportes.whatsapp', [$servicio->id, $reporte->id])); ?>" target="_blank" class="btn btn-success btn-sm">
                             <i class="fa-brands fa-whatsapp"></i> WhatsApp
                         </a>
+
+                        <a href="<?php echo e(route('mis_servicios.reportes.compartir_nativo', [$servicio->id, $reporte->id])); ?>" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-share-nodes"></i> Compartir nativo
+                        </a>
                     <?php endif; ?>
 
                     <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('eliminar reportes de servicios')): ?>
@@ -440,6 +444,10 @@
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('compartir whatsapp reportes de servicios')): ?>
                                     <a href="<?php echo e(route('mis_servicios.reportes.whatsapp', [$servicio->id, $reporte->id])); ?>" target="_blank" class="btn btn-success">
                                         <i class="fa-brands fa-whatsapp"></i> Compartir por WhatsApp
+                                    </a>
+
+                                    <a href="<?php echo e(route('mis_servicios.reportes.compartir_nativo', [$servicio->id, $reporte->id])); ?>" class="btn btn-primary">
+                                        <i class="fa-solid fa-share-nodes"></i> Compartir nativo
                                     </a>
                                 <?php endif; ?>
                             </div>

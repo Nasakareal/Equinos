@@ -49,8 +49,10 @@ class ServicioReporteController extends Controller
         ]);
     }
 
-    public function misServicios()
+    public function misServicios(Request $request)
     {
+        $fecha = $request->input('fecha') ?? now()->toDateString();
+
         $servicios = Servicio::query()
             ->with([
                 'patrulla',
@@ -58,11 +60,12 @@ class ServicioReporteController extends Controller
                 'equino',
                 'reportes',
             ])
+            ->whereDate('fecha', $fecha)
             ->orderByDesc('fecha')
             ->orderByDesc('hora')
             ->get();
 
-        return view('mis_servicios.index', compact('servicios'));
+        return view('mis_servicios.index', compact('servicios', 'fecha'));
     }
 
     public function panelServicio(Servicio $servicio)

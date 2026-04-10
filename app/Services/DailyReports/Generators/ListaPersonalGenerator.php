@@ -7,6 +7,7 @@ use App\Models\ServiceSchedule;
 use App\Models\Turno;
 use App\Services\DailyReports\Contracts\DailyReportGenerator;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -36,31 +37,29 @@ class ListaPersonalGenerator implements DailyReportGenerator
     public function generar(string $fecha, int $turno_id, array $params = []): string
     {
         $area = trim((string)($params['area'] ?? ''));
-        if ($area === '') {
-            $area = 'AGRUPAMIENTO DE EQUINOS Y CANINOS';
-        }
+        $area = mb_strtoupper($area, 'UTF-8');
+
+        $areasObjetivo = $area !== '' ? [$area] : ['EQUINOS', 'CANINOS'];
+        $tituloArea = count($areasObjetivo) === 1 ? $areasObjetivo[0] : 'EQUINOS Y CANINOS';
 
         $tz = 'America/Mexico_City';
         $fechaC = Carbon::parse($fecha, $tz)->locale('es');
 
         $fechaArchivo = $fechaC->format('d-m-Y');
-        $fechaInicioTexto = mb_strtoupper($fechaC->translatedFormat('d \\D\\E F \\D\\E Y'));
+        $fechaInicioTexto = mb_strtoupper($fechaC->translatedFormat('d \\D\\E F \\D\\E Y'), 'UTF-8');
 
         $fechaFin = $fechaC->copy()->addDay();
-        $fechaFinTexto = mb_strtoupper($fechaFin->translatedFormat('d \\D\\E F \\D\\E Y'));
+        $fechaFinTexto = mb_strtoupper($fechaFin->translatedFormat('d \\D\\E F \\D\\E Y'), 'UTF-8');
 
         $turno = Turno::query()->find($turno_id);
-        $turnoClave = mb_strtoupper(trim((string)($turno?->clave ?? '')));
+        $turnoClave = mb_strtoupper(trim((string)($turno?->clave ?? '')), 'UTF-8');
 
-        $areaArchivo = trim(str_ireplace('AGRUPAMIENTO DE ', '', $area));
-        $filename = $fechaArchivo . ' LISTA DE PERSONAL ' . mb_strtoupper($areaArchivo) . ' TURNO ' . $turnoClave . '.xlsx';
+        $filename = $fechaArchivo . ' LISTA DE PERSONAL ' . $tituloArea . ' TURNO ' . $turnoClave . '.xlsx';
 
         $personals = Personal::query()
             ->leftJoin('areas', 'personals.area_id', '=', 'areas.id')
             ->where('personals.activo', 1)
-            ->where(function ($q) use ($area) {
-                $q->whereRaw('TRIM(UPPER(areas.nombre)) = ?', [mb_strtoupper(trim($area))]);
-            })
+            ->whereIn(DB::raw('TRIM(UPPER(areas.nombre))'), $areasObjetivo)
             ->whereHas('asignacionesArmamento', function ($q) {
                 $q->whereNull('fecha_devolucion')
                     ->where('status', 'ASIGNADA')
@@ -81,10 +80,6 @@ class ListaPersonalGenerator implements DailyReportGenerator
             ->orderBy('personals.nombres')
             ->get();
 
-        if ($personals->isEmpty()) {
-            abort(404, 'No hay personal activo con armamento asignado para esa área.');
-        }
-
         $turnoPorPersonal = ServiceSchedule::query()
             ->where('activo', 1)
             ->where('tipo', 'CICLICO')
@@ -100,8 +95,8 @@ class ListaPersonalGenerator implements DailyReportGenerator
             ->keyBy('id');
 
         $esSiemprePrimero = function (Personal $p): bool {
-            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
-            $nombre = mb_strtoupper((string)($p->nombres ?? ''));
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''), 'UTF-8');
+            $nombre = mb_strtoupper((string)($p->nombres ?? ''), 'UTF-8');
 
             return str_contains($cargo, 'SUBDIRECTOR')
                 || str_contains($cargo, 'CMTE. FREDY ERASTO')
@@ -118,7 +113,7 @@ class ListaPersonalGenerator implements DailyReportGenerator
         foreach ($resto as $p) {
             $tId = $turnoPorPersonal->get($p->id)->turno_id ?? null;
             $clave = $tId ? ($turnos->get($tId)->clave ?? null) : null;
-            $clave = mb_strtoupper(trim((string)$clave));
+            $clave = mb_strtoupper(trim((string)$clave), 'UTF-8');
 
             if ($clave === 'A') {
                 $grupoA->push($p);
@@ -187,7 +182,7 @@ class ListaPersonalGenerator implements DailyReportGenerator
         $sheet->getRowDimension(14)->setRowHeight(36);
 
         $sheet->mergeCells('B16:G16');
-        $sheet->setCellValue('B16', mb_strtoupper($area) . ' TURNO "' . $turnoClave . '"');
+        $sheet->setCellValue('B16', 'AGRUPAMIENTO DE ' . $tituloArea . ' TURNO "' . $turnoClave . '"');
         $sheet->getStyle('B16')->getFont()->setBold(true)->setSize(11);
         $sheet->getStyle('B16')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -277,6 +272,14 @@ class ListaPersonalGenerator implements DailyReportGenerator
             }
         }
 
+        if ($personals->isEmpty()) {
+            $sheet->mergeCells("B{$row}:G{$row}");
+            $sheet->setCellValue("B{$row}", 'SIN PERSONAL ACTIVO CON ARMAMENTO ASIGNADO PARA EL ÁREA SELECCIONADA');
+            $sheet->getStyle("B{$row}:G{$row}")->getFont()->setBold(true);
+            $sheet->getStyle("B{$row}:G{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $row++;
+        }
+
         $sheet->mergeCells("D{$row}:G{$row}");
         $sheet->setCellValue("D{$row}", 'R E S P E T U O S A M E N T E');
         $sheet->getStyle("D{$row}:G{$row}")->getFont()->setBold(true);
@@ -291,7 +294,7 @@ class ListaPersonalGenerator implements DailyReportGenerator
 
         $nombreFirma = 'CMTE. FREDY ERASTO GONZALEZ OROZCO.';
         if ($siemprePrimero->isNotEmpty()) {
-            $nombreFirma = 'CMTE. ' . mb_strtoupper((string)$siemprePrimero->first()->nombres) . '.';
+            $nombreFirma = 'CMTE. ' . mb_strtoupper((string)$siemprePrimero->first()->nombres, 'UTF-8') . '.';
         }
 
         $sheet->mergeCells("D{$row}:G{$row}");
@@ -358,8 +361,8 @@ class ListaPersonalGenerator implements DailyReportGenerator
         }
 
         return [
-            'arma' => mb_strtoupper($arma),
-            'matricula' => mb_strtoupper($matricula),
+            'arma' => mb_strtoupper($arma, 'UTF-8'),
+            'matricula' => mb_strtoupper($matricula, 'UTF-8'),
         ];
     }
 
@@ -410,15 +413,15 @@ class ListaPersonalGenerator implements DailyReportGenerator
 
     private function ponerEncargadosDeTurnoAlInicio($grupo, string $claveTurno)
     {
-        $claveTurnoUp = mb_strtoupper($claveTurno);
+        $claveTurnoUp = mb_strtoupper($claveTurno, 'UTF-8');
 
         $enc = $grupo->filter(function ($p) use ($claveTurnoUp) {
-            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''), 'UTF-8');
             return str_contains($cargo, 'ENCARGADO TURNO ' . $claveTurnoUp);
         })->values();
 
         $resto = $grupo->reject(function ($p) use ($claveTurnoUp) {
-            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''), 'UTF-8');
             return str_contains($cargo, 'ENCARGADO TURNO ' . $claveTurnoUp);
         })->values();
 

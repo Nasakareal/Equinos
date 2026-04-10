@@ -8,7 +8,6 @@ use App\Models\ServiceSchedule;
 use App\Models\Turno;
 use App\Services\DailyReports\Contracts\DailyReportGenerator;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
@@ -36,27 +35,25 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
     public function generar(string $fecha, int $turno_id, array $params = []): string
     {
         $area = trim((string)($params['area'] ?? ''));
-        if ($area === '') {
-            $area = 'AGRUPAMIENTO DE EQUINOS Y CANINOS';
-        }
+        $area = mb_strtoupper($area, 'UTF-8');
+
+        $areasObjetivo = $area !== '' ? [$area] : ['EQUINOS', 'CANINOS'];
 
         $tz = 'America/Mexico_City';
         $fechaC = Carbon::parse($fecha, $tz);
         $fecha_titulo = $fechaC->format('d-m-Y');
-        $fecha_texto = mb_strtoupper($fechaC->translatedFormat('d \\D\\E F \\D\\E Y'));
+        $fecha_texto = mb_strtoupper($fechaC->translatedFormat('d \\D\\E F \\D\\E Y'), 'UTF-8');
 
         $turno = Turno::query()->find($turno_id);
         $turno_clave = (string)($turno?->clave ?? '');
 
-        $area_archivo = trim(str_ireplace('AGRUPAMIENTO DE ', '', $area));
-        $filename = $fecha_titulo . ' ARMAMENTO ' . mb_strtoupper($area_archivo) . ' TURNO ' . mb_strtoupper($turno_clave) . '.xlsx';
+        $tituloArea = count($areasObjetivo) === 1 ? $areasObjetivo[0] : 'EQUINOS Y CANINOS';
+        $filename = $fecha_titulo . ' ARMAMENTO ' . $tituloArea . ' TURNO ' . mb_strtoupper($turno_clave, 'UTF-8') . '.xlsx';
 
         $personals = Personal::query()
             ->leftJoin('areas', 'personals.area_id', '=', 'areas.id')
             ->where('personals.activo', 1)
-            ->where(function ($q) use ($area) {
-                $q->whereRaw('TRIM(UPPER(areas.nombre)) = ?', [mb_strtoupper(trim($area))]);
-            })
+            ->whereIn(\DB::raw('TRIM(UPPER(areas.nombre))'), $areasObjetivo)
             ->whereHas('asignacionesArmamento', function ($q) {
                 $q->whereNull('fecha_devolucion')
                     ->where('status', 'ASIGNADA')
@@ -68,10 +65,6 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
             ->orderBy('personals.grado')
             ->orderBy('personals.nombres')
             ->get();
-
-        if ($personals->isEmpty()) {
-            abort(404, 'No hay personal activo con armamento asignado para esa área.');
-        }
 
         $turnoPorPersonal = ServiceSchedule::query()
             ->where('activo', 1)
@@ -88,13 +81,13 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
             ->keyBy('id');
 
         $esJefeAgrupamiento = function (Personal $p): bool {
-            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''), 'UTF-8');
             return str_contains($cargo, 'ENCARGADO DE AGRUPAMIENTO');
         };
 
         $esSiemprePrimero = function (Personal $p): bool {
-            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
-            $nombre = mb_strtoupper((string)($p->nombres ?? ''));
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''), 'UTF-8');
+            $nombre = mb_strtoupper((string)($p->nombres ?? ''), 'UTF-8');
             return str_contains($cargo, 'SUBDIRECTOR')
                 || str_contains($cargo, 'CMTE. FREDY ERASTO')
                 || str_contains($nombre, 'FREDY ERASTO GONZALEZ OROZCO');
@@ -114,7 +107,7 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
         foreach ($resto as $p) {
             $tId = $turnoPorPersonal->get($p->id)->turno_id ?? null;
             $clave = $tId ? ($turnos->get($tId)->clave ?? null) : null;
-            $clave = mb_strtoupper(trim((string)$clave));
+            $clave = mb_strtoupper(trim((string)$clave), 'UTF-8');
 
             if ($clave === 'A') {
                 $grupoA->push($p);
@@ -131,7 +124,7 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
         $grupoB = $this->ponerEncargadosDeTurnoAlInicio($grupoB, 'B');
         $grupoM = $this->ponerEncargadosDeTurnoAlInicio($grupoM, 'MIXTO');
 
-        $turno_activo = strtoupper(trim($turno_clave));
+        $turno_activo = mb_strtoupper(trim($turno_clave), 'UTF-8');
         $forzar_franco_A = ($turno_activo === 'B');
         $forzar_franco_B = ($turno_activo === 'A');
 
@@ -158,7 +151,7 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
         }
 
         $sheet->mergeCells('A1:F1');
-        $sheet->setCellValue('A1', mb_strtoupper($area));
+        $sheet->setCellValue('A1', 'AGRUPAMIENTO DE ' . $tituloArea);
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(13);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -206,6 +199,14 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
         $row = $this->printTurnSection($sheet, $row, 'PERSONAL TURNO MIXTO', $grupoM, $contador, true, false);
         $contador += $grupoM->count();
 
+        if ($personals->isEmpty()) {
+            $sheet->mergeCells("A{$row}:F{$row}");
+            $sheet->setCellValue("A{$row}", 'SIN REGISTROS DE PERSONAL CON ARMAMENTO ASIGNADO PARA EL ÁREA SELECCIONADA');
+            $sheet->getStyle("A{$row}:F{$row}")->getFont()->setBold(true);
+            $sheet->getStyle("A{$row}:F{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $row++;
+        }
+
         $row += 2;
         $sheet->mergeCells("A{$row}:F{$row}");
         $sheet->setCellValue("A{$row}", 'R E S P E T U O S A M E N T E');
@@ -236,11 +237,6 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
         $dir = "daily_reports/{$fecha}/turno_{$turno_id}";
         Storage::disk('local')->makeDirectory($dir);
 
-        $suffix = '';
-        if (!empty($params['area'])) {
-            $suffix = '_' . Str::slug($area, '_');
-        }
-
         $path = "{$dir}/{$filename}";
 
         $tmp = storage_path('app/tmp_armamento_' . uniqid() . '.xlsx');
@@ -266,23 +262,19 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
         $sheet->getStyle("A{$row}:F{$row}")->getFont()->setBold(true);
         $sheet->getStyle("A{$row}:F{$row}")->getFill()
             ->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('B4C6E7');
-        $sheet->getStyle("A{$row}:F{$row}")
-            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("A{$row}:F{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
 
     private function styleDataRow($sheet, int $row): void
     {
-        $sheet->getStyle("A{$row}:F{$row}")
-            ->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-        $sheet->getStyle("A{$row}:B{$row}")
-            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle("D{$row}:F{$row}")
-            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("A{$row}:F{$row}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getStyle("A{$row}:B{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("D{$row}:F{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
 
     private function getEntradaSalidaDesdeObservaciones(?string $obs): array
     {
-        $up = mb_strtoupper((string)$obs);
+        $up = mb_strtoupper((string)$obs, 'UTF-8');
 
         if (str_contains($up, 'VACACIONES')) return ['VACACIONES', 'VACACIONES'];
         if (str_contains($up, 'FRANCO')) return ['FRANCO', 'FRANCO'];
@@ -324,15 +316,15 @@ class ArmamentoEquinosCaninosGenerator implements DailyReportGenerator
 
     private function ponerEncargadosDeTurnoAlInicio($grupo, string $claveTurno)
     {
-        $claveTurnoUp = mb_strtoupper($claveTurno);
+        $claveTurnoUp = mb_strtoupper($claveTurno, 'UTF-8');
 
         $enc = $grupo->filter(function ($p) use ($claveTurnoUp) {
-            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''), 'UTF-8');
             return str_contains($cargo, 'ENCARGADO TURNO ' . $claveTurnoUp);
         })->values();
 
         $resto = $grupo->reject(function ($p) use ($claveTurnoUp) {
-            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''), 'UTF-8');
             return str_contains($cargo, 'ENCARGADO TURNO ' . $claveTurnoUp);
         })->values();
 

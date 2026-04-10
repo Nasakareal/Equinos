@@ -244,7 +244,7 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" value="<?php echo e(old('lat', $servicio->lat)); ?>">
+unset($__errorArgs, $__bag); ?>" value="<?php echo e(old('lat', $servicio->lat)); ?>" readonly>
                                     <?php $__errorArgs = ['lat'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -255,6 +255,7 @@ $message = $__bag->first($__errorArgs[0]); ?>
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
+                                    <small class="text-muted d-block mt-1">Se llena automáticamente con la ubicación actual.</small>
                                 </div>
                             </div>
 
@@ -268,7 +269,7 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" value="<?php echo e(old('lng', $servicio->lng)); ?>">
+unset($__errorArgs, $__bag); ?>" value="<?php echo e(old('lng', $servicio->lng)); ?>" readonly>
                                     <?php $__errorArgs = ['lng'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -279,6 +280,16 @@ $message = $__bag->first($__errorArgs[0]); ?>
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
+                                    <small class="text-muted d-block mt-1">Se llena automáticamente con la ubicación actual.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <button type="button" id="btnUbicacionActual" class="btn btn-outline-primary btn-sm">
+                                        <i class="fa-solid fa-location-crosshairs"></i> Obtener ubicación actual
+                                    </button>
+                                    <small id="estadoUbicacion" class="text-muted ml-2"></small>
                                 </div>
                             </div>
 
@@ -517,11 +528,62 @@ unset($__errorArgs, $__bag); ?>
         });
     }
 
+    function obtenerUbicacionActual() {
+        const estado = document.getElementById('estadoUbicacion');
+        const latInput = document.getElementById('lat');
+        const lngInput = document.getElementById('lng');
+
+        if (!navigator.geolocation) {
+            estado.className = 'text-danger ml-2';
+            estado.textContent = 'Este dispositivo no soporta geolocalización.';
+            return;
+        }
+
+        estado.className = 'text-info ml-2';
+        estado.textContent = 'Obteniendo ubicación actual...';
+
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                latInput.value = Number(position.coords.latitude).toFixed(7);
+                lngInput.value = Number(position.coords.longitude).toFixed(7);
+
+                estado.className = 'text-success ml-2';
+                estado.textContent = 'Ubicación actual obtenida correctamente.';
+            },
+            function(error) {
+                let mensaje = 'No se pudo obtener la ubicación.';
+
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        mensaje = 'Se negó el permiso de ubicación.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        mensaje = 'La ubicación no está disponible.';
+                        break;
+                    case error.TIMEOUT:
+                        mensaje = 'Se agotó el tiempo para obtener la ubicación.';
+                        break;
+                }
+
+                estado.className = 'text-danger ml-2';
+                estado.textContent = mensaje;
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 0
+            }
+        );
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         toggleDatosPersona();
 
         document.getElementById('tipo_reporte').addEventListener('change', toggleDatosPersona);
         document.getElementById('fotos').addEventListener('change', renderDescripcionesFotos);
+        document.getElementById('btnUbicacionActual').addEventListener('click', obtenerUbicacionActual);
+
+        obtenerUbicacionActual();
     });
 </script>
 <?php $__env->stopSection(); ?>

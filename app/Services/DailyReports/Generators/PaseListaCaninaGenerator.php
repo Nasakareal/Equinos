@@ -38,29 +38,40 @@ class PaseListaCaninaGenerator implements DailyReportGenerator
     public function generar(string $fecha, int $turno_id, array $params = []): string
     {
         $tz = 'America/Mexico_City';
-        $fechaCarbon  = Carbon::parse($fecha, $tz);
+        $fechaCarbon = Carbon::parse($fecha, $tz);
         $fechaArchivo = $fechaCarbon->format('d-m-Y');
-        $fechaTexto   = mb_strtoupper($fechaCarbon->translatedFormat('d \\D\\E F \\D\\E Y'));
+        $fechaTexto = mb_strtoupper($fechaCarbon->translatedFormat('d \\D\\E F \\D\\E Y'), 'UTF-8');
 
-        $tituloArea = $params['titulo_area'] ?? 'ÁREA CANINA';
+        $areas = $params['areas'] ?? [];
+        if (!is_array($areas) || empty($areas)) {
+            $areas = ['CANINOS'];
+        }
+
+        $areas = collect($areas)
+            ->map(fn ($item) => mb_strtoupper(trim((string)$item), 'UTF-8'))
+            ->filter()
+            ->values()
+            ->all();
+
+        $tituloArea = trim((string)($params['titulo_area'] ?? ''));
+        if ($tituloArea === '') {
+            $tituloArea = 'CANINOS';
+        }
 
         $turno = Turno::query()->find($turno_id);
-        $turnoClave = mb_strtoupper(trim((string)($turno->clave ?? '')));
+        $turnoClave = mb_strtoupper(trim((string)($turno->clave ?? '')), 'UTF-8');
 
         $personals = Personal::query()
             ->leftJoin('areas', 'personals.area_id', '=', 'areas.id')
             ->where('personals.activo', 1)
-            ->where(function ($q) {
-                $q->whereRaw('TRIM(UPPER(areas.nombre)) = ?', ['AREA CANINA'])
-                  ->orWhereRaw('TRIM(UPPER(areas.nombre)) = ?', ['ÁREA CANINA']);
-            })
+            ->whereIn(DB::raw('TRIM(UPPER(areas.nombre))'), $areas)
             ->select('personals.*')
             ->orderBy('personals.grado')
             ->orderBy('personals.nombres')
             ->get();
 
         if ($personals->isEmpty()) {
-            throw new \RuntimeException('No hay personal activo en el área canina para generar el pase de lista.');
+            throw new \RuntimeException('No hay personal activo en las áreas seleccionadas para generar el pase de lista.');
         }
 
         $turnoPorPersonal = ServiceSchedule::query()
@@ -78,10 +89,10 @@ class PaseListaCaninaGenerator implements DailyReportGenerator
             ->keyBy('id');
 
         $incidenciasActivas = $this->cargarIncidenciasActivas($personals->pluck('id')->all(), $fechaCarbon);
-        $horariosMixtos     = $this->cargarHorariosPersonalizados($personals->pluck('id')->all());
+        $horariosMixtos = $this->cargarHorariosPersonalizados($personals->pluck('id')->all());
 
         $esResponsablePrincipal = function (Personal $p): bool {
-            $cargo = mb_strtoupper(trim((string)($p->cargo ?? '')));
+            $cargo = mb_strtoupper(trim((string)($p->cargo ?? '')), 'UTF-8');
             return str_contains($cargo, 'ENCARGADO DE AGRUPAMIENTO')
                 || str_contains($cargo, 'ENCARGADO DE AREA')
                 || str_contains($cargo, 'ENCARGADO DE ÁREA');
@@ -146,7 +157,7 @@ class PaseListaCaninaGenerator implements DailyReportGenerator
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $sheet->mergeCells('A3:D3');
-        $sheet->setCellValue('A3', mb_strtoupper($tituloArea));
+        $sheet->setCellValue('A3', mb_strtoupper($tituloArea, 'UTF-8'));
         $sheet->getStyle('A3')->getFont()->setBold(true)->setSize(15);
         $sheet->getStyle('A3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -164,8 +175,8 @@ class PaseListaCaninaGenerator implements DailyReportGenerator
 
         foreach ($encargados as $enc) {
             $sheet->setCellValue("A{$row}", $contador++);
-            $sheet->setCellValue("B{$row}", mb_strtoupper((string)$enc->grado));
-            $sheet->setCellValue("C{$row}", mb_strtoupper((string)$enc->nombres));
+            $sheet->setCellValue("B{$row}", mb_strtoupper((string)$enc->grado, 'UTF-8'));
+            $sheet->setCellValue("C{$row}", mb_strtoupper((string)$enc->nombres, 'UTF-8'));
             $sheet->setCellValue("D{$row}", '');
             $this->styleDataRow($sheet, $row);
             $row++;
@@ -299,8 +310,8 @@ class PaseListaCaninaGenerator implements DailyReportGenerator
 
         foreach ($personals as $p) {
             $sheet->setCellValue("A{$row}", $contador++);
-            $sheet->setCellValue("B{$row}", mb_strtoupper((string)$p->grado));
-            $sheet->setCellValue("C{$row}", mb_strtoupper((string)$p->nombres));
+            $sheet->setCellValue("B{$row}", mb_strtoupper((string)$p->grado, 'UTF-8'));
+            $sheet->setCellValue("C{$row}", mb_strtoupper((string)$p->nombres, 'UTF-8'));
             $sheet->setCellValue(
                 "D{$row}",
                 $this->resolverObservacion($p, $fecha, $incidenciasActivas, $forzarFranco, $esMixto, $horariosMixtos)
@@ -333,7 +344,7 @@ class PaseListaCaninaGenerator implements DailyReportGenerator
             }
         }
 
-        $cargo = mb_strtoupper(trim((string)($p->cargo ?? '')));
+        $cargo = mb_strtoupper(trim((string)($p->cargo ?? '')), 'UTF-8');
 
         if (str_contains($cargo, 'MEDICO')) {
             return 'DISPONIBLE LAS 24 HORAS';
@@ -389,9 +400,9 @@ class PaseListaCaninaGenerator implements DailyReportGenerator
                 continue;
             }
 
-            $clave = mb_strtoupper(trim((string)($r->incidencia_clave ?? $this->mapearClaveIncidenciaPorId($r->incidence_type_id ?? null))));
+            $clave = mb_strtoupper(trim((string)($r->incidencia_clave ?? $this->mapearClaveIncidenciaPorId($r->incidence_type_id ?? null))), 'UTF-8');
             $inicio = !empty($r->fecha_inicio) ? Carbon::parse($r->fecha_inicio)->toDateString() : null;
-            $fin    = !empty($r->fecha_fin) ? Carbon::parse($r->fecha_fin)->toDateString() : null;
+            $fin = !empty($r->fecha_fin) ? Carbon::parse($r->fecha_fin)->toDateString() : null;
 
             $esActiva = false;
 
@@ -435,8 +446,8 @@ class PaseListaCaninaGenerator implements DailyReportGenerator
 
     private function normalizarTextoIncidencia(string $clave, string $nombre): string
     {
-        $clave = mb_strtoupper(trim($clave));
-        $nombre = mb_strtoupper(trim($nombre));
+        $clave = mb_strtoupper(trim($clave), 'UTF-8');
+        $nombre = mb_strtoupper(trim($nombre), 'UTF-8');
 
         if ($clave !== '') {
             if (str_contains($clave, 'VACACIONES')) return 'VACACIONES';
@@ -480,14 +491,14 @@ class PaseListaCaninaGenerator implements DailyReportGenerator
         $clave = '';
 
         if ($turnoId) {
-            $clave = mb_strtoupper(trim((string)($turnos->get($turnoId)->clave ?? '')));
+            $clave = mb_strtoupper(trim((string)($turnos->get($turnoId)->clave ?? '')), 'UTF-8');
         }
 
         if (in_array($clave, ['A', 'B', 'MIXTO'], true)) {
             return $clave;
         }
 
-        $cargo = mb_strtoupper(trim((string)($p->cargo ?? '')));
+        $cargo = mb_strtoupper(trim((string)($p->cargo ?? '')), 'UTF-8');
 
         if (str_contains($cargo, 'ENCARGADO TURNO A')) {
             return 'A';
@@ -506,15 +517,15 @@ class PaseListaCaninaGenerator implements DailyReportGenerator
 
     private function ponerEncargadosDeTurnoAlInicio(Collection $grupo, string $claveTurno): Collection
     {
-        $claveTurnoUp = mb_strtoupper($claveTurno);
+        $claveTurnoUp = mb_strtoupper($claveTurno, 'UTF-8');
 
         $enc = $grupo->filter(function ($p) use ($claveTurnoUp) {
-            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''), 'UTF-8');
             return str_contains($cargo, 'ENCARGADO TURNO ' . $claveTurnoUp);
         })->values();
 
         $resto = $grupo->reject(function ($p) use ($claveTurnoUp) {
-            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''), 'UTF-8');
             return str_contains($cargo, 'ENCARGADO TURNO ' . $claveTurnoUp);
         })->values();
 
@@ -524,7 +535,7 @@ class PaseListaCaninaGenerator implements DailyReportGenerator
     private function ordenarGrupoMixto(Collection $grupo): Collection
     {
         return $grupo->sortBy(function ($p) {
-            $cargo = mb_strtoupper((string)($p->cargo ?? ''));
+            $cargo = mb_strtoupper((string)($p->cargo ?? ''), 'UTF-8');
 
             if (str_contains($cargo, 'MEDICO')) return 1;
             if (str_contains($cargo, 'T.E.M.P')) return 2;
@@ -574,9 +585,9 @@ class PaseListaCaninaGenerator implements DailyReportGenerator
 
             $map[$pid][$dia][] = [
                 'entrada' => $r->hora_entrada,
-                'salida'  => $r->hora_salida,
-                'cruza'   => (int)$r->cruza_dia,
-                'bloque'  => $r->bloque,
+                'salida' => $r->hora_salida,
+                'cruza' => (int)$r->cruza_dia,
+                'bloque' => $r->bloque,
             ];
         }
 

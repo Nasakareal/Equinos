@@ -342,68 +342,51 @@
           </div>
 
           <div class="col-lg-5">
-            <div class="glass p-3 p-md-4">
-              <div class="row g-3">
-                <div class="col-12">
-                  <div class="stat">
-                    <div class="d-flex align-items-center justify-content-between">
-                      <div>
-                        <div class="n" data-count="2100">0</div>
-                        <div class="l">Sesiones de equinoterapia reportadas (enero–agosto 2023)</div>
+              <div class="glass p-3 p-md-4">
+                <div class="row g-3">
+                  <div class="col-12">
+                    <div class="stat">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                          <div class="n" data-count="<?php echo e($totalEquinoterapias); ?>">0</div>
+                          <div class="l">Registros de equinoterapia capturados en el sistema</div>
+                        </div>
+                        <i class="fa-solid fa-horse fa-2xl" style="color: var(--warn)"></i>
                       </div>
-                      <i class="fa-solid fa-horse fa-2xl" style="color: var(--warn)"></i>
                     </div>
                   </div>
-                </div>
 
-                <div class="col-6">
-                  <div class="stat">
-                    <div class="d-flex align-items-center justify-content-between">
-                      <div>
-                        <div class="n" data-count="21">0</div>
-                        <div class="l">Binomios caninos en operatividad (referencias públicas)</div>
+                  <div class="col-6">
+                    <div class="stat">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                          <div class="n" data-count="<?php echo e($totalCaninos); ?>">0</div>
+                          <div class="l">Caninos registrados en el sistema</div>
+                        </div>
+                        <i class="fa-solid fa-dog fa-xl" style="color: var(--ok)"></i>
                       </div>
-                      <i class="fa-solid fa-dog fa-xl" style="color: var(--ok)"></i>
                     </div>
                   </div>
-                </div>
 
-                <div class="col-6">
-                  <div class="stat">
-                    <div class="d-flex align-items-center justify-content-between">
-                      <div>
-                        <div class="n" data-count="3">0</div>
-                        <div class="l">Ejes: seguridad, rescate y apoyo comunitario</div>
+                  <div class="col-6">
+                    <div class="stat">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                          <div class="n" data-count="<?php echo e($totalEquinos); ?>">0</div>
+                          <div class="l">Equinos registrados en el sistema</div>
+                        </div>
+                        <i class="fa-solid fa-horse-head fa-xl" style="color: var(--accent)"></i>
                       </div>
-                      <i class="fa-solid fa-shield-halved fa-xl" style="color: var(--accent)"></i>
                     </div>
                   </div>
-                </div>
 
-                <div class="col-12">
-                  <div class="tiny-note mt-1">
-                    * Cifras y funciones descritas con base en comunicados y notas públicas de SSP/medios locales.
+                  <div class="col-12">
+                    <div class="tiny-note mt-1">
+                      * Cifras obtenidas directamente de los registros del sistema.
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div class="divider my-4"></div>
-
-            <div class="glass p-3 p-md-4">
-              <div class="d-flex gap-3 align-items-start">
-                <div class="icon-chip">
-                  <i class="fa-solid fa-star"></i>
-                </div>
-                <div>
-                  <div class="fw-bold">Enfoque de proximidad</div>
-                  <div class="text-white-50">
-                    Operatividad preventiva y presencia estratégica en espacios públicos, eventos y zonas con acceso complejo.
-                  </div>
-                </div>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>

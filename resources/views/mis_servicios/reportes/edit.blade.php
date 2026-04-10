@@ -154,20 +154,31 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="lat">Latitud</label>
-                                    <input type="number" step="0.0000001" name="lat" id="lat" class="form-control @error('lat') is-invalid @enderror" value="{{ old('lat', $reporte->lat) }}">
+                                    <input type="number" step="0.0000001" name="lat" id="lat" class="form-control @error('lat') is-invalid @enderror" value="{{ old('lat', $reporte->lat ?? $servicio->lat) }}" readonly>
                                     @error('lat')
                                         <span class="invalid-feedback d-block">{{ $message }}</span>
                                     @enderror
+                                    <small class="text-muted d-block mt-1">Se llena automáticamente con la ubicación actual.</small>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="lng">Longitud</label>
-                                    <input type="number" step="0.0000001" name="lng" id="lng" class="form-control @error('lng') is-invalid @enderror" value="{{ old('lng', $reporte->lng) }}">
+                                    <input type="number" step="0.0000001" name="lng" id="lng" class="form-control @error('lng') is-invalid @enderror" value="{{ old('lng', $reporte->lng ?? $servicio->lng) }}" readonly>
                                     @error('lng')
                                         <span class="invalid-feedback d-block">{{ $message }}</span>
                                     @enderror
+                                    <small class="text-muted d-block mt-1">Se llena automáticamente con la ubicación actual.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <button type="button" id="btnUbicacionActual" class="btn btn-outline-primary btn-sm">
+                                        <i class="fa-solid fa-location-crosshairs"></i> Obtener ubicación actual
+                                    </button>
+                                    <small id="estadoUbicacion" class="text-muted ml-2"></small>
                                 </div>
                             </div>
 
@@ -350,11 +361,64 @@
         });
     }
 
+    function obtenerUbicacionActual() {
+        const estado = document.getElementById('estadoUbicacion');
+        const latInput = document.getElementById('lat');
+        const lngInput = document.getElementById('lng');
+
+        if (!navigator.geolocation) {
+            estado.className = 'text-danger ml-2';
+            estado.textContent = 'Este dispositivo no soporta geolocalización.';
+            return;
+        }
+
+        estado.className = 'text-info ml-2';
+        estado.textContent = 'Obteniendo ubicación actual...';
+
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                latInput.value = Number(position.coords.latitude).toFixed(7);
+                lngInput.value = Number(position.coords.longitude).toFixed(7);
+
+                estado.className = 'text-success ml-2';
+                estado.textContent = 'Ubicación actual obtenida correctamente.';
+            },
+            function(error) {
+                let mensaje = 'No se pudo obtener la ubicación.';
+
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        mensaje = 'Se negó el permiso de ubicación.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        mensaje = 'La ubicación no está disponible.';
+                        break;
+                    case error.TIMEOUT:
+                        mensaje = 'Se agotó el tiempo para obtener la ubicación.';
+                        break;
+                }
+
+                estado.className = 'text-danger ml-2';
+                estado.textContent = mensaje;
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 0
+            }
+        );
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         toggleDatosPersona();
 
         document.getElementById('tipo_reporte').addEventListener('change', toggleDatosPersona);
         document.getElementById('fotos').addEventListener('change', renderDescripcionesFotos);
+        document.getElementById('btnUbicacionActual').addEventListener('click', obtenerUbicacionActual);
+
+        if (!document.getElementById('lat').value || !document.getElementById('lng').value) {
+            obtenerUbicacionActual();
+        }
     });
 </script>
 @stop

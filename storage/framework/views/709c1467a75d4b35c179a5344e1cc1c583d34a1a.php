@@ -33,7 +33,6 @@
                         <div class="col-md-3">
                             <label>Turno</label>
                             <input type="number" name="turno_id" value="<?php echo e($turno_id); ?>" class="form-control" min="1">
-                            
                         </div>
 
                         <div class="col-md-6 d-flex align-items-end" style="gap:8px;">
@@ -103,8 +102,6 @@
                                             </button>
                                         <?php endif; ?>
                                     </div>
-
-                                    
                                 </div>
                             </div>
                         </div>

@@ -4,7 +4,13 @@
     "\\app",
     "\\app\\Http",
     "\\app\\Http\\Controllers",
-    "\\app\\Http\\Controllers\\Api"
+    "\\app\\Services",
+    "\\app\\Services\\DailyReports",
+    "\\app\\Services\\DailyReports\\Generators",
+    "\\resources",
+    "\\resources\\views",
+    "\\resources\\views\\daily_reports"
   ],
+  "SelectedNode": "\\app\\Services\\DailyReports\\Generators\\PaseListaCaninaGenerator.php",
   "PreviewInSolutionExplorer": false
 }

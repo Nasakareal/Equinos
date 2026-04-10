@@ -33,7 +33,6 @@
                         <div class="col-md-3">
                             <label>Turno</label>
                             <input type="number" name="turno_id" value="{{ $turno_id }}" class="form-control" min="1">
-                            {{-- Si quieres, luego lo cambiamos a select con turnos --}}
                         </div>
 
                         <div class="col-md-6 d-flex align-items-end" style="gap:8px;">
@@ -101,8 +100,6 @@
                                             </button>
                                         @endif
                                     </div>
-
-                                    {{-- Aquí luego metemos UI especial para ARMAMENTO (select dependencia) --}}
                                 </div>
                             </div>
                         </div>
