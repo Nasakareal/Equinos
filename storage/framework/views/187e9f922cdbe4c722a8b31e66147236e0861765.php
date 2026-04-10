@@ -49,13 +49,13 @@
                                             <div class="btn-group" role="group">
 
                                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('ver personal')): ?>
-                                                    <a href="<?php echo e(url('/personal/' . $personal->id)); ?>" class="btn btn-info btn-sm" title="Ver">
+                                                    <a href="<?php echo e(url('admin/settings/personal/' . $personal->id)); ?>" class="btn btn-info btn-sm" title="Ver">
                                                         <i class="fa-regular fa-eye"></i>
                                                     </a>
                                                 <?php endif; ?>
 
                                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('editar personal')): ?>
-                                                    <a href="<?php echo e(url('/personal/' . $personal->id . '/edit')); ?>" class="btn btn-success btn-sm" title="Editar">
+                                                    <a href="<?php echo e(url('admin/settings/personal/' . $personal->id . '/edit')); ?>" class="btn btn-success btn-sm" title="Editar">
                                                         <i class="fa-regular fa-pen-to-square"></i>
                                                     </a>
                                                 <?php endif; ?>

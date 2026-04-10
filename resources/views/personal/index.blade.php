@@ -14,7 +14,7 @@
                     <h3 class="card-title">Personal Registrado</h3>
                     <div class="card-tools">
                         @can('crear personal')
-                            <a href="{{ url('/personal/create') }}" class="btn btn-primary">
+                            <a href="{{ url('admin/settings/personal/create') }}" class="btn btn-primary">
                                 <i class="fa-solid fa-plus"></i> Agregar Personal
                             </a>
                         @endcan
@@ -49,13 +49,13 @@
                                             <div class="btn-group" role="group">
 
                                                 @can('ver personal')
-                                                    <a href="{{ url('/personal/' . $personal->id) }}" class="btn btn-info btn-sm" title="Ver">
+                                                    <a href="{{ url('admin/settings/personal/' . $personal->id) }}" class="btn btn-info btn-sm" title="Ver">
                                                         <i class="fa-regular fa-eye"></i>
                                                     </a>
                                                 @endcan
 
                                                 @can('editar personal')
-                                                    <a href="{{ url('/personal/' . $personal->id . '/edit') }}" class="btn btn-success btn-sm" title="Editar">
+                                                    <a href="{{ url('admin/settings/personal/' . $personal->id . '/edit') }}" class="btn btn-success btn-sm" title="Editar">
                                                         <i class="fa-regular fa-pen-to-square"></i>
                                                     </a>
                                                 @endcan
