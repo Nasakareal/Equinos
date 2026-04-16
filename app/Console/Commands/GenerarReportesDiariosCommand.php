@@ -22,7 +22,16 @@ class GenerarReportesDiariosCommand extends Command
             return 1;
         }
 
-        $service->generarYGuardarTodos($fecha, $turno_id);
+        $resultado = $service->generarYGuardarTodos($fecha, $turno_id);
+
+        if (empty($resultado)) {
+            $this->error('No se generó ningún reporte.');
+            return 1;
+        }
+
+        foreach ($resultado as $item) {
+            $this->line($item['tipo'] . ' -> ' . $item['name']);
+        }
 
         $this->info("Reportes diarios generados correctamente para {$fecha}, turno {$turno_id}.");
 

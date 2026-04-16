@@ -2,9 +2,13 @@
   "ExpandedNodes": [
     "",
     "\\app",
+    "\\app\\Console",
+    "\\app\\Console\\Commands",
+    "\\app\\Http",
+    "\\app\\Models",
     "\\app\\Services",
     "\\app\\Services\\DailyReports"
   ],
-  "SelectedNode": "\\app\\Services\\DailyReports\\DailyReportsService.php",
+  "SelectedNode": "\\app\\Console\\Kernel.php",
   "PreviewInSolutionExplorer": false
 }

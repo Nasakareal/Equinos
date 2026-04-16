@@ -48,16 +48,12 @@ class DailyReportsController extends Controller
 
     public function descargar(DailyReport $daily_report, string $tipo, Request $request, DailyReportsService $service)
     {
-        $params = $request->all();
-
-        return $service->descargarDesdeRegistro($daily_report, $tipo, $params);
+        return $service->descargarDesdeRegistro($daily_report, $tipo, $request->all());
     }
 
     public function descargarExcelArmamento(DailyReport $daily_report, Request $request, DailyReportsService $service)
     {
-        $params = $request->all();
-
-        return $service->descargarExcelArmamentoDesdeRegistro($daily_report, $params);
+        return $service->descargarExcelArmamentoDesdeRegistro($daily_report, $request->all());
     }
 
     protected function indexPorTipo(Request $request, string $tipo, string $view)
@@ -67,7 +63,7 @@ class DailyReportsController extends Controller
         $turno_id = $this->resolverTurnoId($request->query('turno_id'));
 
         $reportes = DailyReport::query()
-            ->where('tipo', $tipo)
+            ->where('tipo_reporte', $tipo)
             ->when($fecha_desde, function ($query) use ($fecha_desde) {
                 $query->whereDate('fecha', '>=', $fecha_desde);
             })
@@ -87,11 +83,12 @@ class DailyReportsController extends Controller
 
     protected function normalizarFecha(?string $fecha): ?string
     {
-        $tz = 'America/Mexico_City';
-        $fecha = (string) ($fecha ?: now($tz)->toDateString());
+        if (empty($fecha)) {
+            return null;
+        }
 
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
-            return now($tz)->toDateString();
+            return null;
         }
 
         return $fecha;
@@ -99,6 +96,6 @@ class DailyReportsController extends Controller
 
     protected function resolverTurnoId($turnoId): int
     {
-        return (int) ($turnoId ?? (auth()->user()->turno_id ?? 0));
+        return (int) ($turnoId ?? 0);
     }
 }

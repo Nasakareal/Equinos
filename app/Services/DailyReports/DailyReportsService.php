@@ -7,6 +7,7 @@ use App\Services\DailyReports\Contracts\DailyReportGenerator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 
 class DailyReportsService
@@ -39,31 +40,6 @@ class DailyReportsService
             ->all();
     }
 
-    public function estadoArchivos(string $fecha, int $turno_id): array
-    {
-        $estado = [];
-
-        foreach ($this->generadores as $tipo => $gen) {
-            $reporte = DailyReport::query()
-                ->where('tipo_reporte', $tipo)
-                ->whereDate('fecha', $fecha)
-                ->where('turno_id', $turno_id)
-                ->latest('id')
-                ->first();
-
-            $path = $reporte->archivo ?? $this->pathEsperado($tipo, $fecha, $turno_id, []);
-
-            $estado[$tipo] = [
-                'exists' => $path ? Storage::disk('local')->exists($path) : false,
-                'path' => $path,
-                'name' => $path ? basename($path) : null,
-                'daily_report_id' => $reporte->id ?? null,
-            ];
-        }
-
-        return $estado;
-    }
-
     public function descargar(string $tipo, string $fecha, int $turno_id, array $params = []): Response
     {
         $reporte = DailyReport::query()
@@ -73,34 +49,20 @@ class DailyReportsService
             ->latest('id')
             ->first();
 
-        if ($reporte && !empty($reporte->archivo) && Storage::disk('local')->exists($reporte->archivo)) {
-            $abs = storage_path('app/' . $reporte->archivo);
-            return response()->download($abs, basename($reporte->archivo))->deleteFileAfterSend(false);
+        if ($reporte) {
+            return $this->descargarDesdeRegistro($reporte, $tipo, $params);
         }
 
-        $gen = $this->generador($tipo);
-        $path = $gen->generar($fecha, $turno_id, $params);
+        $items = $this->generarMultiples($fecha, $turno_id, [$tipo], $params);
+        $item = $items[0] ?? null;
 
-        if (!Storage::disk('local')->exists($path)) {
+        if (!$item || empty($item['id'])) {
             abort(404, 'No se pudo generar el reporte.');
         }
 
-        $registro = DailyReport::updateOrCreate(
-            [
-                'tipo_reporte' => $tipo,
-                'fecha' => $fecha,
-                'turno_id' => $turno_id,
-            ],
-            [
-                'archivo' => $path,
-                'generado_por' => Auth::id(),
-            ]
-        );
+        $reporte = DailyReport::findOrFail($item['id']);
 
-        $abs = storage_path('app/' . $registro->archivo);
-        $downloadName = basename($registro->archivo);
-
-        return response()->download($abs, $downloadName)->deleteFileAfterSend(false);
+        return $this->descargarDesdeRegistro($reporte, $tipo, $params);
     }
 
     public function descargarDesdeRegistro(DailyReport $daily_report, string $tipo, array $params = []): Response
@@ -115,14 +77,14 @@ class DailyReportsService
             $gen = $this->generador($tipo);
             $path = $gen->generar($daily_report->fecha->format('Y-m-d'), (int) $daily_report->turno_id, $params);
 
+            if (empty($path) || !Storage::disk('local')->exists($path)) {
+                throw new RuntimeException('El generador no produjo un archivo válido para ' . $tipo);
+            }
+
             $daily_report->update([
                 'archivo' => $path,
                 'generado_por' => $daily_report->generado_por ?: Auth::id(),
             ]);
-        }
-
-        if (!Storage::disk('local')->exists($path)) {
-            abort(404, 'No se encontró el archivo del reporte.');
         }
 
         $abs = storage_path('app/' . $path);
@@ -149,10 +111,14 @@ class DailyReportsService
             $tipo = (string) $tipo;
             $gen = $this->generador($tipo);
 
-            $path = $this->pathEsperado($tipo, $fecha, $turno_id, $params);
+            $path = $gen->generar($fecha, $turno_id, $params);
+
+            if (empty($path)) {
+                throw new RuntimeException('El generador devolvió una ruta vacía para ' . $tipo);
+            }
 
             if (!Storage::disk('local')->exists($path)) {
-                $path = $gen->generar($fecha, $turno_id, $params);
+                throw new RuntimeException('No existe el Excel generado para ' . $tipo . ': ' . $path);
             }
 
             $reporte = DailyReport::updateOrCreate(
@@ -172,7 +138,7 @@ class DailyReportsService
                 'tipo' => $tipo,
                 'label' => $gen->label(),
                 'path' => $path,
-                'exists' => Storage::disk('local')->exists($path),
+                'exists' => true,
                 'name' => basename($path),
             ];
         }
