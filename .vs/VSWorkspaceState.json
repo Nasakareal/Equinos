@@ -3,13 +3,8 @@
     "",
     "\\app",
     "\\app\\Services",
-    "\\app\\Services\\DailyReports",
-    "\\app\\Services\\DailyReports\\Generators",
-    "\\resources",
-    "\\resources\\views",
-    "\\resources\\views\\daily_reports",
-    "\\resources\\views\\daily_reports\\armamento_equinos_caninos"
+    "\\app\\Services\\DailyReports"
   ],
-  "SelectedNode": "\\resources\\views\\daily_reports\\armamento_equinos_caninos\\index.blade.php",
+  "SelectedNode": "\\app\\Services\\DailyReports\\DailyReportsService.php",
   "PreviewInSolutionExplorer": false
 }

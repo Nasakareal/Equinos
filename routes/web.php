@@ -175,30 +175,31 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('reportes-diarios')->middleware('can:ver reportes')->group(function () {
-        Route::get('/', [DailyReportController::class, 'index'])->name('daily_reports.index');
-        Route::get('/{daily_report}', [DailyReportController::class, 'show'])->name('daily_reports.show');
-        Route::get('/{daily_report}/descargar/{tipo}', [DailyReportController::class, 'descargar'])->name('daily_reports.descargar');
-        Route::get('/{daily_report}/descargar/excel-armamento', [DailyReportController::class, 'descargarExcelArmamento'])->name('daily_reports.descargar.excel_armamento');
+        Route::get('/', [DailyReportsController::class, 'index'])->name('daily_reports.index');
 
         Route::prefix('estado-fuerza')->group(function () {
-            Route::get('/', [DailyReportController::class, 'indexEstadoFuerza'])->name('daily_reports.estado_fuerza.index');
+            Route::get('/', [DailyReportsController::class, 'indexEstadoFuerza'])->name('daily_reports.estado_fuerza.index');
         });
 
         Route::prefix('lista-personal')->group(function () {
-            Route::get('/', [DailyReportController::class, 'indexListaPersonal'])->name('daily_reports.lista_personal.index');
+            Route::get('/', [DailyReportsController::class, 'indexListaPersonal'])->name('daily_reports.lista_personal.index');
         });
 
         Route::prefix('pase-lista-canina')->group(function () {
-            Route::get('/', [DailyReportController::class, 'indexPaseListaCanina'])->name('daily_reports.pase_lista_canina.index');
+            Route::get('/', [DailyReportsController::class, 'indexPaseListaCanina'])->name('daily_reports.pase_lista_canina.index');
         });
 
         Route::prefix('pase-lista-agrupamiento-equinos-caninos')->group(function () {
-            Route::get('/', [DailyReportController::class, 'indexPaseListaAgrupamientoEquinosCaninos'])->name('daily_reports.pase_lista_agrupamiento_equinos_caninos.index');
+            Route::get('/', [DailyReportsController::class, 'indexPaseListaAgrupamientoEquinosCaninos'])->name('daily_reports.pase_lista_agrupamiento_equinos_caninos.index');
         });
 
         Route::prefix('armamento-equinos-caninos')->group(function () {
-            Route::get('/', [DailyReportController::class, 'indexArmamentoEquinosCaninos'])->name('daily_reports.armamento_equinos_caninos.index');
+            Route::get('/', [DailyReportsController::class, 'indexArmamentoEquinosCaninos'])->name('daily_reports.armamento_equinos_caninos.index');
         });
+
+        Route::get('/{daily_report}/descargar/{tipo}', [DailyReportsController::class, 'descargar'])->name('daily_reports.descargar');
+        Route::get('/{daily_report}/descargar/excel-armamento', [DailyReportsController::class, 'descargarExcelArmamento'])->name('daily_reports.descargar.excel_armamento');
+        Route::get('/{daily_report}', [DailyReportsController::class, 'show'])->name('daily_reports.show');
     });
 
     Route::prefix('reportes-diarios')->middleware('can:ver reportes')->group(function () {

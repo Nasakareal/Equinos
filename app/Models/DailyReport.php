@@ -17,6 +17,7 @@ class DailyReport extends Model
         'turno_id',
         'generado_por',
         'notas',
+        'archivo',
     ];
 
     protected $casts = [

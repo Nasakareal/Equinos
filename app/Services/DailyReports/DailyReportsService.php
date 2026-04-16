@@ -2,7 +2,9 @@
 
 namespace App\Services\DailyReports;
 
+use App\Models\DailyReport;
 use App\Services\DailyReports\Contracts\DailyReportGenerator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,12 +44,20 @@ class DailyReportsService
         $estado = [];
 
         foreach ($this->generadores as $tipo => $gen) {
-            $path = $this->pathEsperado($tipo, $fecha, $turno_id, []);
+            $reporte = DailyReport::query()
+                ->where('tipo_reporte', $tipo)
+                ->whereDate('fecha', $fecha)
+                ->where('turno_id', $turno_id)
+                ->latest('id')
+                ->first();
+
+            $path = $reporte->archivo ?? $this->pathEsperado($tipo, $fecha, $turno_id, []);
 
             $estado[$tipo] = [
-                'exists' => Storage::disk('local')->exists($path),
+                'exists' => $path ? Storage::disk('local')->exists($path) : false,
                 'path' => $path,
-                'name' => basename($path),
+                'name' => $path ? basename($path) : null,
+                'daily_report_id' => $reporte->id ?? null,
             ];
         }
 
@@ -56,22 +66,73 @@ class DailyReportsService
 
     public function descargar(string $tipo, string $fecha, int $turno_id, array $params = []): Response
     {
-        $gen = $this->generador($tipo);
+        $reporte = DailyReport::query()
+            ->where('tipo_reporte', $tipo)
+            ->whereDate('fecha', $fecha)
+            ->where('turno_id', $turno_id)
+            ->latest('id')
+            ->first();
 
-        $path = $this->pathEsperado($tipo, $fecha, $turno_id, $params);
-
-        if (!Storage::disk('local')->exists($path)) {
-            $path = $gen->generar($fecha, $turno_id, $params);
+        if ($reporte && !empty($reporte->archivo) && Storage::disk('local')->exists($reporte->archivo)) {
+            $abs = storage_path('app/' . $reporte->archivo);
+            return response()->download($abs, basename($reporte->archivo))->deleteFileAfterSend(false);
         }
+
+        $gen = $this->generador($tipo);
+        $path = $gen->generar($fecha, $turno_id, $params);
 
         if (!Storage::disk('local')->exists($path)) {
             abort(404, 'No se pudo generar el reporte.');
         }
 
-        $abs = storage_path('app/' . $path);
-        $downloadName = basename($path);
+        $registro = DailyReport::updateOrCreate(
+            [
+                'tipo_reporte' => $tipo,
+                'fecha' => $fecha,
+                'turno_id' => $turno_id,
+            ],
+            [
+                'archivo' => $path,
+                'generado_por' => Auth::id(),
+            ]
+        );
+
+        $abs = storage_path('app/' . $registro->archivo);
+        $downloadName = basename($registro->archivo);
 
         return response()->download($abs, $downloadName)->deleteFileAfterSend(false);
+    }
+
+    public function descargarDesdeRegistro(DailyReport $daily_report, string $tipo, array $params = []): Response
+    {
+        if ($daily_report->tipo_reporte !== $tipo) {
+            abort(404, 'El tipo solicitado no coincide con el reporte.');
+        }
+
+        $path = $daily_report->archivo;
+
+        if (empty($path) || !Storage::disk('local')->exists($path)) {
+            $gen = $this->generador($tipo);
+            $path = $gen->generar($daily_report->fecha->format('Y-m-d'), (int) $daily_report->turno_id, $params);
+
+            $daily_report->update([
+                'archivo' => $path,
+                'generado_por' => $daily_report->generado_por ?: Auth::id(),
+            ]);
+        }
+
+        if (!Storage::disk('local')->exists($path)) {
+            abort(404, 'No se encontró el archivo del reporte.');
+        }
+
+        $abs = storage_path('app/' . $path);
+
+        return response()->download($abs, basename($path))->deleteFileAfterSend(false);
+    }
+
+    public function descargarExcelArmamentoDesdeRegistro(DailyReport $daily_report, array $params = []): Response
+    {
+        return $this->descargarDesdeRegistro($daily_report, 'armamento_equinos_caninos', $params);
     }
 
     public function generarYGuardarTodos(string $fecha, int $turno_id, array $params = []): array
@@ -94,7 +155,20 @@ class DailyReportsService
                 $path = $gen->generar($fecha, $turno_id, $params);
             }
 
+            $reporte = DailyReport::updateOrCreate(
+                [
+                    'tipo_reporte' => $tipo,
+                    'fecha' => $fecha,
+                    'turno_id' => $turno_id,
+                ],
+                [
+                    'archivo' => $path,
+                    'generado_por' => Auth::id(),
+                ]
+            );
+
             $resultado[] = [
+                'id' => $reporte->id,
                 'tipo' => $tipo,
                 'label' => $gen->label(),
                 'path' => $path,
