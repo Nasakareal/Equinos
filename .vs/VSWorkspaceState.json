@@ -4,9 +4,12 @@
     "\\app",
     "\\app\\Services",
     "\\app\\Services\\DailyReports",
-    "\\app\\Services\\DailyReports\\Contracts",
-    "\\app\\Services\\DailyReports\\Generators"
+    "\\app\\Services\\DailyReports\\Generators",
+    "\\resources",
+    "\\resources\\views",
+    "\\resources\\views\\daily_reports",
+    "\\resources\\views\\daily_reports\\armamento_equinos_caninos"
   ],
-  "SelectedNode": "\\app\\Services\\DailyReports\\Contracts\\DailyReportGenerator.php",
+  "SelectedNode": "\\resources\\views\\daily_reports\\armamento_equinos_caninos\\index.blade.php",
   "PreviewInSolutionExplorer": false
 }

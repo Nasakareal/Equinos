@@ -2,10 +2,10 @@
 
 namespace App\Services\DailyReports;
 
+use App\Services\DailyReports\Contracts\DailyReportGenerator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
-use App\Services\DailyReports\Contracts\DailyReportGenerator;
 
 class DailyReportsService
 {
@@ -13,6 +13,7 @@ class DailyReportsService
 
     public function __construct()
     {
+        $this->registrar(new \App\Services\DailyReports\Generators\EstadoFuerzaGenerator());
         $this->registrar(new \App\Services\DailyReports\Generators\ArmamentoEquinosCaninosGenerator());
         $this->registrar(new \App\Services\DailyReports\Generators\ListaPersonalGenerator());
         $this->registrar(new \App\Services\DailyReports\Generators\PaseListaCaninaGenerator());
@@ -45,8 +46,8 @@ class DailyReportsService
 
             $estado[$tipo] = [
                 'exists' => Storage::disk('local')->exists($path),
-                'path'   => $path,
-                'name'   => basename($path),
+                'path' => $path,
+                'name' => basename($path),
             ];
         }
 
@@ -73,9 +74,15 @@ class DailyReportsService
         return response()->download($abs, $downloadName)->deleteFileAfterSend(false);
     }
 
-    public function generarMultiples(string $fecha, int $turno_id, ?array $tipos = null, array $params = []): void
+    public function generarYGuardarTodos(string $fecha, int $turno_id, array $params = []): array
+    {
+        return $this->generarMultiples($fecha, $turno_id, null, $params);
+    }
+
+    public function generarMultiples(string $fecha, int $turno_id, ?array $tipos = null, array $params = []): array
     {
         $lista = $tipos ?: array_keys($this->generadores);
+        $resultado = [];
 
         foreach ($lista as $tipo) {
             $tipo = (string) $tipo;
@@ -84,9 +91,19 @@ class DailyReportsService
             $path = $this->pathEsperado($tipo, $fecha, $turno_id, $params);
 
             if (!Storage::disk('local')->exists($path)) {
-                $gen->generar($fecha, $turno_id, $params);
+                $path = $gen->generar($fecha, $turno_id, $params);
             }
+
+            $resultado[] = [
+                'tipo' => $tipo,
+                'label' => $gen->label(),
+                'path' => $path,
+                'exists' => Storage::disk('local')->exists($path),
+                'name' => basename($path),
+            ];
         }
+
+        return $resultado;
     }
 
     private function generador(string $tipo): DailyReportGenerator
@@ -101,7 +118,7 @@ class DailyReportsService
     private function pathEsperado(string $tipo, string $fecha, int $turno_id, array $params): string
     {
         $safeTipo = Str::slug($tipo, '_');
-        $ext = $this->generadores[$tipo]->extension() ?? 'xlsx';
+        $ext = $this->generadores[$tipo]->extension() ?: 'xlsx';
 
         $suffix = '';
 
