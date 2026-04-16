@@ -2,12 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\app",
-    "\\app\\Http",
-    "\\app\\Http\\Controllers",
-    "\\resources",
-    "\\resources\\views",
-    "\\resources\\views\\personal"
+    "\\app\\Services",
+    "\\app\\Services\\DailyReports",
+    "\\app\\Services\\DailyReports\\Contracts",
+    "\\app\\Services\\DailyReports\\Generators"
   ],
-  "SelectedNode": "\\resources\\views\\personal\\index.blade.php",
+  "SelectedNode": "\\app\\Services\\DailyReports\\Contracts\\DailyReportGenerator.php",
   "PreviewInSolutionExplorer": false
 }

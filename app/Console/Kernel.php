@@ -12,11 +12,13 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             \App\Services\TurnoActual::syncTurnoActualHoy();
         })->dailyAt('06:55');
+
+        $schedule->command('reportes-diarios:generar')->dailyAt('07:00');
     }
 
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

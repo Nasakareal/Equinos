@@ -2,62 +2,103 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\DailyReport;
 use App\Services\DailyReports\DailyReportsService;
+use Illuminate\Http\Request;
 
 class DailyReportsController extends Controller
 {
-    public function index(Request $request, DailyReportsService $service)
+    public function index(Request $request)
     {
-        $tz = 'America/Mexico_City';
+        $fecha = $this->normalizarFecha($request->query('fecha'));
+        $turno_id = $this->resolverTurnoId($request->query('turno_id'));
 
-        $fecha = (string) $request->query('fecha', now($tz)->toDateString());
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
-            $fecha = now($tz)->toDateString();
-        }
-
-        $turno_id = (int) ($request->query('turno_id') ?? (auth()->user()->turno_id ?? 1));
-
-        $tipos = $service->catalogoTipos();
-        $estado = $service->estadoArchivos($fecha, $turno_id);
-
-        return view('daily_reports.index', compact('fecha', 'turno_id', 'tipos', 'estado'));
+        return view('daily_reports.index', compact('fecha', 'turno_id'));
     }
 
-    public function descargar(Request $request, string $tipo, DailyReportsService $service)
+    public function indexEstadoFuerza(Request $request)
     {
-        $tz = 'America/Mexico_City';
-
-        $fecha = (string) $request->query('fecha', now($tz)->toDateString());
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
-            $fecha = now($tz)->toDateString();
-        }
-
-        $turno_id = (int) ($request->query('turno_id') ?? (auth()->user()->turno_id ?? 1));
-
-        $params = $request->all();
-
-        return $service->descargar($tipo, $fecha, $turno_id, $params);
+        return $this->indexPorTipo($request, 'estado_fuerza', 'daily_reports.estado_fuerza.index');
     }
 
-    public function generar(Request $request, DailyReportsService $service)
+    public function indexListaPersonal(Request $request)
     {
-        $tz = 'America/Mexico_City';
+        return $this->indexPorTipo($request, 'lista_personal', 'daily_reports.lista_personal.index');
+    }
 
-        $fecha = (string) $request->input('fecha', now($tz)->toDateString());
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
-            $fecha = now($tz)->toDateString();
-        }
+    public function indexPaseListaCanina(Request $request)
+    {
+        return $this->indexPorTipo($request, 'pase_lista_canina', 'daily_reports.pase_lista_canina.index');
+    }
 
-        $turno_id = (int) ($request->input('turno_id') ?? (auth()->user()->turno_id ?? 1));
+    public function indexPaseListaAgrupamientoEquinosCaninos(Request $request)
+    {
+        return $this->indexPorTipo($request, 'pase_lista_agrupamiento_equinos_caninos', 'daily_reports.pase_lista_agrupamiento_equinos_caninos.index');
+    }
 
-        $tipos = $request->input('tipos');
+    public function indexArmamentoEquinosCaninos(Request $request)
+    {
+        return $this->indexPorTipo($request, 'armamento_equinos_caninos', 'daily_reports.armamento_equinos_caninos.index');
+    }
+
+    public function show(DailyReport $daily_report)
+    {
+        return view('daily_reports.show', compact('daily_report'));
+    }
+
+    public function descargar(DailyReport $daily_report, string $tipo, Request $request, DailyReportsService $service)
+    {
         $params = $request->all();
 
-        $service->generarMultiples($fecha, $turno_id, $tipos ?: null, $params);
+        return $service->descargarDesdeRegistro($daily_report, $tipo, $params);
+    }
 
-        return redirect()
-            ->route('daily_reports.index', ['fecha' => $fecha, 'turno_id' => $turno_id])
-            ->with('success', 'Listo. Reportes generados.');
+    public function descargarExcelArmamento(DailyReport $daily_report, Request $request, DailyReportsService $service)
+    {
+        $params = $request->all();
+
+        return $service->descargarExcelArmamentoDesdeRegistro($daily_report, $params);
+    }
+
+    protected function indexPorTipo(Request $request, string $tipo, string $view)
+    {
+        $fecha_desde = $this->normalizarFecha($request->query('fecha_desde'));
+        $fecha_hasta = $this->normalizarFecha($request->query('fecha_hasta'));
+        $turno_id = $this->resolverTurnoId($request->query('turno_id'));
+
+        $reportes = DailyReport::query()
+            ->where('tipo', $tipo)
+            ->when($fecha_desde, function ($query) use ($fecha_desde) {
+                $query->whereDate('fecha', '>=', $fecha_desde);
+            })
+            ->when($fecha_hasta, function ($query) use ($fecha_hasta) {
+                $query->whereDate('fecha', '<=', $fecha_hasta);
+            })
+            ->when($turno_id > 0, function ($query) use ($turno_id) {
+                $query->where('turno_id', $turno_id);
+            })
+            ->orderByDesc('fecha')
+            ->orderByDesc('id')
+            ->paginate(30)
+            ->withQueryString();
+
+        return view($view, compact('reportes', 'tipo', 'fecha_desde', 'fecha_hasta', 'turno_id'));
+    }
+
+    protected function normalizarFecha(?string $fecha): ?string
+    {
+        $tz = 'America/Mexico_City';
+        $fecha = (string) ($fecha ?: now($tz)->toDateString());
+
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            return now($tz)->toDateString();
+        }
+
+        return $fecha;
+    }
+
+    protected function resolverTurnoId($turnoId): int
+    {
+        return (int) ($turnoId ?? (auth()->user()->turno_id ?? 0));
     }
 }
