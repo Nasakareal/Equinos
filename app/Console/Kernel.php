@@ -13,9 +13,9 @@ class Kernel extends ConsoleKernel
             \App\Services\TurnoActual::syncTurnoActualHoy();
         })->dailyAt('06:55');
 
-        Schema::table('daily_reports', function (Blueprint $table) {
-            $table->string('archivo')->nullable()->after('notas');
-        });
+        $schedule->command('reportes-diarios:generar')
+            ->dailyAt('18:00')
+            ->timezone('America/Mexico_City');
     }
 
     protected function commands()

@@ -193,39 +193,6 @@
     </div>
     @endcan
 
-    @can('ver reportes')
-    <div class="col-lg-4 col-md-6 col-12">
-        <div class="ef-card">
-            <div class="ef-card__icon bg-success">
-                <i class="fa-solid fa-file-excel"></i>
-            </div>
-            <div class="ef-card__body">
-                <div class="ef-card__title">Reportes diarios</div>
-                <div class="ef-card__desc">
-                    Generación y descarga de formatos diarios (6 excels).
-                </div>
-
-                <div class="d-flex gap-2" style="gap:8px;">
-
-                    @can('crear reportes')
-                    <form action="{{ route('daily_reports.generar') }}" method="POST" style="display:inline;">
-                        @csrf
-                        <button type="submit" class="btn ef-btn">
-                            <i class="fa-solid fa-file-circle-plus"></i> Generar hoy
-                        </button>
-                    </form>
-                    @endcan
-
-                    <a href="{{ route('daily_reports.index') }}" class="btn ef-btn ef-btn--ghost">
-                        <i class="fa-solid fa-list"></i> Historial
-                    </a>
-
-                </div>
-            </div>
-        </div>
-    </div>
-    @endcan
-
     <div class="col-12 mt-2">
         <div class="ef-section">
             <div class="ef-section__title">

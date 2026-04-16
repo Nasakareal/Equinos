@@ -3,24 +3,12 @@
   "WorkspaceRootPath": "C:\\wamp64\\www\\equinosCaninos\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Console\\Kernel.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Console\\Kernel.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\routes\\web.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:routes\\web.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Console\\Commands\\GenerarReportesDiariosCommand.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Console\\Commands\\GenerarReportesDiariosCommand.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Services\\DailyReports\\DailyReportsService.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Services\\DailyReports\\DailyReportsService.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Models\\DailyReport.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Models\\DailyReport.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\DailyReportsController.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\Http\\Controllers\\DailyReportsController.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\wamp64\\www\\equinosCaninos\\resources\\views\\daily_reports\\armamento_equinos_caninos\\index.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:resources\\views\\daily_reports\\armamento_equinos_caninos\\index.blade.php||{3B902123-F8A7-4915-9F01-361F908088D0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,71 +18,32 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Kernel.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Console\\Kernel.php",
-              "RelativeDocumentMoniker": "app\\Console\\Kernel.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Console\\Kernel.php",
-              "RelativeToolTip": "app\\Console\\Kernel.php",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-04-16T04:58:57.92Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "GenerarReportesDiariosCommand.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Console\\Commands\\GenerarReportesDiariosCommand.php",
-              "RelativeDocumentMoniker": "app\\Console\\Commands\\GenerarReportesDiariosCommand.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Console\\Commands\\GenerarReportesDiariosCommand.php",
-              "RelativeToolTip": "app\\Console\\Commands\\GenerarReportesDiariosCommand.php",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAA==",
+              "Title": "index.blade.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\daily_reports\\armamento_equinos_caninos\\index.blade.php",
+              "RelativeDocumentMoniker": "resources\\views\\daily_reports\\armamento_equinos_caninos\\index.blade.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\resources\\views\\daily_reports\\armamento_equinos_caninos\\index.blade.php",
+              "RelativeToolTip": "resources\\views\\daily_reports\\armamento_equinos_caninos\\index.blade.php",
+              "ViewState": "AgIAABkAAAAAAAAAAAAmwD8AAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-04-16T04:58:47.411Z",
+              "WhenOpened": "2026-04-16T05:00:57.769Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "DailyReport.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Models\\DailyReport.php",
-              "RelativeDocumentMoniker": "app\\Models\\DailyReport.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Models\\DailyReport.php",
-              "RelativeToolTip": "app\\Models\\DailyReport.php",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACkAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "web.php",
+              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\routes\\web.php",
+              "RelativeDocumentMoniker": "routes\\web.php",
+              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\routes\\web.php",
+              "RelativeToolTip": "routes\\web.php",
+              "ViewState": "AgIAALMAAAAAAAAAAAAWwMoAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-04-16T04:58:31.96Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "DailyReportsController.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\DailyReportsController.php",
-              "RelativeDocumentMoniker": "app\\Http\\Controllers\\DailyReportsController.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Http\\Controllers\\DailyReportsController.php",
-              "RelativeToolTip": "app\\Http\\Controllers\\DailyReportsController.php",
-              "ViewState": "AgIAADIAAAAAAAAAAAAmwGUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-04-16T04:58:17.42Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "DailyReportsService.php",
-              "DocumentMoniker": "C:\\wamp64\\www\\equinosCaninos\\app\\Services\\DailyReports\\DailyReportsService.php",
-              "RelativeDocumentMoniker": "app\\Services\\DailyReports\\DailyReportsService.php",
-              "ToolTip": "C:\\wamp64\\www\\equinosCaninos\\app\\Services\\DailyReports\\DailyReportsService.php",
-              "RelativeToolTip": "app\\Services\\DailyReports\\DailyReportsService.php",
-              "ViewState": "AgIAAHwAAAAAAAAAAAAmwK8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002338|",
-              "WhenOpened": "2026-04-16T04:52:09.277Z",
+              "WhenOpened": "2026-04-16T05:00:46.038Z",
               "EditorCaption": ""
             }
           ]
