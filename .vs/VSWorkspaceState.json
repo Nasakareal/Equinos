@@ -1,14 +1,12 @@
 {
   "ExpandedNodes": [
     "",
-    "\\app",
-    "\\app\\Console",
-    "\\app\\Console\\Commands",
-    "\\app\\Http",
-    "\\app\\Models",
-    "\\app\\Services",
-    "\\app\\Services\\DailyReports"
+    "\\resources",
+    "\\resources\\views",
+    "\\resources\\views\\daily_reports",
+    "\\resources\\views\\daily_reports\\armamento_equinos_caninos",
+    "\\routes"
   ],
-  "SelectedNode": "\\app\\Console\\Kernel.php",
+  "SelectedNode": "\\resources\\views\\daily_reports\\armamento_equinos_caninos\\index.blade.php",
   "PreviewInSolutionExplorer": false
 }

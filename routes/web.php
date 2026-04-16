@@ -202,12 +202,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/{daily_report}', [DailyReportsController::class, 'show'])->name('daily_reports.show');
     });
 
-    Route::prefix('reportes-diarios')->middleware('can:ver reportes')->group(function () {
-        Route::get('/', [DailyReportsController::class, 'index'])->name('daily_reports.index');
-        Route::get('/descargar/{tipo}', [DailyReportsController::class, 'descargar'])->middleware('can:ver reportes')->name('daily_reports.descargar');
-        Route::post('/generar', [DailyReportsController::class, 'generar'])->middleware('can:crear reportes')->name('daily_reports.generar');
-    });
-
     Route::prefix('servicios')->middleware('can:ver servicios')->group(function () {
         Route::get('/', [ServicioController::class, 'index'])->name('servicios.index');
         Route::get('/create', [ServicioController::class, 'create'])->middleware('can:crear servicios')->name('servicios.create');
