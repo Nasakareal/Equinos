@@ -14,7 +14,10 @@ class PuestaDisposicionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = PuestaDisposicion::query()->with('personal')->orderByDesc('anio')->orderByDesc('created_at');
+        $query = PuestaDisposicion::query()
+            ->with(['personal'])
+            ->orderByDesc('anio')
+            ->orderByDesc('created_at');
 
         if ($request->filled('anio')) {
             $query->where('anio', (int) $request->anio);
@@ -27,18 +30,17 @@ class PuestaDisposicionController extends Controller
         if ($request->filled('buscar')) {
             $buscar = (string) $request->buscar;
             $query->where(function ($q) use ($buscar) {
-                $q->where('folio', 'like', '%' . $buscar . '%')->orWhere('observaciones', 'like', '%' . $buscar . '%');
+                $q->where('folio', 'like', '%' . $buscar . '%')
+                    ->orWhere('observaciones', 'like', '%' . $buscar . '%');
             });
         }
 
-        return response()->json(['ok' => true, 'data' => $query->paginate(20)]);
-    }
+        $perPage = (int) $request->get('per_page', 20);
+        $perPage = $perPage > 0 ? min($perPage, 100) : 20;
 
-    public function catalogos(Request $request)
-    {
-        $anio = (int) ($request->get('anio') ?: now('America/Mexico_City')->year);
+        $puestas = $query->paginate($perPage);
 
-        return response()->json(['ok' => true, 'data' => ['anio' => $anio, 'personals' => Personal::query()->orderBy('nombres')->get(['id', 'nombres', 'grado', 'cargo'])]]);
+        return response()->json($puestas);
     }
 
     public function store(Request $request)
@@ -47,13 +49,23 @@ class PuestaDisposicionController extends Controller
             'personal_id' => 'required|exists:personals,id',
             'anio' => 'required|integer|min:2000|max:2100',
             'hecho_id' => 'nullable|integer',
-            'folio' => ['required', 'string', 'max:60', Rule::unique('puestas_disposicions', 'folio')->where(function ($q) use ($request) { return $q->where('anio', (int) $request->input('anio')); })],
+            'folio' => [
+                'required',
+                'string',
+                'max:60',
+                Rule::unique('puestas_disposicions', 'folio')->where(function ($q) use ($request) {
+                    return $q->where('anio', (int) $request->input('anio'));
+                }),
+            ],
             'observaciones' => 'nullable|string',
             'archivo_pdf' => 'required|file|mimes:pdf|max:10240',
-        ], ['folio.unique' => 'Ese folio ya existe en ese año.']);
+        ], [
+            'folio.unique' => 'Ese folio ya existe en ese año.',
+        ]);
 
         $userId = Auth::id();
         $anio = (int) $validated['anio'];
+
         $path = $request->file('archivo_pdf')->store("puestas_disposicion/{$anio}", 'public');
 
         $pd = PuestaDisposicion::create([
@@ -73,12 +85,21 @@ class PuestaDisposicionController extends Controller
             $pd->update(['archivo_pdf' => $newPath]);
         }
 
-        return response()->json(['ok' => true, 'message' => 'Puesta a disposición registrada correctamente.', 'data' => $pd->fresh()->load('personal')], 201);
+        $pd->load(['personal']);
+
+        return response()->json([
+            'message' => 'Puesta a disposición registrada correctamente',
+            'data' => $pd,
+        ], 201);
     }
 
     public function show(PuestaDisposicion $puesta_disposicion)
     {
-        return response()->json(['ok' => true, 'data' => $puesta_disposicion->load('personal')]);
+        $puesta_disposicion->load(['personal']);
+
+        return response()->json([
+            'data' => $puesta_disposicion,
+        ]);
     }
 
     public function update(Request $request, PuestaDisposicion $puesta_disposicion)
@@ -87,10 +108,19 @@ class PuestaDisposicionController extends Controller
             'personal_id' => 'required|exists:personals,id',
             'anio' => 'required|integer|min:2000|max:2100',
             'hecho_id' => 'nullable|integer',
-            'folio' => ['required', 'string', 'max:60', Rule::unique('puestas_disposicions', 'folio')->where(function ($q) use ($request) { return $q->where('anio', (int) $request->input('anio')); })->ignore($puesta_disposicion->id)],
+            'folio' => [
+                'required',
+                'string',
+                'max:60',
+                Rule::unique('puestas_disposicions', 'folio')->where(function ($q) use ($request) {
+                    return $q->where('anio', (int) $request->input('anio'));
+                })->ignore($puesta_disposicion->id),
+            ],
             'observaciones' => 'nullable|string',
             'archivo_pdf' => 'nullable|file|mimes:pdf|max:10240',
-        ], ['folio.unique' => 'Ese folio ya existe en ese año.']);
+        ], [
+            'folio.unique' => 'Ese folio ya existe en ese año.',
+        ]);
 
         $userId = Auth::id();
         $anio = (int) $validated['anio'];
@@ -120,7 +150,12 @@ class PuestaDisposicionController extends Controller
             }
         }
 
-        return response()->json(['ok' => true, 'message' => 'Puesta a disposición actualizada correctamente.', 'data' => $puesta_disposicion->fresh()->load('personal')]);
+        $puesta_disposicion->load(['personal']);
+
+        return response()->json([
+            'message' => 'Puesta a disposición actualizada correctamente',
+            'data' => $puesta_disposicion,
+        ]);
     }
 
     public function destroy(PuestaDisposicion $puesta_disposicion)
@@ -131,6 +166,20 @@ class PuestaDisposicionController extends Controller
 
         $puesta_disposicion->delete();
 
-        return response()->json(['ok' => true, 'message' => 'Puesta a disposición eliminada correctamente.']);
+        return response()->json([
+            'message' => 'Puesta a disposición eliminada correctamente',
+        ]);
+    }
+
+    public function catalogos()
+    {
+        $personals = Personal::query()
+            ->orderBy('nombres')
+            ->get(['id', 'nombres', 'grado', 'cargo']);
+
+        return response()->json([
+            'personals' => $personals,
+            'anio_actual' => now('America/Mexico_City')->year,
+        ]);
     }
 }

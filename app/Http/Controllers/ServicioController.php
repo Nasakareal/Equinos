@@ -26,10 +26,15 @@ class ServicioController extends Controller
 
     private function normalizeText(?string $value): ?string
     {
-        if ($value === null) return null;
+        if ($value === null) {
+            return null;
+        }
 
         $value = trim($value);
-        if ($value === '') return null;
+
+        if ($value === '') {
+            return null;
+        }
 
         return mb_strtoupper(preg_replace('/\s+/u', ' ', $value), 'UTF-8');
     }
@@ -123,7 +128,7 @@ class ServicioController extends Controller
         $validatedData['unidad_clave'] = $this->normalizeText($validatedData['unidad_clave'] ?? null);
         $validatedData['crp'] = $this->normalizeText($validatedData['crp'] ?? null);
         $validatedData['objetivo_servicio'] = $this->normalizeText($validatedData['objetivo_servicio'] ?? null);
-        $validatedData['folio_operativo'] = $validatedData['folio_operativo'] ?? null;
+        $validatedData['folio_operativo'] = $this->normalizeText($validatedData['folio_operativo'] ?? null);
 
         $validatedData['tipo_busqueda'] = $this->normalizeText($validatedData['tipo_busqueda'] ?? null);
         $validatedData['asunto'] = $this->normalizeText($validatedData['asunto'] ?? null);
@@ -260,15 +265,29 @@ class ServicioController extends Controller
 
             DB::commit();
 
-            Log::info('Servicio creado: ' . $servicio->id . ' por usuario ' . (Auth::id() ?? 'N/A'));
+            Log::info('Servicio creado correctamente.', [
+                'servicio_id' => $servicio->id,
+                'user_id' => Auth::id(),
+            ]);
 
             return redirect()->route('servicios.index')->with('success', 'Servicio creado correctamente.');
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            Log::error('Error al crear servicio: ' . $e->getMessage());
+            Log::error('Error al crear servicio.', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all(),
+                'user_id' => Auth::id(),
+            ]);
 
-            return redirect()->back()->withErrors('Hubo un error al crear el servicio.')->withInput();
+            $mensaje = app()->environment('local')
+                ? 'Error al crear el servicio: ' . $e->getMessage()
+                : 'Hubo un error al crear el servicio.';
+
+            return redirect()->back()->withErrors([$mensaje])->withInput();
         }
     }
 
@@ -323,15 +342,30 @@ class ServicioController extends Controller
 
             DB::commit();
 
-            Log::info('Servicio actualizado: ' . $servicio->id . ' por usuario ' . (Auth::id() ?? 'N/A'));
+            Log::info('Servicio actualizado correctamente.', [
+                'servicio_id' => $servicio->id,
+                'user_id' => Auth::id(),
+            ]);
 
             return redirect()->route('servicios.index')->with('success', 'Servicio actualizado correctamente.');
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            Log::error('Error al actualizar servicio: ' . $e->getMessage());
+            Log::error('Error al actualizar servicio.', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all(),
+                'servicio_id' => $id,
+                'user_id' => Auth::id(),
+            ]);
 
-            return redirect()->back()->withErrors('Hubo un error al actualizar el servicio.')->withInput();
+            $mensaje = app()->environment('local')
+                ? 'Error al actualizar el servicio: ' . $e->getMessage()
+                : 'Hubo un error al actualizar el servicio.';
+
+            return redirect()->back()->withErrors([$mensaje])->withInput();
         }
     }
 
@@ -343,13 +377,27 @@ class ServicioController extends Controller
 
             $servicio->delete();
 
-            Log::info('Servicio eliminado: ' . $idServicio . ' por usuario ' . (Auth::id() ?? 'N/A'));
+            Log::info('Servicio eliminado correctamente.', [
+                'servicio_id' => $idServicio,
+                'user_id' => Auth::id(),
+            ]);
 
             return redirect()->route('servicios.index')->with('success', 'Servicio eliminado correctamente.');
         } catch (\Throwable $e) {
-            Log::error('Error al eliminar servicio: ' . $e->getMessage());
+            Log::error('Error al eliminar servicio.', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'servicio_id' => $id,
+                'user_id' => Auth::id(),
+            ]);
 
-            return redirect()->back()->withErrors('Hubo un error al eliminar servicio.');
+            $mensaje = app()->environment('local')
+                ? 'Error al eliminar el servicio: ' . $e->getMessage()
+                : 'Hubo un error al eliminar servicio.';
+
+            return redirect()->back()->withErrors([$mensaje]);
         }
     }
 }

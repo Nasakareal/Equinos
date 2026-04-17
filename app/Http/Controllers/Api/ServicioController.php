@@ -4,18 +4,24 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Servicio;
-use App\Models\Animal;
-use App\Models\Personal;
-use App\Models\Patrol;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class ServicioController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+
+        $this->middleware('can:ver servicios')->only(['index', 'show']);
+        $this->middleware('can:crear servicios')->only(['store']);
+        $this->middleware('can:editar servicios')->only(['update']);
+        $this->middleware('can:eliminar servicios')->only(['destroy']);
+    }
+
     private function normalizeText(?string $value): ?string
     {
         if ($value === null) {
@@ -28,9 +34,7 @@ class ServicioController extends Controller
             return null;
         }
 
-        $value = preg_replace('/\s+/u', ' ', $value);
-
-        return mb_strtoupper($value, 'UTF-8');
+        return mb_strtoupper(preg_replace('/\s+/u', ' ', $value), 'UTF-8');
     }
 
     private function validationRules(): array
@@ -38,9 +42,9 @@ class ServicioController extends Controller
         return [
             'categoria_registro' => ['required', 'string', Rule::in(['SERVICIO', 'APOYO', 'MEMORANDUM'])],
             'tipo_servicio' => ['required', 'string', 'max:255'],
+            'folio_referencia' => ['nullable', 'string', 'max:255'],
+
             'estatus_servicio' => ['nullable', 'string', 'max:255'],
-            'oficio_referencia' => ['nullable', 'string', 'max:255'],
-            'memorandum_referencia' => ['nullable', 'string', 'max:255'],
             'unidad_clave' => ['nullable', 'string', 'max:255'],
             'crp' => ['nullable', 'string', 'max:255'],
             'objetivo_servicio' => ['nullable', 'string', 'max:255'],
@@ -116,13 +120,14 @@ class ServicioController extends Controller
     {
         $validatedData['categoria_registro'] = $this->normalizeText($validatedData['categoria_registro'] ?? null);
         $validatedData['tipo_servicio'] = $this->normalizeText($validatedData['tipo_servicio'] ?? null);
+        $validatedData['folio_referencia'] = $this->normalizeText($validatedData['folio_referencia'] ?? null);
+
         $validatedData['estatus_servicio'] = $this->normalizeText($validatedData['estatus_servicio'] ?? null);
-        $validatedData['oficio_referencia'] = $validatedData['oficio_referencia'] ?? null;
-        $validatedData['memorandum_referencia'] = $validatedData['memorandum_referencia'] ?? null;
         $validatedData['unidad_clave'] = $this->normalizeText($validatedData['unidad_clave'] ?? null);
         $validatedData['crp'] = $this->normalizeText($validatedData['crp'] ?? null);
         $validatedData['objetivo_servicio'] = $this->normalizeText($validatedData['objetivo_servicio'] ?? null);
-        $validatedData['folio_operativo'] = $validatedData['folio_operativo'] ?? null;
+        $validatedData['folio_operativo'] = $this->normalizeText($validatedData['folio_operativo'] ?? null);
+
         $validatedData['tipo_busqueda'] = $this->normalizeText($validatedData['tipo_busqueda'] ?? null);
         $validatedData['asunto'] = $this->normalizeText($validatedData['asunto'] ?? null);
         $validatedData['municipio'] = $this->normalizeText($validatedData['municipio'] ?? null);
@@ -219,95 +224,38 @@ class ServicioController extends Controller
         }
     }
 
-    private function loadServicioRelations(Servicio $servicio): Servicio
+    public function index(Request $request)
     {
-        return $servicio->load([
-            'creador',
-            'personal',
-            'canino',
-            'equino',
-            'patrulla',
-            'estadoFuerza',
-            'participantes',
-            'coordenadas',
-            'recursos',
-            'reportes.creador',
-            'reportes.fotos',
-        ]);
-    }
+        $fecha = $request->input('fecha');
 
-    public function catalogos()
-    {
-        $personales = Personal::query()
-            ->where('activo', 1)
-            ->orderBy('nombres')
-            ->get();
-
-        $caninos = Animal::query()
-            ->where('tipo', 'CANINO')
-            ->where('estatus', 'ACTIVO')
-            ->orderBy('nombre')
-            ->get();
-
-        $equinos = Animal::query()
-            ->where('tipo', 'EQUINO')
-            ->where('estatus', 'ACTIVO')
-            ->orderBy('nombre')
-            ->get();
-
-        $patrullas = Patrol::query()
-            ->orderBy('id')
-            ->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'personales' => $personales,
-                'caninos' => $caninos,
-                'equinos' => $equinos,
-                'patrullas' => $patrullas,
-                'categoria_registro_opciones' => ['SERVICIO', 'APOYO', 'MEMORANDUM'],
-            ],
-        ]);
-    }
-
-    public function index()
-    {
-        $servicios = Servicio::query()
-            ->with(['creador', 'personal', 'canino', 'equino', 'patrulla', 'estadoFuerza'])
+        $query = Servicio::query()
+            ->with([
+                'creador',
+                'personal',
+                'canino',
+                'equino',
+                'patrulla',
+                'estadoFuerza',
+            ])
             ->orderByDesc('fecha')
-            ->orderByDesc('hora')
-            ->get();
+            ->orderByDesc('hora');
+
+        if ($fecha) {
+            $query->whereDate('fecha', $fecha);
+        }
+
+        $servicios = $query->get();
 
         return response()->json([
-            'success' => true,
+            'ok' => true,
             'data' => $servicios,
-        ]);
-    }
-
-    public function show(Servicio $servicio)
-    {
-        $servicio = $this->loadServicioRelations($servicio);
-
-        return response()->json([
-            'success' => true,
-            'data' => $servicio,
         ]);
     }
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), $this->validationRules());
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Los datos enviados no son válidos.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $validatedData = $this->normalizeValidatedData($validator->validated());
+        $validatedData = $request->validate($this->validationRules());
+        $validatedData = $this->normalizeValidatedData($validatedData);
         $validatedData['created_by'] = Auth::id();
 
         DB::beginTransaction();
@@ -317,43 +265,81 @@ class ServicioController extends Controller
 
             $this->syncServicioDetalles($servicio, $validatedData);
 
+            $servicio->load([
+                'creador',
+                'personal',
+                'canino',
+                'equino',
+                'patrulla',
+                'estadoFuerza',
+                'participantes',
+                'coordenadas',
+                'recursos',
+            ]);
+
             DB::commit();
 
-            $servicio = $this->loadServicioRelations($servicio);
-
-            Log::info('Servicio creado: ' . $servicio->id . ' por usuario ' . (Auth::id() ?? 'N/A'));
+            Log::info('Servicio API creado correctamente.', [
+                'servicio_id' => $servicio->id,
+                'user_id' => Auth::id(),
+            ]);
 
             return response()->json([
-                'success' => true,
+                'ok' => true,
                 'message' => 'Servicio creado correctamente.',
                 'data' => $servicio,
             ], 201);
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            Log::error('Error al crear servicio: ' . $e->getMessage());
+            Log::error('Error al crear servicio desde API.', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all(),
+                'user_id' => Auth::id(),
+            ]);
 
             return response()->json([
-                'success' => false,
-                'message' => 'Hubo un error al crear el servicio.',
-                'error' => $e->getMessage(),
+                'ok' => false,
+                'message' => app()->environment('local')
+                    ? 'Error al crear el servicio: ' . $e->getMessage()
+                    : 'Hubo un error al crear el servicio.',
             ], 500);
         }
     }
 
-    public function update(Request $request, Servicio $servicio)
+    public function show($id)
     {
-        $validator = Validator::make($request->all(), $this->validationRules());
+        $servicio = Servicio::query()
+            ->with([
+                'creador',
+                'personal',
+                'canino',
+                'equino',
+                'patrulla',
+                'estadoFuerza',
+                'participantes',
+                'coordenadas',
+                'recursos',
+                'reportes.creador',
+                'reportes.fotos',
+            ])
+            ->findOrFail($id);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Los datos enviados no son válidos.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
+        return response()->json([
+            'ok' => true,
+            'data' => $servicio,
+        ]);
+    }
 
-        $validatedData = $this->normalizeValidatedData($validator->validated());
+    public function update(Request $request, $id)
+    {
+        $servicio = Servicio::query()->findOrFail($id);
+
+        $validatedData = $request->validate($this->validationRules());
+        $validatedData = $this->normalizeValidatedData($validatedData);
 
         DB::beginTransaction();
 
@@ -362,50 +348,86 @@ class ServicioController extends Controller
 
             $this->syncServicioDetalles($servicio, $validatedData);
 
+            $servicio->load([
+                'creador',
+                'personal',
+                'canino',
+                'equino',
+                'patrulla',
+                'estadoFuerza',
+                'participantes',
+                'coordenadas',
+                'recursos',
+                'reportes.creador',
+                'reportes.fotos',
+            ]);
+
             DB::commit();
 
-            $servicio = $this->loadServicioRelations($servicio);
-
-            Log::info('Servicio actualizado: ' . $servicio->id . ' por usuario ' . (Auth::id() ?? 'N/A'));
+            Log::info('Servicio API actualizado correctamente.', [
+                'servicio_id' => $servicio->id,
+                'user_id' => Auth::id(),
+            ]);
 
             return response()->json([
-                'success' => true,
+                'ok' => true,
                 'message' => 'Servicio actualizado correctamente.',
                 'data' => $servicio,
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            Log::error('Error al actualizar servicio: ' . $e->getMessage());
+            Log::error('Error al actualizar servicio desde API.', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all(),
+                'servicio_id' => $id,
+                'user_id' => Auth::id(),
+            ]);
 
             return response()->json([
-                'success' => false,
-                'message' => 'Hubo un error al actualizar el servicio.',
-                'error' => $e->getMessage(),
+                'ok' => false,
+                'message' => app()->environment('local')
+                    ? 'Error al actualizar el servicio: ' . $e->getMessage()
+                    : 'Hubo un error al actualizar el servicio.',
             ], 500);
         }
     }
 
-    public function destroy(Servicio $servicio)
+    public function destroy($id)
     {
         try {
+            $servicio = Servicio::query()->findOrFail($id);
             $idServicio = $servicio->id;
 
             $servicio->delete();
 
-            Log::info('Servicio eliminado: ' . $idServicio . ' por usuario ' . (Auth::id() ?? 'N/A'));
+            Log::info('Servicio API eliminado correctamente.', [
+                'servicio_id' => $idServicio,
+                'user_id' => Auth::id(),
+            ]);
 
             return response()->json([
-                'success' => true,
+                'ok' => true,
                 'message' => 'Servicio eliminado correctamente.',
             ]);
         } catch (\Throwable $e) {
-            Log::error('Error al eliminar servicio: ' . $e->getMessage());
+            Log::error('Error al eliminar servicio desde API.', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'servicio_id' => $id,
+                'user_id' => Auth::id(),
+            ]);
 
             return response()->json([
-                'success' => false,
-                'message' => 'Hubo un error al eliminar el servicio.',
-                'error' => $e->getMessage(),
+                'ok' => false,
+                'message' => app()->environment('local')
+                    ? 'Error al eliminar el servicio: ' . $e->getMessage()
+                    : 'Hubo un error al eliminar el servicio.',
             ], 500);
         }
     }

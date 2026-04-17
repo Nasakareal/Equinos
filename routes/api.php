@@ -11,15 +11,17 @@ use App\Http\Controllers\Api\AnimalMedicalRecordController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EquinoterapiaReporteController;
 use App\Http\Controllers\Api\FeedController;
+use App\Http\Controllers\Api\ServicioController;
+use App\Http\Controllers\Api\ServicioReporteController;
+use App\Http\Controllers\Api\PuestaDisposicionController;
+
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\RoleController;
+
 use App\Http\Controllers\Api\PersonalController;
 use App\Http\Controllers\Api\PersonalDocumentController;
 use App\Http\Controllers\Api\PersonalHorarioController;
 use App\Http\Controllers\Api\PersonalHorarioDetalleController;
-use App\Http\Controllers\Api\ServicioController;
-use App\Http\Controllers\Api\ServicioReporteController;
-
-use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\RoleController;
 
 Route::get('/ping', function () {
     return response()->json(['ok' => true, 'message' => 'pong']);
@@ -69,28 +71,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/incidencias/archivos/{file}', [AnimalIncidenceFileController::class, 'destroy'])->middleware('can:editar incidencias');
     });
 
-    Route::prefix('personal')->middleware('can:ver personal')->group(function () {
-        Route::get('/catalogos', [PersonalController::class, 'catalogos']);
-        Route::get('/', [PersonalController::class, 'index']);
-        Route::post('/', [PersonalController::class, 'store'])->middleware('can:crear personal');
-        Route::get('/{personal}', [PersonalController::class, 'show']);
-        Route::put('/{personal}', [PersonalController::class, 'update'])->middleware('can:editar personal');
-        Route::delete('/{personal}', [PersonalController::class, 'destroy'])->middleware('can:eliminar personal');
-
-        Route::get('/{personal}/horario', [PersonalHorarioController::class, 'show']);
-        Route::post('/{personal}/horario', [PersonalHorarioController::class, 'store'])->middleware('can:editar personal');
-        Route::post('/{personal}/horario/{personal_horario}/detalles', [PersonalHorarioDetalleController::class, 'store'])->middleware('can:editar personal');
-        Route::put('/{personal}/horario/{personal_horario}/detalles/{detalle}', [PersonalHorarioDetalleController::class, 'update'])->middleware('can:editar personal');
-        Route::delete('/{personal}/horario/{personal_horario}/detalles/{detalle}', [PersonalHorarioDetalleController::class, 'destroy'])->middleware('can:editar personal');
-
-        Route::prefix('{personal}/documentos')->group(function () {
-            Route::get('/', [PersonalDocumentController::class, 'index']);
-            Route::post('/', [PersonalDocumentController::class, 'store'])->middleware('can:editar personal');
-            Route::get('/{documento}', [PersonalDocumentController::class, 'show']);
-            Route::put('/{documento}', [PersonalDocumentController::class, 'update'])->middleware('can:editar personal');
-            Route::delete('/{documento}', [PersonalDocumentController::class, 'destroy'])->middleware('can:editar personal');
-            Route::get('/{documento}/descargar', [PersonalDocumentController::class, 'download']);
-        });
+    Route::prefix('puestas-disposicion')->middleware('can:ver puestas_disposicion')->group(function () {
+        Route::get('/', [PuestaDisposicionController::class, 'index']);
+        Route::post('/', [PuestaDisposicionController::class, 'store'])->middleware('can:crear puestas_disposicion');
+        Route::get('/{puesta_disposicion}', [PuestaDisposicionController::class, 'show']);
+        Route::put('/{puesta_disposicion}', [PuestaDisposicionController::class, 'update'])->middleware('can:editar puestas_disposicion');
+        Route::delete('/{puesta_disposicion}', [PuestaDisposicionController::class, 'destroy'])->middleware('can:eliminar puestas_disposicion');
     });
 
     Route::prefix('servicios')->middleware('can:ver servicios')->group(function () {
@@ -142,9 +128,33 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/{role}', [RoleController::class, 'show']);
             Route::put('/{role}', [RoleController::class, 'update'])->middleware('can:editar roles');
             Route::delete('/{role}', [RoleController::class, 'destroy'])->middleware('can:eliminar roles');
-
             Route::get('/{role}/permissions', [RoleController::class, 'permissions'])->middleware('can:editar roles');
             Route::post('/{role}/permissions', [RoleController::class, 'assignPermissions'])->middleware('can:editar roles');
+        });
+
+        Route::prefix('personal')->middleware('can:ver personal')->group(function () {
+            Route::get('/catalogos', [PersonalController::class, 'catalogos']);
+            Route::get('/', [PersonalController::class, 'index']);
+            Route::post('/', [PersonalController::class, 'store'])->middleware('can:crear personal');
+
+            Route::get('/{personal}/horario', [PersonalHorarioController::class, 'show']);
+            Route::post('/{personal}/horario', [PersonalHorarioController::class, 'store'])->middleware('can:editar personal');
+            Route::post('/{personal}/horario/{personal_horario}/detalles', [PersonalHorarioDetalleController::class, 'store'])->middleware('can:editar personal');
+            Route::put('/{personal}/horario/{personal_horario}/detalles/{detalle}', [PersonalHorarioDetalleController::class, 'update'])->middleware('can:editar personal');
+            Route::delete('/{personal}/horario/{personal_horario}/detalles/{detalle}', [PersonalHorarioDetalleController::class, 'destroy'])->middleware('can:editar personal');
+
+            Route::prefix('{personal}/documentos')->group(function () {
+                Route::get('/', [PersonalDocumentController::class, 'index']);
+                Route::post('/', [PersonalDocumentController::class, 'store'])->middleware('can:editar personal');
+                Route::get('/{documento}', [PersonalDocumentController::class, 'show']);
+                Route::put('/{documento}', [PersonalDocumentController::class, 'update'])->middleware('can:editar personal');
+                Route::delete('/{documento}', [PersonalDocumentController::class, 'destroy'])->middleware('can:editar personal');
+                Route::get('/{documento}/descargar', [PersonalDocumentController::class, 'download']);
+            });
+
+            Route::get('/{personal}', [PersonalController::class, 'show']);
+            Route::put('/{personal}', [PersonalController::class, 'update'])->middleware('can:editar personal');
+            Route::delete('/{personal}', [PersonalController::class, 'destroy'])->middleware('can:eliminar personal');
         });
     });
 });
