@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class WhatsAppAiMessage extends Model
 {
+    protected $table = 'whatsapp_ai_messages';
+
     protected $fillable = [
         'phone',
         'direction',

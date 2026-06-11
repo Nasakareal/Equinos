@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class WhatsAppAiMemory extends Model
 {
+    protected $table = 'whatsapp_ai_memories';
+
     protected $fillable = [
         'phone',
         'fact',

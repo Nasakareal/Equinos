@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class WhatsAppAiProfile extends Model
 {
+    protected $table = 'whatsapp_ai_profiles';
+
     protected $fillable = [
         'phone',
         'assistant_name',
