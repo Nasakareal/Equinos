@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\WhatsAppAiProfile;
 use App\Services\WhatsAppAi\WhatsAppAiAccessService;
+use App\Services\WhatsAppAi\WhatsAppAiNotificationService;
 use App\Services\WhatsAppCloudService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +15,11 @@ class EnviarBienvenidaFernandaAiWhatsApp extends Command
 
     protected $description = 'Envia la plantilla inicial de la IA a Fernanda una sola vez';
 
-    public function handle(WhatsAppCloudService $whatsApp, WhatsAppAiAccessService $access): int
+    public function handle(
+        WhatsAppCloudService $whatsApp,
+        WhatsAppAiAccessService $access,
+        WhatsAppAiNotificationService $notifications
+    ): int
     {
         $to = $access->normalizePhone((string) config('services.whatsapp.ai.fernanda_number', ''));
         $template = (string) config('services.whatsapp.ai.welcome_template', 'bienvenida_fernanda_ai');
@@ -75,6 +80,18 @@ class EnviarBienvenidaFernandaAiWhatsApp extends Command
             'welcome_template_message_id' => (string) ($response['body']['messages'][0]['id'] ?? ''),
             'welcome_template_payload' => $response,
         ])->save();
+
+        $notifications->notify(
+            'Aviso IA Equinos: Meta acepto enviar la plantilla inicial a Fernanda. ID: '
+            . ($profile->welcome_template_message_id ?: 'N/D'),
+            [
+                'event' => 'welcome_template_sent',
+                'to' => $to,
+                'template' => $template,
+                'language' => $language,
+                'message_id' => $profile->welcome_template_message_id,
+            ]
+        );
 
         $this->info('Bienvenida enviada a Fernanda. ID Meta: ' . ($profile->welcome_template_message_id ?: 'N/D'));
 

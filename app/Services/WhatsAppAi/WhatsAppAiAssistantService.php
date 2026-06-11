@@ -13,15 +13,18 @@ class WhatsAppAiAssistantService
     protected $contextService;
     protected $oficioDocumentService;
     protected $accessService;
+    protected $notifications;
 
     public function __construct(
         SystemContextService $contextService,
         OficioDocumentService $oficioDocumentService,
-        WhatsAppAiAccessService $accessService
+        WhatsAppAiAccessService $accessService,
+        WhatsAppAiNotificationService $notifications
     ) {
         $this->contextService = $contextService;
         $this->oficioDocumentService = $oficioDocumentService;
         $this->accessService = $accessService;
+        $this->notifications = $notifications;
     }
 
     public function respond(string $phone, string $message, bool $privileged = false): array
@@ -54,6 +57,14 @@ class WhatsAppAiAssistantService
             $profile->save();
 
             $this->saveMemory($phone, 'El nombre de la IA es ' . $assignedName . '.', 'assistant_name');
+            $this->notifications->notify(
+                'Aviso IA Equinos: Fernanda ya le puso nombre a la IA. Nombre: ' . $assignedName . '.',
+                [
+                    'event' => 'assistant_name_assigned',
+                    'phone' => $phone,
+                    'assistant_name' => $assignedName,
+                ]
+            );
 
             return $this->storeAndReturn($phone, 'Listo, Fernanda. Desde ahora me llamo ' . $assignedName . '.', [
                 'intent' => 'assistant_name',

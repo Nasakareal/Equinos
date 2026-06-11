@@ -40,6 +40,7 @@ return [
             'allowed_numbers' => array_values(array_filter(array_map('trim', explode(',', env('WHATSAPP_AI_ALLOWED_NUMBERS', ''))))),
             'privileged_numbers' => array_values(array_filter(array_map('trim', explode(',', env('WHATSAPP_AI_PRIVILEGED_NUMBERS', ''))))),
             'fernanda_number' => env('WHATSAPP_AI_FERNANDA_NUMBER'),
+            'notify_number' => env('WHATSAPP_AI_NOTIFY_NUMBER'),
             'welcome_template' => env('WHATSAPP_AI_WELCOME_TEMPLATE', 'bienvenida_fernanda_ai'),
             'welcome_template_language' => env('WHATSAPP_AI_WELCOME_TEMPLATE_LANGUAGE', 'es_MX'),
             'max_reply_chars' => (int) env('WHATSAPP_AI_MAX_REPLY_CHARS', 3600),
