@@ -16,6 +16,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('reportes-diarios:generar')
             ->dailyAt('18:00')
             ->timezone('America/Mexico_City');
+
+        $schedule->command('whatsapp-ai:enviar-bienvenida-fernanda')
+            ->hourly()
+            ->withoutOverlapping()
+            ->timezone('America/Mexico_City');
     }
 
     protected function commands()

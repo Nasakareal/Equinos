@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\FeedController;
 use App\Http\Controllers\Api\ServicioController;
 use App\Http\Controllers\Api\ServicioReporteController;
 use App\Http\Controllers\Api\PuestaDisposicionController;
+use App\Http\Controllers\Api\WhatsAppAiWebhookController;
 
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RoleController;
@@ -28,6 +29,9 @@ Route::get('/ping', function () {
 });
 
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/whatsapp/webhook', [WhatsAppAiWebhookController::class, 'verify']);
+Route::post('/whatsapp/webhook', [WhatsAppAiWebhookController::class, 'handle']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/feed', [FeedController::class, 'index']);
