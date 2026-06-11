@@ -47,7 +47,7 @@ class WhatsAppAiAssistantService
             return $this->storeAndReturn($phone, $local, ['intent' => 'local']);
         }
 
-        $assignedName = $this->extractAssistantNameAssignment($message, $profile);
+        $assignedName = $this->extractAssistantNameAssignment($message, $profile, $phone);
 
         if ($assignedName !== null) {
             $profile->assistant_name = $assignedName;
@@ -256,7 +256,7 @@ class WhatsAppAiAssistantService
         $assistantName = trim((string) $profile->assistant_name);
         $nameRule = $assistantName !== ''
             ? 'Tu nombre asignado por Fernanda es "' . $assistantName . '". Usalo con naturalidad, sin repetirlo en cada respuesta.'
-            : 'Todavia no tienes nombre asignado. Si Fernanda te da un nombre, aceptalo y usalo en adelante.';
+            : 'Todavia no tienes nombre asignado. Solo Fernanda puede asignarte nombre; no tomes mensajes de prueba ni mensajes de otros usuarios como nombre.';
         $letterhead = trim((string) $profile->oficio_letterhead_text);
         $letterheadRule = $letterhead !== ''
             ? "Membrete oficial guardado para oficios:\n{$letterhead}\nCuando generes un oficio, el documento Word usara ese membrete automaticamente. No lo repitas dentro del cuerpo del oficio."
@@ -444,8 +444,12 @@ PROMPT;
         return mb_substr($value, 0, 3000, 'UTF-8');
     }
 
-    protected function extractAssistantNameAssignment(string $message, WhatsAppAiProfile $profile): ?string
+    protected function extractAssistantNameAssignment(string $message, WhatsAppAiProfile $profile, string $phone): ?string
     {
+        if (!$this->isFernandaNumber($phone)) {
+            return null;
+        }
+
         $patterns = [
             '/\bte\s+(?:llamas|llamaras|llamarás)\s+([A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9 ._-]{2,40})/iu',
             '/\btu\s+nombre\s+es\s+([A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9 ._-]{2,40})/iu',
@@ -468,6 +472,32 @@ PROMPT;
         }
 
         return null;
+    }
+
+    protected function isFernandaNumber(string $phone): bool
+    {
+        $fernanda = $this->accessService->normalizePhone((string) config('services.whatsapp.ai.fernanda_number', ''));
+
+        if ($fernanda === '') {
+            return false;
+        }
+
+        $allowed = array_merge([$fernanda], $this->mexicoPhoneVariants($fernanda));
+
+        return in_array($phone, array_values(array_unique($allowed)), true);
+    }
+
+    protected function mexicoPhoneVariants(string $phone): array
+    {
+        if (preg_match('/^521(\d{10})$/', $phone, $matches)) {
+            return ['52' . $matches[1]];
+        }
+
+        if (preg_match('/^52(\d{10})$/', $phone, $matches)) {
+            return ['521' . $matches[1]];
+        }
+
+        return [];
     }
 
     protected function cleanAssistantName(string $value): ?string
