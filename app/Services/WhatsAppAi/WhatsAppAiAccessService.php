@@ -56,9 +56,26 @@ class WhatsAppAiAccessService
 
             if ($phone !== '') {
                 $phones[] = $phone;
+
+                foreach ($this->mexicoVariants($phone) as $variant) {
+                    $phones[] = $variant;
+                }
             }
         }
 
         return array_values(array_unique($phones));
+    }
+
+    protected function mexicoVariants(string $phone): array
+    {
+        if (preg_match('/^521(\d{10})$/', $phone, $matches)) {
+            return ['52' . $matches[1]];
+        }
+
+        if (preg_match('/^52(\d{10})$/', $phone, $matches)) {
+            return ['521' . $matches[1]];
+        }
+
+        return [];
     }
 }
