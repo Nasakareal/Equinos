@@ -55,6 +55,7 @@ return [
         'model' => env('OPENAI_MODEL', 'gpt-5-mini'),
         'timeout' => (int) env('OPENAI_TIMEOUT', 45),
         'max_output_tokens' => (int) env('OPENAI_MAX_OUTPUT_TOKENS', 2200),
+        'web_search_enabled' => filter_var(env('OPENAI_WEB_SEARCH_ENABLED', false), FILTER_VALIDATE_BOOLEAN),
     ],
 
 ];
