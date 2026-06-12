@@ -5,16 +5,32 @@ namespace App\Services\WhatsAppAi;
 use App\Models\WhatsAppAiProfile;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\SimpleType\Jc;
+use PhpOffice\PhpWord\TemplateProcessor;
+use Illuminate\Support\Facades\Log;
 
 class OficioDocumentService
 {
     public function create(array $oficio, string $phone): ?array
     {
-        $body = $this->paragraphs($oficio['cuerpo'] ?? $oficio['body'] ?? null);
+        $body = $this->paragraphs($oficio['cuerpo'] ?? $oficio['body'] ?? $oficio['cuerpo_oficio'] ?? null);
 
         if (empty($body)) {
             return null;
+        }
+
+        $templatePath = public_path('MEMBRETE.docx');
+
+        if (is_file($templatePath)) {
+            try {
+                return $this->createFromTemplate($templatePath, $oficio, $body);
+            } catch (\Throwable $e) {
+                Log::warning('WhatsApp AI oficio template failed, using fallback generator', [
+                    'template' => $templatePath,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         $phpWord = new PhpWord();
@@ -101,6 +117,71 @@ class OficioDocumentService
         ];
     }
 
+    protected function createFromTemplate(string $templatePath, array $oficio, array $body): array
+    {
+        $directory = storage_path('app/whatsapp_ai/oficios');
+
+        if (!is_dir($directory)) {
+            mkdir($directory, 0775, true);
+        }
+
+        $asunto = trim((string) ($oficio['asunto'] ?? ''));
+        $baseName = $this->safeFilename($oficio['filename'] ?? $asunto ?: 'oficio');
+        $filename = now()->format('Ymd_His') . '_' . $baseName . '.docx';
+        $path = $directory . DIRECTORY_SEPARATOR . $filename;
+
+        $numeroOficio = trim((string) ($oficio['numero_oficio'] ?? $oficio['folio'] ?? ''));
+        $destinatarioNombre = trim((string) ($oficio['destinatario_nombre'] ?? $oficio['destinatario'] ?? 'A QUIEN CORRESPONDA'));
+        $destinatarioCargo = trim((string) ($oficio['destinatario_cargo'] ?? $oficio['cargo_destinatario'] ?? ''));
+        $firmaNombre = trim((string) ($oficio['firma_nombre'] ?? config('services.whatsapp.ai.signature_name', '')));
+        $firmaCargo = trim((string) ($oficio['firma_cargo'] ?? config('services.whatsapp.ai.signature_position', '')));
+        $fechaLarga = trim((string) ($oficio['fecha_larga'] ?? ''));
+
+        if ($fechaLarga === '') {
+            $fechaLarga = $this->fechaLarga();
+        }
+
+        $values = [
+            'dependencia' => trim((string) ($oficio['dependencia'] ?? 'Secretaria de Seguridad Publica')),
+            'sub_dependencia' => trim((string) ($oficio['sub_dependencia'] ?? 'Coordinacion de Agrupamientos')),
+            'oficina' => trim((string) ($oficio['oficina'] ?? 'Agrupamiento de Equinos y Caninos')),
+            'numero_oficio' => $numeroOficio,
+            'folio' => $numeroOficio,
+            'expediente' => trim((string) ($oficio['expediente'] ?? '')),
+            'asunto' => $asunto,
+            'leyenda_anio' => trim((string) ($oficio['leyenda_anio'] ?? '2026, Año de Margarita Maza Parada')),
+            'fecha_larga' => $fechaLarga,
+            'fecha' => $fechaLarga,
+            'destinatario_nombre' => mb_strtoupper($destinatarioNombre, 'UTF-8'),
+            'destinatario' => mb_strtoupper($destinatarioNombre, 'UTF-8'),
+            'destinatario_cargo' => mb_strtoupper($destinatarioCargo, 'UTF-8'),
+            'cargo_destinatario' => mb_strtoupper($destinatarioCargo, 'UTF-8'),
+            'cuerpo_oficio' => implode("\n\n", $body),
+            'cuerpo' => implode("\n\n", $body),
+            'cierre' => trim((string) ($oficio['cierre'] ?? '')),
+            'firma_nombre' => mb_strtoupper($firmaNombre, 'UTF-8'),
+            'firma_cargo' => mb_strtoupper($firmaCargo, 'UTF-8'),
+            'archivo_iniciales' => trim((string) ($oficio['archivo_iniciales'] ?? '')),
+        ];
+
+        $escaping = Settings::isOutputEscapingEnabled();
+        Settings::setOutputEscapingEnabled(true);
+
+        try {
+            $template = new TemplateProcessor($templatePath);
+            $template->setValues($values);
+            $template->saveAs($path);
+        } finally {
+            Settings::setOutputEscapingEnabled($escaping);
+        }
+
+        return [
+            'path' => $path,
+            'filename' => $filename,
+            'caption' => trim((string) ($oficio['caption'] ?? 'Oficio generado por el asistente.')),
+        ];
+    }
+
     protected function paragraphs($value): array
     {
         if (is_array($value)) {
@@ -140,6 +221,29 @@ class OficioDocumentService
         }
 
         $section->addTextBreak(1);
+    }
+
+    protected function fechaLarga(): string
+    {
+        $months = [
+            1 => 'enero',
+            2 => 'febrero',
+            3 => 'marzo',
+            4 => 'abril',
+            5 => 'mayo',
+            6 => 'junio',
+            7 => 'julio',
+            8 => 'agosto',
+            9 => 'septiembre',
+            10 => 'octubre',
+            11 => 'noviembre',
+            12 => 'diciembre',
+        ];
+
+        $date = now();
+        $month = $months[(int) $date->format('n')] ?? $date->format('m');
+
+        return $date->format('d') . ' de ' . $month . ' del ' . $date->format('Y');
     }
 
     protected function safeFilename(string $value): string
