@@ -41,9 +41,13 @@ class SystemContextService
     {
         return $this->safeSection(function () {
             $lines = ['RESUMEN DEL SISTEMA'];
-            $lines[] = '- Personal activo: ' . Personal::query()->where('activo', 1)->count();
-            $lines[] = '- Equinos activos: ' . Animal::query()->where('tipo', 'EQUINO')->where('estatus', 'ACTIVO')->count();
-            $lines[] = '- Caninos activos: ' . Animal::query()->where('tipo', 'CANINO')->where('estatus', 'ACTIVO')->count();
+            $personnelTotals = $this->personnelInventoryTotals();
+            $animalTotals = $this->animalInventoryTotals();
+
+            $lines[] = '- Personal: ' . $this->formatPersonnelTotals($personnelTotals);
+            $lines[] = '- Animales registrados: ' . $animalTotals['total'];
+            $lines[] = '- Equinos: ' . $this->formatAnimalTypeTotals($animalTotals['types']['EQUINO']);
+            $lines[] = '- Caninos: ' . $this->formatAnimalTypeTotals($animalTotals['types']['CANINO']);
             $lines[] = '- Patrullas activas: ' . Patrol::query()->where('estado', 'ACTIVO')->count();
             $lines[] = '- Armas registradas: ' . Weapon::query()->count();
             $lines[] = '- Servicios del mes: ' . Servicio::query()
@@ -237,16 +241,28 @@ class SystemContextService
         return $this->safeSection(function () use ($tokens) {
             $lines = ['RESULTADOS RELACIONADOS CON LA PREGUNTA'];
 
-            $personals = Personal::query()
+            if ($this->isPersonnelInventoryContextNeeded($tokens)) {
+                $lines[] = $this->buildPersonnelInventorySnapshot('CONTEOS EXACTOS DE PERSONAL');
+            }
+
+            if ($this->isAnimalInventoryContextNeeded($tokens)) {
+                $lines[] = $this->buildAnimalInventorySnapshot('CONTEOS EXACTOS DE ANIMALES');
+            }
+
+            $personalQuery = Personal::query()
                 ->with(['area', 'turno'])
                 ->where(function (Builder $query) use ($tokens) {
                     $this->applyLikeSearch($query, ['nombres', 'no_empleado', 'cuip', 'crp', 'cargo', 'actividad'], $tokens);
-                })
+                });
+
+            $personalMatches = (clone $personalQuery)->count();
+            $personals = $personalQuery
+                ->orderBy('nombres')
                 ->limit(8)
                 ->get();
 
             if ($personals->isNotEmpty()) {
-                $lines[] = 'PERSONAL';
+                $lines[] = 'PERSONAL ENCONTRADO (muestra de hasta 8 de ' . $personalMatches . ' coincidencias; no es conteo total)';
 
                 foreach ($personals as $personal) {
                     $area = $personal->area ? $personal->area->nombre : null;
@@ -260,15 +276,20 @@ class SystemContextService
                 }
             }
 
-            $animals = Animal::query()
+            $animalQuery = Animal::query()
                 ->where(function (Builder $query) use ($tokens) {
-                    $this->applyLikeSearch($query, ['nombre', 'raza', 'chip', 'marcaje', 'especialidad', 'estatus', 'caracteristicas'], $tokens);
-                })
+                    $this->applyLikeSearch($query, ['tipo', 'nombre', 'raza', 'chip', 'marcaje', 'especialidad', 'estatus', 'caracteristicas'], $tokens);
+                });
+
+            $animalMatches = (clone $animalQuery)->count();
+            $animals = $animalQuery
+                ->orderBy('tipo')
+                ->orderBy('nombre')
                 ->limit(8)
                 ->get();
 
             if ($animals->isNotEmpty()) {
-                $lines[] = 'ANIMALES';
+                $lines[] = 'ANIMALES ENCONTRADOS (muestra de hasta 8 de ' . $animalMatches . ' coincidencias; no es conteo total)';
 
                 foreach ($animals as $animal) {
                     $lines[] = '- ' . $animal->tipo . ' ' . $animal->nombre
@@ -424,6 +445,16 @@ class SystemContextService
         ];
 
         $tokens = [];
+        $synonyms = [
+            'equinos' => ['equino'],
+            'caballo' => ['equino'],
+            'caballos' => ['equino'],
+            'caninos' => ['canino'],
+            'perro' => ['canino'],
+            'perros' => ['canino'],
+            'k9' => ['canino'],
+            'animales' => ['animal'],
+        ];
 
         foreach ($words as $word) {
             $word = trim((string) $word);
@@ -433,9 +464,112 @@ class SystemContextService
             }
 
             $tokens[] = $word;
+
+            foreach ($synonyms[$word] ?? [] as $synonym) {
+                $tokens[] = $synonym;
+            }
         }
 
         return array_values(array_unique(array_slice($tokens, 0, 8)));
+    }
+
+    protected function isAnimalInventoryContextNeeded(array $tokens): bool
+    {
+        return !empty(array_intersect($tokens, [
+            'animal', 'animales',
+            'equino', 'equinos', 'caballo', 'caballos',
+            'canino', 'caninos', 'perro', 'perros', 'k9',
+        ]));
+    }
+
+    protected function isPersonnelInventoryContextNeeded(array $tokens): bool
+    {
+        return !empty(array_intersect($tokens, [
+            'elemento', 'elementos', 'personal', 'personales', 'policia', 'policias',
+        ]));
+    }
+
+    protected function buildPersonnelInventorySnapshot(string $title): string
+    {
+        $totals = $this->personnelInventoryTotals();
+
+        return $title . "\n"
+            . '- Personal: ' . $this->formatPersonnelTotals($totals) . "\n"
+            . 'Usa este conteo para preguntas de cantidad de elementos o personal; no cuentes las filas de las muestras listadas abajo.';
+    }
+
+    protected function personnelInventoryTotals(): array
+    {
+        $total = Personal::query()->count();
+        $active = Personal::query()->where('activo', 1)->count();
+
+        return [
+            'total' => $total,
+            'active' => $active,
+            'inactive' => max(0, $total - $active),
+        ];
+    }
+
+    protected function formatPersonnelTotals(array $totals): string
+    {
+        return $totals['total'] . ' registrados'
+            . ' (' . (int) $totals['active'] . ' activos'
+            . ', ' . (int) $totals['inactive'] . ' inactivos)';
+    }
+
+    protected function buildAnimalInventorySnapshot(string $title): string
+    {
+        $totals = $this->animalInventoryTotals();
+
+        return $title . "\n"
+            . '- Animales registrados: ' . $totals['total'] . "\n"
+            . '- Equinos: ' . $this->formatAnimalTypeTotals($totals['types']['EQUINO']) . "\n"
+            . '- Caninos: ' . $this->formatAnimalTypeTotals($totals['types']['CANINO']) . "\n"
+            . 'Usa estos conteos para preguntas de cantidad; no cuentes las filas de las muestras listadas abajo.';
+    }
+
+    protected function animalInventoryTotals(): array
+    {
+        $statuses = ['ACTIVO', 'BAJA', 'RESGUARDO'];
+        $types = [
+            'EQUINO' => array_fill_keys(array_merge(['total'], $statuses), 0),
+            'CANINO' => array_fill_keys(array_merge(['total'], $statuses), 0),
+        ];
+
+        $rows = Animal::query()
+            ->selectRaw('tipo, estatus, COUNT(*) as total')
+            ->groupBy('tipo', 'estatus')
+            ->get();
+
+        foreach ($rows as $row) {
+            $type = (string) $row->tipo;
+            $status = (string) $row->estatus;
+
+            if (!isset($types[$type])) {
+                continue;
+            }
+
+            if (!array_key_exists($status, $types[$type])) {
+                $types[$type][$status] = 0;
+            }
+
+            $count = (int) $row->total;
+            $types[$type][$status] += $count;
+            $types[$type]['total'] += $count;
+        }
+
+        return [
+            'total' => $types['EQUINO']['total'] + $types['CANINO']['total'],
+            'types' => $types,
+        ];
+    }
+
+    protected function formatAnimalTypeTotals(array $totals): string
+    {
+        return $totals['total'] . ' registrados'
+            . ' (' . (int) ($totals['ACTIVO'] ?? 0) . ' activos'
+            . ', ' . (int) ($totals['RESGUARDO'] ?? 0) . ' en resguardo'
+            . ', ' . (int) ($totals['BAJA'] ?? 0) . ' de baja)';
     }
 
     protected function safeSection(callable $callback, string $fallback): string

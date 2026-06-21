@@ -10,6 +10,7 @@ class WhatsAppAiMessage extends Model
 
     protected $fillable = [
         'phone',
+        'meta_message_id',
         'direction',
         'body',
         'payload',

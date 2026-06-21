@@ -102,7 +102,8 @@ class WhatsAppAiWebhookController extends Controller
 
         $text = trim((string) ($input['value'] ?? ''));
         $privileged = $this->accessService->isPrivileged($from);
-        $result = $this->assistantService->respond($from, $text, $privileged);
+        $metaMessageId = trim((string) ($message['id'] ?? ''));
+        $result = $this->assistantService->respond($from, $text, $privileged, $metaMessageId);
         $reply = trim((string) ($result['reply'] ?? ''));
 
         foreach ($this->chunks($reply, (int) config('services.whatsapp.ai.max_reply_chars', 3600)) as $chunk) {

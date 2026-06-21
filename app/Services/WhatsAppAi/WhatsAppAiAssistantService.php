@@ -2,11 +2,15 @@
 
 namespace App\Services\WhatsAppAi;
 
+use App\Models\Animal;
+use App\Models\Personal;
 use App\Models\WhatsAppAiMemory;
 use App\Models\WhatsAppAiMessage;
 use App\Models\WhatsAppAiProfile;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class WhatsAppAiAssistantService
 {
@@ -27,17 +31,55 @@ class WhatsAppAiAssistantService
         $this->notifications = $notifications;
     }
 
-    public function respond(string $phone, string $message, bool $privileged = false): array
+    public function respond(string $phone, string $message, bool $privileged = false, ?string $metaMessageId = null): array
     {
         $phone = $this->accessService->normalizePhone($phone);
         $message = trim($message);
+        $metaMessageId = $this->cleanMetaMessageId((string) $metaMessageId);
+        $inboundPayload = $metaMessageId !== ''
+            ? ['meta_message_id' => $metaMessageId, 'source' => 'whatsapp_cloud']
+            : null;
 
-        $inbound = WhatsAppAiMessage::create([
+        if ($metaMessageId !== '' && $this->hasProcessedMetaMessage($metaMessageId)) {
+            return [
+                'reply' => '',
+                'document' => null,
+                'payload' => [
+                    'intent' => 'duplicate',
+                    'duplicate' => true,
+                    'meta_message_id' => $metaMessageId,
+                ],
+            ];
+        }
+
+        $inboundData = [
             'phone' => $phone,
             'direction' => 'in',
             'body' => $message,
-            'payload' => null,
-        ]);
+            'payload' => $inboundPayload,
+        ];
+
+        if ($metaMessageId !== '' && $this->hasMetaMessageIdColumn()) {
+            $inboundData['meta_message_id'] = $metaMessageId;
+        }
+
+        try {
+            $inbound = WhatsAppAiMessage::create($inboundData);
+        } catch (QueryException $e) {
+            if ($metaMessageId !== '' && $this->isDuplicateMetaMessageException($e)) {
+                return [
+                    'reply' => '',
+                    'document' => null,
+                    'payload' => [
+                        'intent' => 'duplicate',
+                        'duplicate' => true,
+                        'meta_message_id' => $metaMessageId,
+                    ],
+                ];
+            }
+
+            throw $e;
+        }
 
         if ($message === '') {
             return $this->storeAndReturn($phone, 'Mandame texto y lo reviso.', ['intent' => 'empty']);
@@ -199,6 +241,18 @@ class WhatsAppAiAssistantService
             return 'No puedo borrar el membrete. Tengo prohibido eliminar informacion; si hay que cambiarlo, mandame el membrete nuevo y lo usare de aqui en adelante.';
         }
 
+        $personnelInventory = $this->answerPersonnelInventoryQuestion($normalized);
+
+        if ($personnelInventory !== null) {
+            return $personnelInventory;
+        }
+
+        $animalInventory = $this->answerAnimalInventoryQuestion($normalized);
+
+        if ($animalInventory !== null) {
+            return $animalInventory;
+        }
+
         if (in_array($normalized, ['membrete', 'ver membrete', 'membrete de oficio', 'que membrete tienes'], true)) {
             $letterhead = trim((string) $profile->oficio_letterhead_text);
 
@@ -246,6 +300,204 @@ class WhatsAppAiAssistantService
         }
 
         return null;
+    }
+
+    protected function answerPersonnelInventoryQuestion(string $normalized): ?string
+    {
+        if (!$this->isPersonnelInventoryQuestion($normalized)) {
+            return null;
+        }
+
+        $total = Personal::query()->count();
+        $active = Personal::query()->where('activo', 1)->count();
+        $inactive = max(0, $total - $active);
+
+        return 'Tienes ' . $total . ' elementos registrados en total.'
+            . "\n" . 'Activos: ' . $active . '.'
+            . "\n" . 'Inactivos: ' . $inactive . '.'
+            . "\n" . 'Conteo directo de la base de datos, no de la muestra de busqueda.';
+    }
+
+    protected function isPersonnelInventoryQuestion(string $normalized): bool
+    {
+        $asksCount = $this->containsAnyWord($normalized, [
+            'cuanto', 'cuantos', 'cuanta', 'cuantas', 'total', 'totales',
+            'conteo', 'contar', 'cantidad', 'inventario',
+        ]);
+
+        if (!$asksCount) {
+            return false;
+        }
+
+        if ($this->containsAnyWord($normalized, [
+            'animal', 'animales',
+            'equino', 'equinos', 'caballo', 'caballos',
+            'canino', 'caninos', 'perro', 'perros', 'k9',
+        ])) {
+            return false;
+        }
+
+        return $this->containsAnyWord($normalized, [
+            'elemento', 'elementos', 'personal', 'personales', 'policia', 'policias',
+        ]);
+    }
+
+    protected function answerAnimalInventoryQuestion(string $normalized): ?string
+    {
+        if (!$this->isAnimalInventoryQuestion($normalized)) {
+            return null;
+        }
+
+        $totals = $this->animalInventoryTotals();
+        $askedEquinos = $this->containsAnyWord($normalized, ['equino', 'equinos', 'caballo', 'caballos']);
+        $askedCaninos = $this->containsAnyWord($normalized, ['canino', 'caninos', 'perro', 'perros', 'k9']);
+        $askedBoth = $askedEquinos && $askedCaninos;
+        $askedGeneral = !$askedEquinos && !$askedCaninos;
+        $lines = [];
+
+        if ($askedGeneral || $askedBoth) {
+            $lines[] = 'Tienes ' . $totals['total'] . ' animales registrados en total.';
+        }
+
+        if ($askedGeneral || $askedEquinos) {
+            $lines[] = 'Equinos: ' . $this->formatAnimalTypeTotals($totals['types']['EQUINO']);
+        }
+
+        if ($askedGeneral || $askedCaninos) {
+            $lines[] = 'Caninos: ' . $this->formatAnimalTypeTotals($totals['types']['CANINO']);
+        }
+
+        $lines[] = 'Conteo directo de la base de datos, no de la muestra de busqueda.';
+
+        return implode("\n", $lines);
+    }
+
+    protected function isAnimalInventoryQuestion(string $normalized): bool
+    {
+        $asksCount = $this->containsAnyWord($normalized, [
+            'cuanto', 'cuantos', 'cuanta', 'cuantas', 'total', 'totales',
+            'conteo', 'contar', 'cantidad', 'inventario',
+        ]);
+
+        if (!$asksCount) {
+            return false;
+        }
+
+        return $this->containsAnyWord($normalized, [
+            'animal', 'animales', 'elemento', 'elementos',
+            'equino', 'equinos', 'caballo', 'caballos',
+            'canino', 'caninos', 'perro', 'perros', 'k9',
+        ]);
+    }
+
+    protected function animalInventoryTotals(): array
+    {
+        $statuses = ['ACTIVO', 'BAJA', 'RESGUARDO'];
+        $types = [
+            'EQUINO' => array_fill_keys(array_merge(['total'], $statuses), 0),
+            'CANINO' => array_fill_keys(array_merge(['total'], $statuses), 0),
+        ];
+
+        $rows = Animal::query()
+            ->selectRaw('tipo, estatus, COUNT(*) as total')
+            ->groupBy('tipo', 'estatus')
+            ->get();
+
+        foreach ($rows as $row) {
+            $type = (string) $row->tipo;
+            $status = (string) $row->estatus;
+
+            if (!isset($types[$type])) {
+                continue;
+            }
+
+            if (!array_key_exists($status, $types[$type])) {
+                $types[$type][$status] = 0;
+            }
+
+            $count = (int) $row->total;
+            $types[$type][$status] += $count;
+            $types[$type]['total'] += $count;
+        }
+
+        return [
+            'total' => $types['EQUINO']['total'] + $types['CANINO']['total'],
+            'types' => $types,
+        ];
+    }
+
+    protected function formatAnimalTypeTotals(array $totals): string
+    {
+        return $totals['total'] . ' registrados'
+            . ' (' . (int) ($totals['ACTIVO'] ?? 0) . ' activos'
+            . ', ' . (int) ($totals['RESGUARDO'] ?? 0) . ' en resguardo'
+            . ', ' . (int) ($totals['BAJA'] ?? 0) . ' de baja)';
+    }
+
+    protected function containsAnyWord(string $normalized, array $words): bool
+    {
+        foreach ($words as $word) {
+            if (preg_match('/(?:^| )' . preg_quote($word, '/') . '(?: |$)/', $normalized)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function hasProcessedMetaMessage(string $metaMessageId): bool
+    {
+        if ($this->hasMetaMessageIdColumn()) {
+            $exists = WhatsAppAiMessage::query()
+                ->where('meta_message_id', $metaMessageId)
+                ->exists();
+
+            if ($exists) {
+                return true;
+            }
+        }
+
+        try {
+            return WhatsAppAiMessage::query()
+                ->where('direction', 'in')
+                ->where('payload->meta_message_id', $metaMessageId)
+                ->exists();
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    protected function hasMetaMessageIdColumn(): bool
+    {
+        static $hasColumn = null;
+
+        if ($hasColumn !== null) {
+            return $hasColumn;
+        }
+
+        try {
+            $hasColumn = Schema::hasColumn('whatsapp_ai_messages', 'meta_message_id');
+        } catch (\Throwable $e) {
+            $hasColumn = false;
+        }
+
+        return $hasColumn;
+    }
+
+    protected function cleanMetaMessageId(string $value): string
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return '';
+        }
+
+        return mb_substr($value, 0, 191, 'UTF-8');
+    }
+
+    protected function isDuplicateMetaMessageException(QueryException $e): bool
+    {
+        return (string) $e->getCode() === '23000';
     }
 
     protected function openAiInput(string $message, string $context, string $memories, array $history, bool $privileged, WhatsAppAiProfile $profile): array
@@ -318,6 +570,7 @@ REGLAS:
 - Responde siempre en espanol claro, ejecutivo y util.
 - Puedes conversar, explicar, redactar, resumir, preparar textos institucionales y responder preguntas generales con criterio amplio.
 - Si el usuario pide buscar, consultar o listar datos del sistema, usa el CONTEXTO ACTUAL DEL SISTEMA que recibes. Si el dato no aparece, dilo con honestidad y sugiere como buscarlo.
+- Cuando el contexto incluya conteos exactos, usalos como fuente de verdad. No calcules totales contando filas de secciones marcadas como muestra, resultados encontrados o novedades recientes.
 - Si el usuario pide informacion general, cultural, tecnica, creativa o de redaccion que no depende del sistema, responde con tu conocimiento general y tu capacidad de razonamiento.
 - Si tienes herramienta de busqueda web disponible, usala cuando la pregunta dependa de informacion actual, externa o verificable en internet. Si no esta disponible, aclara que no tienes navegacion en vivo y ofrece una respuesta general o una forma de verificarla.
 - No inventes cifras, nombres, folios, cargos, ubicaciones ni resultados.
