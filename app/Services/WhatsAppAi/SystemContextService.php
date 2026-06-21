@@ -61,18 +61,26 @@ class SystemContextService
                 ->count();
 
             $areas = Area::query()
-                ->withCount(['personals as personal_activo_count' => function ($query) {
-                    $query->where('activo', 1);
-                }])
+                ->withCount([
+                    'personals as total_personal_count',
+                    'personals as personal_activo_count' => function ($query) {
+                        $query->where('activo', 1);
+                    },
+                ])
                 ->orderBy('nombre')
                 ->limit(12)
                 ->get();
 
             if ($areas->isNotEmpty()) {
-                $lines[] = 'AREAS';
+                $lines[] = 'AREAS DE PERSONAL (NO SON CONTEOS DE ANIMALES)';
 
                 foreach ($areas as $area) {
-                    $lines[] = '- ' . trim((string) $area->nombre) . ': ' . (int) $area->personal_activo_count . ' activos';
+                    $total = (int) $area->total_personal_count;
+                    $active = (int) $area->personal_activo_count;
+                    $inactive = max(0, $total - $active);
+
+                    $lines[] = '- Area ' . trim((string) $area->nombre) . ': ' . $total
+                        . ' elementos registrados (' . $active . ' activos, ' . $inactive . ' inactivos)';
                 }
             }
 
@@ -240,9 +248,10 @@ class SystemContextService
 
         return $this->safeSection(function () use ($tokens) {
             $lines = ['RESULTADOS RELACIONADOS CON LA PREGUNTA'];
+            $personnelAreaName = $this->personnelAreaNameFromTokens($tokens);
 
             if ($this->isPersonnelInventoryContextNeeded($tokens)) {
-                $lines[] = $this->buildPersonnelInventorySnapshot('CONTEOS EXACTOS DE PERSONAL');
+                $lines[] = $this->buildPersonnelInventorySnapshot('CONTEOS EXACTOS DE PERSONAL', $personnelAreaName);
             }
 
             if ($this->isAnimalInventoryContextNeeded($tokens)) {
@@ -447,9 +456,13 @@ class SystemContextService
         $tokens = [];
         $synonyms = [
             'equinos' => ['equino'],
+            'equina' => ['equino'],
+            'equinas' => ['equino'],
             'caballo' => ['equino'],
             'caballos' => ['equino'],
             'caninos' => ['canino'],
+            'canina' => ['canino'],
+            'caninas' => ['canino'],
             'perro' => ['canino'],
             'perros' => ['canino'],
             'k9' => ['canino'],
@@ -486,11 +499,22 @@ class SystemContextService
     {
         return !empty(array_intersect($tokens, [
             'elemento', 'elementos', 'personal', 'personales', 'policia', 'policias',
+            'area', 'areas', 'agrupamiento',
         ]));
     }
 
-    protected function buildPersonnelInventorySnapshot(string $title): string
+    protected function buildPersonnelInventorySnapshot(string $title, ?string $areaName = null): string
     {
+        if ($areaName !== null) {
+            $areaTotals = $this->personnelAreaInventoryTotals($areaName);
+
+            if ($areaTotals !== null) {
+                return $title . "\n"
+                    . '- Personal del area ' . $areaName . ': ' . $this->formatPersonnelTotals($areaTotals) . "\n"
+                    . 'Este conteo es de personal por area, no de animales. No lo compares contra el inventario de equinos/caninos.';
+            }
+        }
+
         $totals = $this->personnelInventoryTotals();
 
         return $title . "\n"
@@ -502,6 +526,58 @@ class SystemContextService
     {
         $total = Personal::query()->count();
         $active = Personal::query()->where('activo', 1)->count();
+
+        return [
+            'total' => $total,
+            'active' => $active,
+            'inactive' => max(0, $total - $active),
+        ];
+    }
+
+    protected function personnelAreaNameFromTokens(array $tokens): ?string
+    {
+        $hasAreaCue = !empty(array_intersect($tokens, [
+            'area', 'areas', 'agrupamiento',
+            'elemento', 'elementos', 'personal', 'personales', 'policia', 'policias',
+        ]));
+
+        if (!$hasAreaCue) {
+            return null;
+        }
+
+        if (!empty(array_intersect($tokens, ['canino', 'caninos', 'canina', 'caninas', 'k9']))) {
+            return 'CANINOS';
+        }
+
+        if (!empty(array_intersect($tokens, ['equino', 'equinos', 'equina', 'equinas']))) {
+            return 'EQUINOS';
+        }
+
+        if (in_array('equinoterapia', $tokens, true)) {
+            return 'EQUINOTERAPIA';
+        }
+
+        return null;
+    }
+
+    protected function personnelAreaInventoryTotals(string $areaName): ?array
+    {
+        $area = Area::query()
+            ->withCount([
+                'personals as total_personal_count',
+                'personals as personal_activo_count' => function ($query) {
+                    $query->where('activo', 1);
+                },
+            ])
+            ->where('nombre', $areaName)
+            ->first();
+
+        if (!$area) {
+            return null;
+        }
+
+        $total = (int) $area->total_personal_count;
+        $active = (int) $area->personal_activo_count;
 
         return [
             'total' => $total,
@@ -525,7 +601,7 @@ class SystemContextService
             . '- Animales registrados: ' . $totals['total'] . "\n"
             . '- Equinos: ' . $this->formatAnimalTypeTotals($totals['types']['EQUINO']) . "\n"
             . '- Caninos: ' . $this->formatAnimalTypeTotals($totals['types']['CANINO']) . "\n"
-            . 'Usa estos conteos para preguntas de cantidad; no cuentes las filas de las muestras listadas abajo.';
+            . 'Estos son animales registrados (caballos/perros), no personal de las areas EQUINOS/CANINOS. No cuentes las filas de las muestras listadas abajo.';
     }
 
     protected function animalInventoryTotals(): array

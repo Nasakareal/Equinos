@@ -3,6 +3,7 @@
 namespace App\Services\WhatsAppAi;
 
 use App\Models\Animal;
+use App\Models\Area;
 use App\Models\Personal;
 use App\Models\WhatsAppAiMemory;
 use App\Models\WhatsAppAiMessage;
@@ -241,16 +242,10 @@ class WhatsAppAiAssistantService
             return 'No puedo borrar el membrete. Tengo prohibido eliminar informacion; si hay que cambiarlo, mandame el membrete nuevo y lo usare de aqui en adelante.';
         }
 
-        $personnelInventory = $this->answerPersonnelInventoryQuestion($normalized);
+        $inventory = $this->answerInventoryQuestion($normalized);
 
-        if ($personnelInventory !== null) {
-            return $personnelInventory;
-        }
-
-        $animalInventory = $this->answerAnimalInventoryQuestion($normalized);
-
-        if ($animalInventory !== null) {
-            return $animalInventory;
+        if ($inventory !== null) {
+            return $inventory;
         }
 
         if (in_array($normalized, ['membrete', 'ver membrete', 'membrete de oficio', 'que membrete tienes'], true)) {
@@ -302,10 +297,50 @@ class WhatsAppAiAssistantService
         return null;
     }
 
+    protected function answerInventoryQuestion(string $normalized): ?string
+    {
+        $personnelInventory = $this->answerPersonnelInventoryQuestion($normalized);
+        $animalInventory = $this->shouldAnswerAnimalInventory($normalized)
+            ? $this->answerAnimalInventoryQuestion($normalized)
+            : null;
+
+        if ($personnelInventory !== null && $animalInventory !== null) {
+            return $animalInventory . "\n\n" . $personnelInventory;
+        }
+
+        return $personnelInventory ?: $animalInventory;
+    }
+
+    protected function shouldAnswerAnimalInventory(string $normalized): bool
+    {
+        if (!$this->isAnimalInventoryQuestion($normalized)) {
+            return false;
+        }
+
+        if (!$this->isPersonnelInventoryQuestion($normalized)) {
+            return true;
+        }
+
+        if ($this->containsAnyWord($normalized, ['animal', 'animales', 'caballo', 'caballos', 'perro', 'perros'])) {
+            return true;
+        }
+
+        return (bool) preg_match(
+            '/(?:^| )(?:total|totales|conteo|cantidad)(?: de)?(?: los| las)? (?:equinos|caninos)(?: |$)|(?:^| )(?:cuanto|cuantos|cuanta|cuantas) (?:equinos|caninos)(?: |$)/',
+            $normalized
+        );
+    }
+
     protected function answerPersonnelInventoryQuestion(string $normalized): ?string
     {
         if (!$this->isPersonnelInventoryQuestion($normalized)) {
             return null;
+        }
+
+        $areaName = $this->personnelAreaNameFromQuestion($normalized);
+
+        if ($areaName !== null) {
+            return $this->answerPersonnelAreaInventoryQuestion($areaName);
         }
 
         $total = Personal::query()->count();
@@ -329,17 +364,61 @@ class WhatsAppAiAssistantService
             return false;
         }
 
-        if ($this->containsAnyWord($normalized, [
-            'animal', 'animales',
-            'equino', 'equinos', 'caballo', 'caballos',
-            'canino', 'caninos', 'perro', 'perros', 'k9',
-        ])) {
-            return false;
-        }
-
         return $this->containsAnyWord($normalized, [
             'elemento', 'elementos', 'personal', 'personales', 'policia', 'policias',
+        ]) || $this->personnelAreaNameFromQuestion($normalized) !== null;
+    }
+
+    protected function answerPersonnelAreaInventoryQuestion(string $areaName): string
+    {
+        $area = Area::query()
+            ->withCount([
+                'personals as total_personal_count',
+                'personals as personal_activo_count' => function ($query) {
+                    $query->where('activo', 1);
+                },
+            ])
+            ->where('nombre', $areaName)
+            ->first();
+
+        if (!$area) {
+            return 'No encontre el area de personal ' . $areaName . ' en la base de datos.';
+        }
+
+        $total = (int) $area->total_personal_count;
+        $active = (int) $area->personal_activo_count;
+        $inactive = max(0, $total - $active);
+
+        return 'Personal del area ' . $areaName . ': ' . $total . ' elementos registrados.'
+            . "\n" . 'Activos: ' . $active . '.'
+            . "\n" . 'Inactivos: ' . $inactive . '.'
+            . "\n" . 'Este conteo es de personal por area, no de animales.';
+    }
+
+    protected function personnelAreaNameFromQuestion(string $normalized): ?string
+    {
+        $hasAreaCue = $this->containsAnyWord($normalized, ['area', 'areas', 'agrupamiento']);
+        $hasPersonnelCue = $this->containsAnyWord($normalized, [
+            'elemento', 'elementos', 'personal', 'personales', 'policia', 'policias',
         ]);
+
+        if (!$hasAreaCue && !$hasPersonnelCue) {
+            return null;
+        }
+
+        if ($this->containsAnyWord($normalized, ['canino', 'caninos', 'canina', 'caninas', 'k9'])) {
+            return 'CANINOS';
+        }
+
+        if ($this->containsAnyWord($normalized, ['equino', 'equinos', 'equina', 'equinas'])) {
+            return 'EQUINOS';
+        }
+
+        if ($this->containsAnyWord($normalized, ['equinoterapia'])) {
+            return 'EQUINOTERAPIA';
+        }
+
+        return null;
     }
 
     protected function answerAnimalInventoryQuestion(string $normalized): ?string
@@ -384,7 +463,7 @@ class WhatsAppAiAssistantService
         }
 
         return $this->containsAnyWord($normalized, [
-            'animal', 'animales', 'elemento', 'elementos',
+            'animal', 'animales',
             'equino', 'equinos', 'caballo', 'caballos',
             'canino', 'caninos', 'perro', 'perros', 'k9',
         ]);
@@ -571,6 +650,7 @@ REGLAS:
 - Puedes conversar, explicar, redactar, resumir, preparar textos institucionales y responder preguntas generales con criterio amplio.
 - Si el usuario pide buscar, consultar o listar datos del sistema, usa el CONTEXTO ACTUAL DEL SISTEMA que recibes. Si el dato no aparece, dilo con honestidad y sugiere como buscarlo.
 - Cuando el contexto incluya conteos exactos, usalos como fuente de verdad. No calcules totales contando filas de secciones marcadas como muestra, resultados encontrados o novedades recientes.
+- Distingue conceptos: "equinos/caballos" y "caninos/perros/K9" son animales; "area EQUINOS/CANINOS", "personal" o "elementos" son personal asignado a un area. No trates conteos de areas de personal como conteos de animales.
 - Si el usuario pide informacion general, cultural, tecnica, creativa o de redaccion que no depende del sistema, responde con tu conocimiento general y tu capacidad de razonamiento.
 - Si tienes herramienta de busqueda web disponible, usala cuando la pregunta dependa de informacion actual, externa o verificable en internet. Si no esta disponible, aclara que no tienes navegacion en vivo y ofrece una respuesta general o una forma de verificarla.
 - No inventes cifras, nombres, folios, cargos, ubicaciones ni resultados.
